@@ -1,0 +1,165 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "targetServerName": {
+            "type": "string",
+            "defaultValue": "5a128a64-659d-4481-9440-4f377e30358c"
+        }, 
+        "dataFactoryName": {
+            "type": "string", 
+            "defaultValue": "fa603ea7-f1bd-48c0-a690-73b92d12176c"
+        }, 
+        "adminUser": {
+            "type": "string", 
+            "defaultValue": "demoadmin"
+        }, 
+        "adminPassword": {
+            "type": "string", 
+            "defaultValue": ""
+        }, 
+        "storageAccountType": {
+            "type": "string", 
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS", 
+                "Standard_GRS", 
+                "Standard_ZRS", 
+                "Premium_LRS"
+            ], 
+            "metadata": {
+                "description": "Storage Account Type"
+            }
+        },         
+        "storageAccountName": {
+            "type": "string", 
+            "defaultValue": "4swyu27nfq4ta",
+            "metadata": {
+                "description": "Unique Storage Account Name"
+            }
+        }, 
+        "location": {
+            "type": "string", 
+            "defaultValue": "[resourceGroup().location]", 
+            "metadata": {
+                "description": "Location for all resources"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('storageAccountType')]",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(parameters('storageAccountName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(parameters('storageAccountName'), '/default/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {  
+            "name":"[parameters('dataFactoryName')]",
+            "apiVersion":"2018-06-01",
+            "type":"Microsoft.DataFactory/factories",
+            "location":"[parameters('location')]",
+            "identity":{  
+                "type":"SystemAssigned"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "name": "[parameters('targetServerName')]",
+            "location": "[parameters('location')]",
+            "apiVersion": "2015-05-01-preview",
+            "properties": {
+                "administratorLogin": "[parameters('adminUser')]",
+                "administratorLoginPassword": "[parameters('adminPassword')]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.Sql/servers/databases",
+                    "name": "[concat(string(parameters('targetServerName')), '/TargetDatabase')]",
+                    "location": "[parameters('location')]",
+                    "apiVersion": "2017-10-01-preview",
+                    "sku": {
+                        "name": "S0", 
+                        "tier":"Standard"
+                    },
+                    "dependsOn": [
+                        "[resourceID('Microsoft.Sql/servers/', parameters('targetServerName'))]"
+                    ]
+                },
+                {
+                    "type": "firewallrules",
+                    "name": "AllowAllAzureIps",
+                    "location": "[parameters('location')]",
+                    "apiVersion": "2015-05-01-preview",
+                    "dependsOn": [
+                        "[resourceID('Microsoft.Sql/servers/', parameters('targetServerName'))]"
+                    ],
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "255.255.255.255"
+                    }
+                }
+            ]
+        }
+    ], 
+    "outputs": {
+        "storageAccountName": {
+            "type": "string", 
+            "value": "[parameters('storageAccountName')]"
+        }
+    }
+}

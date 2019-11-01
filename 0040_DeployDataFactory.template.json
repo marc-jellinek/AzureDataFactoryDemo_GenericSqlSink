@@ -1,0 +1,752 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "fa603ea7-f1bd-48c0-a690-73b92d12176c"
+        },
+        "TargetDatabase_connectionString": {
+            "type": "string",
+            "metadata": "Secure string for 'connectionString' of 'TargetDatabase'"
+        },
+        "SourceBlobStorageAccount_connectionString": {
+            "type": "string",
+            "metadata": "Secure string for 'connectionString' of 'SourceBlobStorageAccount'"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/GenericSqlTableTarget')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "TargetDatabase",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "SchemaName": {
+                        "type": "string",
+                        "defaultValue": "dbo"
+                    },
+                    "TableName": {
+                        "type": "string",
+                        "defaultValue": "TestTable2"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().SchemaName",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().TableName",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/TargetDatabase')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/GenericCSVFileSource')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "SourceBlobStorageAccount",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "container": "default"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/SourceBlobStorageAccount')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Drop file to generic SQL sink')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Copy from Source to Sink",
+                        "type": "Copy",
+                        "dependsOn": [
+                            {
+                                "activity": "Get Target Table Schema and Name",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageReadSettings",
+                                    "recursive": true
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "AzureSqlSink"
+                            },
+                            "enableStaging": false
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "GenericCSVFileSource",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "FileName": {
+                                        "value": "@pipeline().parameters.FileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "GenericSqlTableTarget",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "SchemaName": {
+                                        "value": "@activity('Get Target Table Schema and Name').output.firstRow.SchemaName",
+                                        "type": "Expression"
+                                    },
+                                    "TableName": {
+                                        "value": "@activity('Get Target Table Schema and Name').output.firstRow.TableName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Get CSV file Structure",
+                        "type": "GetMetadata",
+                        "dependsOn": [
+                            {
+                                "activity": "Log Start",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "GenericCSVFileSource",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "FileName": {
+                                        "value": "@pipeline().parameters.FileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "structure"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Get Target Table Schema and Name",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "Get CSV file Structure",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "AzureSqlSource",
+                                "sqlReaderStoredProcedureName": "[[utils].[sp_FindOrCreateTargetTable]",
+                                "storedProcedureParameters": {
+                                    "FileName": {
+                                        "type": "String",
+                                        "value": {
+                                            "value": "@pipeline().parameters.FileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "MultipleMatches": {
+                                        "type": "Boolean",
+                                        "value": null
+                                    },
+                                    "SchemaName": {
+                                        "type": "String",
+                                        "value": null
+                                    },
+                                    "SuppliedStructure": {
+                                        "type": "String",
+                                        "value": {
+                                            "value": "@{string(activity('Get CSV file Structure').output.structure)}",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "TableName": {
+                                        "type": "String",
+                                        "value": null
+                                    }
+                                }
+                            },
+                            "dataset": {
+                                "referenceName": "GenericSqlTableTarget",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "SchemaName": "dbo",
+                                    "TableName": "TestTable2"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Log End",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Copy from Source to Sink",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
+                            "storedProcedureParameters": {
+                                "ErrorMessage": {
+                                    "value": null,
+                                    "type": "String"
+                                },
+                                "ErrorNumber": {
+                                    "value": null,
+                                    "type": "Int32"
+                                },
+                                "EventState": {
+                                    "value": "Success",
+                                    "type": "String"
+                                },
+                                "SourceName": {
+                                    "value": "Drop file to generic SQL Sink",
+                                    "type": "String"
+                                },
+                                "SourceType": {
+                                    "value": "Data Factory Pipeline",
+                                    "type": "String"
+                                },
+                                "StatusMessage": {
+                                    "value": {
+                                        "value": "@concat(\n   'End of pipeline - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'PipelineRunID:(', pipeline().RunId, '), ', \n   'PipelineTriggerID:(', pipeline().TriggerId, '), ', \n   'PipelineTriggerName:(', pipeline().TriggerName, '), ', \n   'PipelineTriggerTime:(', pipeline().TriggerTime, '), ', \n   'PipelineTriggerType:(', pipeline().TriggerType, '), ', \n   'FileName:(', pipeline().parameters.FileName, ')'\n)",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "TargetDatabase",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Log Start",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
+                            "storedProcedureParameters": {
+                                "ErrorMessage": {
+                                    "value": null,
+                                    "type": "String"
+                                },
+                                "ErrorNumber": {
+                                    "value": null,
+                                    "type": "Int32"
+                                },
+                                "EventState": {
+                                    "value": "Information",
+                                    "type": "String"
+                                },
+                                "SourceName": {
+                                    "value": "Drop file to generic SQL Sink",
+                                    "type": "String"
+                                },
+                                "SourceType": {
+                                    "value": "Data Factory Pipeline",
+                                    "type": "String"
+                                },
+                                "StatusMessage": {
+                                    "value": {
+                                        "value": "@concat(\n   'Start of pipeline - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'PipelineRunID:(', pipeline().RunId, '), ', \n   'PipelineTriggerID:(', pipeline().TriggerId, '), ', \n   'PipelineTriggerName:(', pipeline().TriggerName, '), ', \n   'PipelineTriggerTime:(', pipeline().TriggerTime, '), ', \n   'PipelineTriggerType:(', pipeline().TriggerType, '), ', \n   'FileName:(', pipeline().parameters.FileName, ')'\n)",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "TargetDatabase",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Log Error - CSV",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Get CSV file Structure",
+                                "dependencyConditions": [
+                                    "Failed"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
+                            "storedProcedureParameters": {
+                                "ErrorMessage": {
+                                    "value": null,
+                                    "type": "String"
+                                },
+                                "ErrorNumber": {
+                                    "value": null,
+                                    "type": "Int32"
+                                },
+                                "EventState": {
+                                    "value": "Error",
+                                    "type": "String"
+                                },
+                                "SourceName": {
+                                    "value": "Drop file to generic SQL Sink/Get CSV file Structure",
+                                    "type": "String"
+                                },
+                                "SourceType": {
+                                    "value": "Data Factory Pipeline \nAction",
+                                    "type": "String"
+                                },
+                                "StatusMessage": {
+                                    "value": {
+                                        "value": "@concat(\n   'Error in pipeline - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Get CSV file Structure', '), ', \n   'RuntimeError:(', activity('Get CSV file Structure').Error,'), ', \n   'SchemaName:(), ', \n   'TableName:()'\n)",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "TargetDatabase",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Log Error - Get Target Schema and Name",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Get Target Table Schema and Name",
+                                "dependencyConditions": [
+                                    "Failed"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
+                            "storedProcedureParameters": {
+                                "ErrorMessage": {
+                                    "value": null,
+                                    "type": "String"
+                                },
+                                "ErrorNumber": {
+                                    "value": null,
+                                    "type": "Int32"
+                                },
+                                "EventState": {
+                                    "value": "Error",
+                                    "type": "String"
+                                },
+                                "SourceName": {
+                                    "value": "Drop file to generic SQL Sink/Get Target Table Schema and Name",
+                                    "type": "String"
+                                },
+                                "SourceType": {
+                                    "value": "Data Factory Pipeline \nAction",
+                                    "type": "String"
+                                },
+                                "StatusMessage": {
+                                    "value": {
+                                        "value": "@concat(\n   'Error in pipeline - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Get Target Table Schema and Name', '), ', \n   'RuntimeError:(', activity('Get Target Table Schema and Name').Error,'), ', \n   'SchemaName:(), ', \n   'TableName:()'\n)",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "TargetDatabase",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Log Error - Copy from Source to Sink",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Copy from Source to Sink",
+                                "dependencyConditions": [
+                                    "Failed"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
+                            "storedProcedureParameters": {
+                                "ErrorMessage": {
+                                    "value": null,
+                                    "type": "String"
+                                },
+                                "ErrorNumber": {
+                                    "value": null,
+                                    "type": "Int32"
+                                },
+                                "EventState": {
+                                    "value": "Error",
+                                    "type": "String"
+                                },
+                                "SourceName": {
+                                    "value": "Drop file to generic SQL Sink/Get Target Table Schema and Name",
+                                    "type": "String"
+                                },
+                                "SourceType": {
+                                    "value": "Data Factory Pipeline \nAction",
+                                    "type": "String"
+                                },
+                                "StatusMessage": {
+                                    "value": {
+                                        "value": "@concat(\n   'Error in pipeline - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Copy from Source to Sink', '), ', \n   'RuntimeError:(', activity('Copy from Source to Sink').Error,'), ', \n   'SchemaName:(), ', \n   'TableName:()'\n)",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "TargetDatabase",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Log Success - Get CSV Structure",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Get CSV file Structure",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
+                            "storedProcedureParameters": {
+                                "ErrorMessage": {
+                                    "value": null,
+                                    "type": "String"
+                                },
+                                "ErrorNumber": {
+                                    "value": null,
+                                    "type": "Int32"
+                                },
+                                "EventState": {
+                                    "value": "Error",
+                                    "type": "String"
+                                },
+                                "SourceName": {
+                                    "value": "Drop file to generic SQL Sink/Get CSV file Structure",
+                                    "type": "String"
+                                },
+                                "SourceType": {
+                                    "value": "Data Factory Pipeline \nAction",
+                                    "type": "String"
+                                },
+                                "StatusMessage": {
+                                    "value": {
+                                        "value": "@concat(\n   'Success in pipeline activity - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Get CSV file Structure', '), ', \n   'CSVStructure:(', activity('Get CSV file Structure').output.structure,'), ', \n   'SchemaName:(), ', \n   'TableName:()'\n)",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "TargetDatabase",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Log Success - Get Target Table",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Get Target Table Schema and Name",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
+                            "storedProcedureParameters": {
+                                "ErrorMessage": {
+                                    "value": null,
+                                    "type": "String"
+                                },
+                                "ErrorNumber": {
+                                    "value": null,
+                                    "type": "Int32"
+                                },
+                                "EventState": {
+                                    "value": "Success",
+                                    "type": "String"
+                                },
+                                "SourceName": {
+                                    "value": "Drop file to generic SQL Sink",
+                                    "type": "String"
+                                },
+                                "SourceType": {
+                                    "value": "Data Factory Pipeline",
+                                    "type": "String"
+                                },
+                                "StatusMessage": {
+                                    "value": {
+                                        "value": "@concat(\n   'Success in pipeline activity - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Get Target Table Schema and Name', '), ', \n   'SchemaName:(', activity('Get Target Table Schema and Name').output.firstRow.SchemaName, '), ', \n   'TableName:(', activity('Get Target Table Schema and Name').output.firstRow.TableName, ')'\n)",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "TargetDatabase",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Log Success - Copy from Source to Sink",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Copy from Source to Sink",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
+                            "storedProcedureParameters": {
+                                "ErrorMessage": {
+                                    "value": null,
+                                    "type": "String"
+                                },
+                                "ErrorNumber": {
+                                    "value": null,
+                                    "type": "Int32"
+                                },
+                                "EventState": {
+                                    "value": "Success",
+                                    "type": "String"
+                                },
+                                "SourceName": {
+                                    "value": "Drop file to generic SQL Sink",
+                                    "type": "String"
+                                },
+                                "SourceType": {
+                                    "value": "Data Factory Pipeline",
+                                    "type": "String"
+                                },
+                                "StatusMessage": {
+                                    "value": {
+                                        "value": "@concat(\n   'Success in pipeline activity - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Copy from Source to Sink', '), ', \n   'RuntimeData:(', activity('Copy from Source to Sink').output,'), ', \n   'SchemaName:(', activity('Get Target Table Schema and Name').output.firstRow.SchemaName, '), ', \n   'TableName:(', activity('Get Target Table Schema and Name').output.firstRow.TableName, ')'\n)",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "TargetDatabase",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "parameters": {
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/GenericCSVFileSource')]",
+                "[concat(variables('factoryId'), '/datasets/GenericSqlTableTarget')]",
+                "[concat(variables('factoryId'), '/linkedServices/TargetDatabase')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TargetDatabase')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('TargetDatabase_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SourceBlobStorageAccount')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "connectionString": "[parameters('SourceBlobStorageAccount_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}
