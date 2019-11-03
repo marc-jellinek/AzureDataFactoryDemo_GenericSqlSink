@@ -1,6 +1,6 @@
 # Throwing Mud on the Wall with Azure Data Factory and AzureDataFactoryDemo_GenericSqlSink
 
-## This is a work in progress, it is not currently functional
+## This is a work in progress, it is not currently release quality
 
 Sometimes I just need data sourced from CSV files imported into a SQL Server table.  Nothing fancy, just quick-and-dirty while using security, operational and deployment best-practices.  I've done this enough times that I find it worth investing the time to create a generic, reusable and redeployable solution.
 
