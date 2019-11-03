@@ -56,19 +56,24 @@ Security Best Practices adhered to:
 
 AzureDataFactoryDemo_GenericSqlSink does the following:
 
--Reads structure metadata from a CSV file stored in blob storage
--Finds or Creates the SQL table in the target database that matches the structure of the CSV file
--If there are zero matches, a new table and view are created to act as the sink for the data, the table and view name of the new table is used
--If there is one match, the table and view name of the matching table is used
--If there is more than one match, the system doesn't know where it should belong, a new table and view are created to act as the sink for the data, the table and view name of the new table is used
+- Reads structure metadata from a CSV file stored in blob storage
+
+- Finds or Creates the SQL table in the target database that matches the structure of the CSV file
+
+- - If there are zero matches, a new table and view are created to act as the sink for the data, the table and view name of the new table is used
+
+- - If there is one match, the table and view name of the matching table is used
+
+- - If there is more than one match, the system doesn't know where it should belong, a new table and view are created to act as the sink for the data, the table and view name of the new table is used
+
 
 Operational metadata is logged to the target view.  The metadata collected is:
--__StorageAccountName:  Source blob storage account name
--__FileName:  Name of the file used as the source of data
--__DataFactoryName:  Name of the Azure Data Factory used to load the data
--__DataFactoryPipelineName:  Name of the Azure Data Factory Pipeline used to load the data
--__DataFactoryPipelineRunId:  ID of the Data Factory Pipeline Run that loaded the data
--__InsertDateTimeUTC:  Full date and time the data was loaded in the UTC timezone, sourced from the Data Factory
+- __StorageAccountName:  Source blob storage account name
+- __FileName:  Name of the file used as the source of data
+- __DataFactoryName:  Name of the Azure Data Factory used to load the data
+- __DataFactoryPipelineName:  Name of the Azure Data Factory Pipeline used to load the data
+- __DataFactoryPipelineRunId:  ID of the Data Factory Pipeline Run that loaded the data
+- __InsertDateTimeUTC:  Full date and time the data was loaded in the UTC timezone, sourced from the Data Factory
 
 
 
