@@ -41,7 +41,8 @@ SQL Server connection security:
 
 Blob Storage connection security 
 
-- Use of RBAC
+- Use of RBAC roles to assign acsess to the Data Factory
+- Use of Access keys as parameters to access blob storage
 
 Security Best Practices adhered to:
 
