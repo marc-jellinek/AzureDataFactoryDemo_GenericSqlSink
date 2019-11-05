@@ -22,12 +22,12 @@ DROP TABLE IF EXISTS audit.OperationsEventLog;
 GO
 
 CREATE TABLE audit.OperationsEventLog(
-    OpsSK int IDENTITY,
+    OpsSK bigint IDENTITY,
     EventDateTime datetime DEFAULT GETUTCDATE(),
-    EventState varchar(100),
-    SourceType varchar(100),
+    EventState varchar(8000),
+    SourceType varchar(8000),
     -- stored procedure, data factory pipeline, etc
-    SourceName varchar(100),
+    SourceName varchar(8000),
     StatusMessage varchar(8000) NOT NULL
 );
 GO
@@ -36,10 +36,10 @@ DROP PROCEDURE IF EXISTS audit.InsertOperationsEventLog;
 GO
 
 CREATE PROCEDURE audit.InsertOperationsEventLog
-    @EventState varchar(100),
-    @SourceType varchar(100),
+    @EventState varchar(8000),
+    @SourceType varchar(8000),
     -- stored procedure, data factory pipeline, etc
-    @SourceName varchar(100),
+    @SourceName varchar(8000),
     @StatusMessage varchar(8000)
 AS
 BEGIN
@@ -141,6 +141,7 @@ RETURNS varchar(8000)
     WHERE       sch.name = @SchemaName AND
         vws.name = @ViewName AND
         NOT col.name = '__RowID' AND
+        NOT col.name = '__StorageAccountName' AND 
         NOT col.name = '__FileName' AND
         NOT col.name = '__DataFactoryName' AND
         NOT col.name = '__DataFactoryPipelineName' AND
@@ -238,10 +239,10 @@ BEGIN
 
     SET @Create = 'CREATE TABLE ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName);    
     
-    SELECT @Columns  = '[__RowID] bigint IDENTITY, ';
+    SELECT @Columns  = '[__RowID] bigint IDENTITY PRIMARY KEY CLUSTERED, ';
 
     SELECT @Columns += columndef.name
-    FROM (   SELECT QUOTENAME(columnspec.Name) + ' varchar(100), ' as name
+    FROM (   SELECT QUOTENAME(columnspec.Name) + ' varchar(max), ' as name
         FROM OPENJSON(@SuppliedStructure)
                                 WITH (
                                     [Name] sysname '$.name', 
@@ -249,10 +250,12 @@ BEGIN
                                 ) columnspec
                 ) columndef;
 
+    SELECT @Columns += '[__StorageAccountName] varchar(1000), ';
     SELECT @Columns += '[__FileName] varchar(1000), ';
     SELECT @Columns += '[__DataFactoryName] varchar(1000), ';
     SELECT @Columns += '[__DataFactoryPipelineName] varchar(1000), ';
-    SELECT @Columns += '[__DataFactoryPipelineRunId] varchar(1000) ';
+    SELECT @Columns += '[__DataFactoryPipelineRunId] varchar(1000), ';
+    SELECT @Columns += '[__InsertDateTimeUTC] datetime2(7) DEFAULT GETDATE() ';
 
     SET @sql = @Create + '(' + @Columns + ')';
     
@@ -274,10 +277,12 @@ BEGIN
                                 ) columnspec
                 ) columndef;
 
+    SELECT @Columns += '[__StorageAccountName], ';
     SELECT @Columns += '[__FileName], ';
     SELECT @Columns += '[__DataFactoryName], ';
     SELECT @Columns += '[__DataFactoryPipelineName], ';
-    SELECT @Columns += '[__DataFactoryPipelineRunId]';
+    SELECT @Columns += '[__DataFactoryPipelineRunId], ';
+    SELECT @Columns += '[__InsertDateTimeUTC]';
 
     SET @Columns += ' FROM ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName);
 
@@ -314,12 +319,14 @@ BEGIN
             @ViewName = @ViewName OUTPUT
 
         SELECT  @SchemaName as SchemaName, 
-                @ViewName as ViewName            
+                @ViewName as ViewName, 
+                @MultipleMatches as MultipleMatches
     END
     ELSE
     BEGIN
         SELECT  @SchemaName as SchemaName, 
-                @ViewName as ViewName
+                @ViewName as ViewName, 
+                @MultipleMatches as MultipleMatches
     END
 
 

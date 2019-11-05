@@ -33,7 +33,7 @@
         },         
         "storageAccountName": {
             "type": "string", 
-            "defaultValue": "4swyu27nfq4ta",
+            "defaultValue": "fa603ea7",
             "metadata": {
                 "description": "Unique Storage Account Name"
             }
