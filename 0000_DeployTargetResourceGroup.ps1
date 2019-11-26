@@ -1,6 +1,6 @@
 $subscriptionName = "Marc Jellinek - Visual Studio Enterprise"
 $resourceGroupName = "AzDataFactoryDemo_GenericSqlSink"
-$location = "eastus"
+$location = 'eastus'
 
 Connect-AzAccount `
     -Subscription $subscriptionName
