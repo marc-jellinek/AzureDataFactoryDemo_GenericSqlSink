@@ -294,16 +294,6 @@
             "properties": {
                 "publicAccess": "None"
             }
-        },        
-        {  
-            "name":"[parameters('dataFactoryName')]",
-            "apiVersion":"2018-06-01",
-            "type":"Microsoft.DataFactory/factories",
-            "location":"[resourceGroup().location]",
-            "identity":{  
-                "type":"SystemAssigned"
-            }, 
-            "properties":{}
         },
         {
             "type": "Microsoft.Sql/servers",

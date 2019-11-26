@@ -1,5 +1,5 @@
 $parameterValues = @{ `
-    factoryName = "$dataFactoryName"; 
+    dataFactoryName = "$dataFactoryName"; 
 }
 
 $dataFactoryDeployment = New-AzResourceGroupDeployment `
