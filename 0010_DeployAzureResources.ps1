@@ -34,7 +34,6 @@ $loggingDatabaseSqlAdminPassword = $deployment.Parameters.loggingDatabaseSqlAdmi
 $loggingDatabaseSqlOpsUsername = $deployment.Parameters.loggingDatabaseSqlOpsUsername.value
 $loggingDatabaseSqlOpsPassword = $deployment.Parameters.loggingDatabaseSqlOpsPassword.value
 
-$dataFactoryName = $deployment.Parameters.dataFactoryName.value
 $storageAccount1Name = $deployment.Parameters.storageAccount1Name.value
 $storageAccount2Name = $deployment.Parameters.storageAccount2Name.value
 $loggingUrl = $deployment.Outputs.loggingUrl 

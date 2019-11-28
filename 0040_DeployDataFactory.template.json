@@ -7,6 +7,12 @@
             "metadata": {
                 "Description": "Data Factory name"
             }
+        }, 
+        "keyVaultName": {
+            "type": "string", 
+            "metadata": {
+                "Description": "Name of the Key Vault supplying values of secrets"
+            }
         }
     },
     "variables": {
@@ -22,6 +28,21 @@
                 "type":"SystemAssigned"
             }, 
             "properties":{}
+        },
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/', parameters('keyVaultName'))]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureKeyVault",
+                "typeProperties": {
+                    "baseUrl": "[concat('https://', parameters('keyVaultName'), '.vault.azure.net/')]"
+                }
+            },
+            "dependsOn": [
+                "[variables('factoryId')]"
+            ]
         },
         {
             "name": "[concat(parameters('dataFactoryName'), '/GenericCSVFileSource')]",

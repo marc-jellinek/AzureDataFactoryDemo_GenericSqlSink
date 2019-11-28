@@ -57,14 +57,11 @@
             "value": "A4W@R600TRyS"
         },
         "loggingDatabaseSqlOpsUsername": {
-            "value": "mdjlogginsqlops"
+            "value": "mdjloggingsqlops"
         },
         "loggingDatabaseSqlOpsPassword": {
             "value": "X@J7hs*WA&8&"
         },
-        "dataFactoryName": {
-            "value": "mdjDataFactory"
-        }, 
         "storageAccount1Name": {
             "value": "mdjstorageaccount1"
         }, 
