@@ -10,23 +10,27 @@ I'm open-sourcing this so that if someone
 - finds a problem 
 - wants to add a new source and destination mapping, they can do it themselves and contribute their code back to the project
 - finds a more secure way to provide services, the issue can be raised and addressed
-- finds a faster way to provide services, the issue can be raised and addressed.
+- finds more performant way to provide services, the issue can be raised and addressed.
 
 Sources and sinks I envision supporting:
 
-- Azure SQL Database (source, sink)
+- Azure SQL Database
 - CSV files
 - JSON files
 - Azure CosmosDB
 - Azure SQL Data Warehouse
 - Blob Storage
 - Azure Data Lake Storage
+- Avro
+- Parquet
 
 Logging options to be supported:
 
 - CSV logging 
 - JSON logging
 - Logging to an Event Hub
+- Logging to a SQL Server table (in the target database)
+- Logging to a SQL Server table (in a dedicated database)
 
 Operational Monitoring Scenarios:
 
@@ -38,6 +42,8 @@ SQL Server connection security:
 - SQL Server Connection String providing username, password and connection data through runtime parameters
 - Use of Azure SQL Database-Azure Active Directory integration to assign SQL Server-level rights 
 - Use of least-privilege accounts to support data movement
+
+Use of Azure Active Directory assumes that AAD is in place.  See https://docs.microsoft.com/en-us/azure/sql-database/sql-database-aad-authentication-configure
 
 Blob Storage connection security 
 
