@@ -36,22 +36,25 @@ $loggingDatabaseSqlOpsPassword = $deployment.Parameters.loggingDatabaseSqlOpsPas
 
 $storageAccount1Name = $deployment.Parameters.storageAccount1Name.value
 $storageAccount2Name = $deployment.Parameters.storageAccount2Name.value
+
 $loggingUrl = $deployment.Outputs.loggingUrl 
 
-$storageAccount1Key = (Get-AzStorageAccountKey `
-        -ResourceGroupName $resourceGroupName `
-        -AccountName $storageAccount1Name `
-    | Where-Object { $_.KeyName -eq 'key1' }).Value
+$storageAccount1ConnectionString = $deployment.Outputs.storageAccount1ConnectionString.value
+$storageAccount2ConnectionString = $deployment.Outputs.storageAccount2ConnectionString.value
 
-$storageAccount2Key = (Get-AzStorageAccountKey `
-        -ResourceGroupName $resourceGroupName `
-        -AccountName $storageAccount2Name `
-    | Where-Object { $_.KeyName -eq 'key1' }).Value
+#$storageAccount1Key = (Get-AzStorageAccountKey `
+#        -ResourceGroupName $resourceGroupName `
+#        -AccountName $storageAccount1Name `
+#    | Where-Object { $_.KeyName -eq 'key1' }).Value
+
+#$storageAccount2Key = (Get-AzStorageAccountKey `
+#        -ResourceGroupName $resourceGroupName `
+#        -AccountName $storageAccount2Name `
+#    | Where-Object { $_.KeyName -eq 'key1' }).Value
 
 # upload test data to blob storage accounts
 $ctx = New-AzStorageContext `
-    -StorageAccountName $storageAccount1Name `
-    -StorageAccountKey $storageAccount1Key
+    -ConnectionString $storageAccount1ConnectionString
 
 Set-AzStorageBlobContent `
     -File "./0030_SourceData1.csv" `
@@ -60,8 +63,7 @@ Set-AzStorageBlobContent `
     -Force
 
 $ctx = New-AzStorageContext `
-    -StorageAccountName $storageAccount2Name `
-    -StorageAccountKey $storageAccount2Key
+    -ConnectionString $storageAccount2ConnectionString
 
 Set-AzStorageBlobContent `
     -File "./0030_SourceData2.csv" `
@@ -69,4 +71,5 @@ Set-AzStorageBlobContent `
     -Context $ctx `
     -Force   
 
+#"./0020_DeployDatabaseObjects.sql"
 #"./0040_DeployDataFactory.ps1"

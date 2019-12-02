@@ -1,5 +1,6 @@
 $parameterValues = @{ `
     dataFactoryName = "$dataFactoryName"; 
+    keyVaultName = "$keyVaultName"
 }
 
 $dataFactoryDeployment `
@@ -15,3 +16,6 @@ $dataFactoryDeployment `
 #    -TemplateParameterFile "./0040_DeployDataFactory.parameters.json"
 
 $dataFactoryDeployment | Out-Host
+
+# Get identity of Data Factory
+# grant it access to Key Vault
