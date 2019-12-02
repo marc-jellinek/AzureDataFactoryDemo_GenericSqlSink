@@ -3,113 +3,108 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "keyVaultName": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
         }, 
         "userObjectId": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": "9e2654c3-c940-490f-8a98-e0daa71d194b"
-        }, 
-
+        },
         "targetDatabase1ServerName": {
             "type": "string",
             "defaultValue": ""
-        }, 
-        "targetDatabase1DatabaseName": {
-            "type": "string", 
+        },
+        "targetDatabase1DatabaseName": { 
+            "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "targetDatabase1SqlAdminUsername": {
             "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "targetDatabase1SqlAdminPassword": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "targetDatabase1SqlOpsUsername": {
             "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "targetDatabase1SqlOpsPassword": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
         },
         "targetDatabase2ServerName": {
             "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "targetDatabase2DatabaseName": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "targetDatabase2SqlAdminUsername": {
             "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "targetDatabase2SqlAdminPassword": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "targetDatabase2SqlOpsUsername": {
             "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "targetDatabase2SqlOpsPassword": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
         },
         "loggingDatabaseServerName": {
             "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "loggingDatabaseDatabaseName": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "loggingDatabaseSqlAdminUsername": {
             "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "loggingDatabaseSqlAdminPassword": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "loggingDatabaseSqlOpsUsername": {
             "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "loggingDatabaseSqlOpsPassword": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
         },
-        "dataFactoryName": {
-            "type": "string", 
-            "defaultValue": ""
-        }, 
         "storageAccount1Name": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "storageAccount1Type": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": "Standard_LRS",
             "allowedValues": [
-                "Standard_LRS", 
-                "Standard_GRS", 
+                "Standard_LRS",
+                "Standard_GRS",
                 "Standard_ZRS"
             ]
-        },         
+        },
         "storageAccount2Name": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": ""
-        }, 
+        },
         "storageAccount2Type": {
-            "type": "string", 
+            "type": "string",
             "defaultValue": "",
             "allowedValues": [
-                "Standard_LRS", 
-                "Standard_GRS", 
+                "Standard_LRS",
+                "Standard_GRS",
                 "Standard_ZRS"
             ]
         }
@@ -177,20 +172,165 @@
             }
         },
         {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetDatabase1ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('targetDatabase1ServerName'), '.database.windows.net;Initial Catalog=', parameters('targetDatabase1DatabaseName'), ';User ID=', parameters('targetDatabase1SqlOpsUserName'), ';Password=', parameters('targetDatabase1SqlOpsPassword'))]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetDatabase2ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('targetDatabase2ServerName'), '.database.windows.net;Initial Catalog=', parameters('targetDatabase2DatabaseName'), ';User ID=', parameters('targetDatabase2SqlOpsUserName'), ';Password=', parameters('targetDatabase2SqlOpsPassword'))]"
+            }
+        }, 
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetblob1ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1Name'))]"
+            ],
+            "properties": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount1Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount1Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+            }
+        }, 
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetblob2ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2Name'))]"
+            ],
+            "properties": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount2Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount2Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+            }
+        }, 
+        {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
             "name": "[parameters('storageAccount1Name')]",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "[parameters('storageAccount1Type')]",
+                "tier": "Standard" 
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[parameters('userObjectId')]",
+                        "permissions": {
+                            "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "certificates": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "ManageContacts",
+                                "ManageIssuers",
+                                "GetIssuers",
+                                "ListIssuers",
+                                "SetIssuers",
+                                "DeleteIssuers"
+                            ]
+                        }
+                    }
+                ],
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('storageAccount2Name')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('storageAccount2Type')]",
                 "tier": "Standard"
             },
             "kind": "StorageV2",
             "properties": {
                 "networkAcls": {
                     "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
                     "defaultAction": "Allow"
                 },
                 "supportsHttpsTrafficOnly": true,
@@ -249,7 +389,25 @@
             ],
             "properties": {
                 "cors": {
-                    "corsRules": []
+                    "corsRules": [
+                    ]
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(parameters('storageAccount2Name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2Name'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": [
+                    ]
                 },
                 "deleteRetentionPolicy": {
                     "enabled": false
@@ -296,16 +454,6 @@
                 "publicAccess": "None"
             }
         },        
-        {  
-            "name":"[parameters('dataFactoryName')]",
-            "apiVersion":"2018-06-01",
-            "type":"Microsoft.DataFactory/factories",
-            "location":"[resourceGroup().location]",
-            "identity":{  
-                "type":"SystemAssigned"
-            }, 
-            "properties":{}
-        },
         {
             "type": "Microsoft.Sql/servers",
             "name": "[parameters('targetDatabase1ServerName')]",
@@ -323,8 +471,8 @@
                     "location": "[resourceGroup().location]",
                     "apiVersion": "2017-10-01-preview",
                     "sku": {
-                        "name": "S0", 
-                        "tier":"Standard"
+                        "name": "S0",
+                        "tier": "Standard"
                     },
                     "dependsOn": [
                         "[resourceID('Microsoft.Sql/servers/', parameters('targetDatabase1ServerName'))]"
@@ -344,12 +492,90 @@
                     }
                 }
             ]
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "name": "[parameters('targetDatabase2ServerName')]",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-05-01-preview",
+            "properties": {
+                "administratorLogin": "[parameters('targetDatabase2SqlAdminUsername')]",
+                "administratorLoginPassword": "[parameters('targetDatabase2SqlAdminPassword')]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.Sql/servers/databases",
+                    "name": "[concat(string(parameters('targetDatabase2ServerName')), '/', parameters('targetDatabase2DatabaseName'))]",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "2017-10-01-preview",
+                    "sku": {
+                        "name": "S0",
+                        "tier": "Standard"
+                    },
+                    "dependsOn": [
+                        "[resourceID('Microsoft.Sql/servers/', parameters('targetDatabase2ServerName'))]"
+                    ]
+                },
+                {
+                    "type": "firewallrules",
+                    "name": "AllowAllAzureIps",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "2015-05-01-preview",
+                    "dependsOn": [
+                        "[resourceID('Microsoft.Sql/servers/', parameters('targetDatabase2ServerName'))]"
+                    ],
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "255.255.255.255"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "name": "[parameters('loggingDatabaseServerName')]",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-05-01-preview",
+            "properties": {
+                "administratorLogin": "[parameters('loggingDatabaseSqlAdminUsername')]",
+                "administratorLoginPassword": "[parameters('loggingDatabaseSqlAdminPassword')]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.Sql/servers/databases",
+                    "name": "[concat(string(parameters('loggingDatabaseServerName')), '/', parameters('loggingDatabaseDatabaseName'))]",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "2017-10-01-preview",
+                    "sku": {
+                        "name": "S0",
+                        "tier": "Standard"
+                    },
+                    "dependsOn": [
+                        "[resourceID('Microsoft.Sql/servers/', parameters('loggingDatabaseServerName'))]"
+                    ]
+                },
+                {
+                    "type": "firewallrules",
+                    "name": "AllowAllAzureIps",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "2015-05-01-preview",
+                    "dependsOn": [
+                        "[resourceID('Microsoft.Sql/servers/', parameters('loggingDatabaseServerName'))]"
+                    ],
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "255.255.255.255"
+                    }
+                }
+            ]
         }, 
        {
             "type": "Microsoft.Sql/servers",
             "name": "[parameters('targetDatabase2ServerName')]",
             "location": "[resourceGroup().location]",
-            "apiVersion": "2015-05-01-preview",
+            "apiVersion": "2015-05-01-preview", 
             "properties": {
                 "administratorLogin": "[parameters('targetDatabase2SqlAdminUsername')]",
                 "administratorLoginPassword": "[parameters('targetDatabase2SqlAdminPassword')]",
@@ -431,27 +657,32 @@
             "properties": {
                 "displayName": "LoggingDatabase",
                 "parameterValues": {
-                    "server": "[concat(parameters('loggingDatabaseServerName'), '.database.windows.net')]", 
-                    "database": "[parameters('loggingDatabaseDatabaseName')]", 
-                    "userName":"[parameters('loggingDatabaseSqlOpsUsername')]", 
-                    "password":"[parameters('loggingDatabaseSqlOpsPassword')]"
+                    "server": "[concat(parameters('loggingDatabaseServerName'), '.database.windows.net')]",
+                    "database": "[parameters('loggingDatabaseDatabaseName')]",
+                    "userName": "[parameters('loggingDatabaseSqlOpsUsername')]",
+                    "password": "[parameters('loggingDatabaseSqlOpsPassword')]"
                 },
-                "customParameterValues": {},
+                "customParameterValues": {
+                },
                 "api": {
                     "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/sql')]"
                 }
-            }
+            }, 
+            "dependsOn": [
+                "[resourceID('Microsoft.Sql/servers/', parameters('loggingDatabaseServerName'))]"
+            ]
         },
         {
             "type": "Microsoft.Logic/workflows",
             "apiVersion": "2017-07-01",
             "name": "WriteToOperationsEventLog",
             "location": "[resourceGroup().location]",
-            "identity":{
+            "identity": {
                 "type": "SystemAssigned"
-            }, 
+            },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/connections', 'sql')]"
+                "[resourceId('Microsoft.Web/connections', 'WriteToOperationsEventLogDatabaseConnection')]", 
+                "[resourceID('Microsoft.Sql/servers/', parameters('loggingDatabaseServerName'))]"
             ],
             "properties": {
                 "state": "Enabled",
@@ -520,20 +751,28 @@
                     "$connections": {
                         "value": {
                             "sql": {
-                                "connectionId": "[resourceId('Microsoft.Web/connections', 'sql')]",
-                                "connectionName": "sql",
+                                "connectionId": "[resourceId('Microsoft.Web/connections', 'WriteToOperationsEventLogDatabaseConnection')]",
+                                "connectionName": "WriteToOperationsEventLogDatabaseConnection",
                                 "id": "[concat('/subscriptions/', subscription().subscriptionId,'/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/sql')]"
                             }
                         }
                     }
                 }
             }
-        }                
+        }
     ], 
-    "outputs": {
-        "loggingUrl": {
-           "type": "string",
-           "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows/', 'WriteToOperationsEventLog'), '/triggers/manual'), '2017-07-01').value]"
+    "outputs": { 
+        "loggingUrl": { 
+            "type": "string",
+            "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows/', 'WriteToOperationsEventLog'), '/triggers/manual'), '2017-07-01').value]"
+        }, 
+        "storageAccount1ConnectionString": {
+            "type": "string", 
+            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount1Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount1Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+        }, 
+        "storageAccount2ConnectionString": {
+            "type": "string", 
+            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount2Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount2Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
         }
     }    
 }

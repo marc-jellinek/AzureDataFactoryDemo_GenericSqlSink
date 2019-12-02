@@ -38,7 +38,7 @@ Invoke-Sqlcmd `
     -Database "$targetDatabase1DatabaseName" `
     -Username $targetDatabase1SqlAdminUsername `
     -Password $targetDatabase1SqlAdminPassword `
-    -Query "CREATE USER [$targetDatabase1SqlOpsUsername] WITH PASSWORD='targetDatabase1SqlOpsPassword'"
+    -Query "CREATE USER [$targetDatabase1SqlOpsUsername] WITH PASSWORD='$targetDatabase1SqlOpsPassword'"
 
 Invoke-Sqlcmd `
     -ServerInstance "tcp:$targetDatabase1ServerName.database.windows.net" `
@@ -49,7 +49,7 @@ Invoke-Sqlcmd `
 
 # Create operational user in TargetDB2 as admin
 # Create schema [utils]
-# grant operational user CONTROL on schema [utils]
+# grant operational user access on schema [utils]
 
 Invoke-Sqlcmd `
     -ServerInstance "tcp:$targetDatabase2ServerName.database.windows.net" `

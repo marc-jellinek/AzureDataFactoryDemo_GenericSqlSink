@@ -1,11 +1,17 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "dataFactoryName": {
             "type": "string",
             "metadata": {
                 "Description": "Data Factory name"
+            }
+        },
+        "keyVaultName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Name of the Key Vault supplying values of secrets"
             }
         }
     },
@@ -70,6 +76,83 @@
             ]
         },
         {
+            "name": "[parameters('dataFactoryName')]",
+            "apiVersion": "2018-06-01",
+            "type": "Microsoft.DataFactory/factories",
+            "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+            }
+        },
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/', parameters('keyVaultName'))]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [
+                ],
+                "type": "AzureKeyVault",
+                "typeProperties": {
+                    "baseUrl": "[concat('https://', parameters('keyVaultName'), '.vault.azure.net/')]"
+                }
+            },
+            "dependsOn": [
+                "[variables('factoryId')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/GenericCSVFileSource')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "SourceBlobStorageAccount",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                    }
+                },
+                "parameters": {
+                    "FileName": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "StorageAccountName": {
+                        "type": "string",
+                        "defaultValue": ""
+                    },
+                    "StorageAccountKey": {
+                        "type": "string",
+                        "defaultValue": ""
+                    }
+                },
+                "annotations": [
+                ],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "container": "default"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                ]
+            },
+            "dependsOn": [
+                "[variables('factoryId')]",
+                "[concat(variables('factoryId'), '/linkedServices/SourceBlobStorageAccount')]"
+            ]
+        },
+        {
             "name": "[concat(parameters('dataFactoryName'), '/GenericSqlTableTarget')]",
             "type": "Microsoft.DataFactory/factories/datasets",
             "apiVersion": "2018-06-01",
@@ -106,25 +189,27 @@
                         "defaultValue": ""
                     },
                     "TargetSQLServerName": {
-                        "type": "string", 
+                        "type": "string",
                         "defaultValue": ""
                     },
                     "TargetSQLDatabaseName": {
-                        "type": "string", 
+                        "type": "string",
                         "defaultValue": ""
                     },
                     "TargetSQLUsername": {
-                        "type": "string", 
+                        "type": "string",
                         "defaultValue": ""
                     },
                     "TargetSQLPassword": {
-                        "type": "string", 
+                        "type": "string",
                         "defaultValue": ""
                     }
                 },
-                "annotations": [],
+                "annotations": [
+                ],
                 "type": "AzureSqlTable",
-                "schema": [],
+                "schema": [
+                ],
                 "typeProperties": {
                     "schema": {
                         "value": "@dataset().SchemaName",
@@ -137,6 +222,7 @@
                 }
             },
             "dependsOn": [
+                "[variables('factoryId')]",
                 "[concat(variables('factoryId'), '/linkedServices/TargetDatabase')]"
             ]
         },
@@ -154,7 +240,8 @@
                                 "type": "DatasetReference"
                             },
                             "name": "ReadFromCSVInBlobStorage",
-                            "typeProperties": {}
+                            "typeProperties": {
+                            }
                         }
                     ],
                     "sinks": [
@@ -175,6 +262,7 @@
                 }
             },
             "dependsOn": [
+                "[variables('factoryId')]",
                 "[concat(variables('factoryId'), '/datasets/GenericCSVFileSource')]",
                 "[concat(variables('factoryId'), '/datasets/GenericSqlTableTarget')]"
             ]
@@ -191,16 +279,18 @@
                 },
                 "parameters": {
                     "storageAccountName": {
-                        "type": "string", 
+                        "type": "string",
                         "defaultValue": ""
                     },
                     "storageAccountKey": {
-                        "type": "string", 
+                        "type": "string",
                         "defaultValue": ""
                     }
                 }
             },
-            "dependsOn": []
+            "dependsOn": [
+                "[variables('factoryId')]"
+            ]
         },
         {
             "name": "[concat(parameters('dataFactoryName'), '/TargetDatabase')]",
@@ -209,32 +299,35 @@
             "properties": {
                 "parameters": {
                     "TargetSQLServerName": {
-                        "type": "string", 
+                        "type": "string",
                         "defaultValue": ""
                     },
                     "TargetSQLDatabaseName": {
-                        "type": "string", 
+                        "type": "string",
                         "defaultValue": ""
                     },
                     "TargetSQLUsername": {
-                        "type": "string", 
+                        "type": "string",
                         "defaultValue": ""
                     },
                     "TargetSQLPassword": {
-                        "type": "string", 
+                        "type": "string",
                         "defaultValue": ""
                     }
                 },
-                "annotations": [],
+                "annotations": [
+                ],
                 "type": "AzureSqlDatabase",
                 "typeProperties": {
                     "connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().TargetSQLServerName};Initial Catalog=@{linkedService().TargetSQLDatabaseName};User ID=@{linkedService().TargetSQLUsername};Password=@{linkedService().TargetSQLPassword}"
                 }
             },
-            "dependsOn": []
+            "dependsOn": [
+                "[variables('factoryId')]"
+            ]
         },
         {
-            "name": "[concat(parameters('dataFactoryName'), '/Import Blob Storage Account Key CSV file into generic SQL table using Copy Activity Logging to Target SQL Server')]",
+            "name": "[concat(parameters('dataFactoryName'), '/Import Blob Storage Account Key CSV file into generic SQL table using Data Flow Activity')]",
             "type": "Microsoft.DataFactory/factories/pipelines",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -250,14 +343,15 @@
                                 ]
                             }
                         ],
-                        "policy": {
+                        "policy": { 
                             "timeout": "7.00:00:00",
                             "retry": 0,
                             "retryIntervalInSeconds": 30,
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "source": {
                                 "type": "DelimitedTextSource",
@@ -387,7 +481,8 @@
                             "secureOutput": false, 
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "source": {
                                 "type": "AzureSqlSource",
@@ -425,8 +520,6 @@
                                 "referenceName": "GenericSqlTableTarget",
                                 "type": "DatasetReference",
                                 "parameters": {
-                                    "SchemaName": "audit",
-                                    "TableName": "DataLineage",
                                     "TargetSQLServerName": {
                                         "value": "@pipeline().parameters.TargetSQLServerName",
                                         "type": "Expression"
@@ -465,7 +558,8 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
                             "storedProcedureParameters": {
@@ -510,13 +604,16 @@
                                     "value": "@pipeline().parameters.TargetSQLPassword",
                                     "type": "Expression"
                                 }
+                            },
+                            "staging": {
                             }
                         }
                     },
                     {
-                        "name": "Log Start",
-                        "type": "SqlServerStoredProcedure",
-                        "dependsOn": [],
+                        "name": "Log Start - WriteToOperationsEventLog",
+                        "type": "WebActivity",
+                        "dependsOn": [
+                        ],
                         "policy": {
                             "timeout": "7.00:00:00",
                             "retry": 0,
@@ -524,7 +621,8 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
                             "storedProcedureParameters": {
@@ -590,7 +688,8 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
                             "storedProcedureParameters": {
@@ -656,51 +755,20 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
-                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
-                            "storedProcedureParameters": {
-                                "EventState": {
-                                    "value": "Error",
-                                    "type": "String"
-                                },
-                                "SourceName": {
-                                    "value": "Drop file to generic SQL Sink/Get Target Table Schema and Name",
-                                    "type": "String"
-                                },
-                                "SourceType": {
-                                    "value": "Data Factory Pipeline \nAction",
-                                    "type": "String"
-                                },
-                                "StatusMessage": {
-                                    "value": {
-                                        "value": "@concat(\n   'Error in pipeline - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Get Target View Schema and Name', '), ', \n   'RuntimeError:(', activity('Get Target View Schema and Name').output.error,'), ', \n   'SchemaName:(), ', \n   'TableName:()'\n)",
-                                        "type": "Expression"
-                                    },
-                                    "type": "String"
-                                }
-                            }
-                        },
-                        "linkedServiceName": {
-                            "referenceName": "TargetDatabase",
-                            "type": "LinkedServiceReference",
-                            "parameters": {
-                                "TargetSQLServerName": {
-                                    "value": "@pipeline().parameters.TargetSQLServerName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLDatabaseName": {
-                                    "value": "@pipeline().parameters.TargetSQLDatabaseName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLUsername": {
-                                    "value": "@pipeline().parameters.TargetSQLUserName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLPassword": {
-                                    "value": "@pipeline().parameters.TargetSQLPassword",
-                                    "type": "Expression"
-                                }
+                            "url": {
+                                "value": "@pipeline().parameters.LoggingURL",
+                                "type": "Expression"
+                            },
+                            "method": "POST",
+                            "headers": {
+                                "Content-Type": "application/json"
+                            },
+                            "body": {
+                                "value": "{\n\t\"EventDateTime\":\"@{utcNow()}\",\n\t\"EventState\":\"Error\",\n\t\"SourceName\":\"@{concat(pipeline().DataFactory, '/', pipeline().Pipeline, '/Get Target View Schema and Name')}\",\n\t\"SourceType\":\"DataFactoryPipelineRunActivity\",\n\t\"StatusMessage\":\"{\n\t\t\\\"EventType\\\": \\\"DataFactoryPipelineRunActivity\\\", \n\t\t\\\"DataFactoryName\\\":\\\"@{pipeline().DataFactory}\\\",\n\t\t\\\"DataFactoryPipelineName\\\":\\\"@{pipeline().Pipeline}\\\",\n\t\t\\\"DataFactoryPipelineActivityName\\\":\\\"Get Target View Schema and Name\\\",\n\t\t\\\"DataFactoryPipelineActivityError\\\":\\\"@{replace(string(activity('Get Target View Schema and Name').error), '\"', '')}\\\",\n\t\t\\\"DataFactoryPipelineRunID\\\":\\\"@{pipeline().RunID}\\\",\n\t\t\\\"DataFactoryPipelineTriggerName\\\":\\\"@{pipeline().TriggerName}\\\",\n\t\t\\\"DataFactoryPipelineTriggerType\\\":\\\"@{pipeline().TriggerType}\\\",\n\t\t\\\"DataFactoryPipelineTriggerTime\\\":\\\"@{pipeline().TriggerTime}\\\",\n\t\t\\\"Parameters\\\":{\n\t\t\t\\\"StorageAccountName\\\":\\\"@{pipeline().parameters.StorageAccountName}\\\", \n\t\t\t\\\"FileName\\\":\\\"@{pipeline().parameters.FileName}\\\",\n\t\t\t\\\"TargetSQLServerName\\\":\\\"@{pipeline().parameters.TargetSQLServerName}\\\", \n\t\t\t\\\"TargetSQLDatabaseName\\\":\\\"@{pipeline().parameters.TargetSQLDatabaseName}\\\", \n\t\t\t\\\"TargetSQLUsername\\\":\\\"@{pipeline().parameters.TargetSQLUsername}\\\"\n\t\t}\n\t}\"\n}",
+                                "type": "Expression"
                             }
                         }
                     },
@@ -722,51 +790,20 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
-                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
-                            "storedProcedureParameters": {
-                                "EventState": {
-                                    "value": "Error",
-                                    "type": "String"
-                                },
-                                "SourceName": {
-                                    "value": "Drop file to generic SQL Sink/Copy From Source to Sink",
-                                    "type": "String"
-                                },
-                                "SourceType": {
-                                    "value": "Data Factory Pipeline \nAction",
-                                    "type": "String"
-                                },
-                                "StatusMessage": {
-                                    "value": {
-                                        "value": "@concat(\n   'Error in pipeline - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Copy from Source to Sink', '), ', \n   'RuntimeError:(', activity('Copy from Source to Sink').Error,'), ', \n   'SchemaName:(), ', \n   'TableName:()'\n)",
-                                        "type": "Expression"
-                                    },
-                                    "type": "String"
-                                }
-                            }
-                        },
-                        "linkedServiceName": {
-                            "referenceName": "TargetDatabase",
-                            "type": "LinkedServiceReference",
-                            "parameters": {
-                                "TargetSQLServerName": {
-                                    "value": "@pipeline().parameters.TargetSQLServerName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLDatabaseName": {
-                                    "value": "@pipeline().parameters.TargetSQLDatabaseName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLUsername": {
-                                    "value": "@pipeline().parameters.TargetSQLUserName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLPassword": {
-                                    "value": "@pipeline().parameters.TargetSQLPassword",
-                                    "type": "Expression"
-                                }
+                            "url": {
+                                "value": "@pipeline().parameters.LoggingURL",
+                                "type": "Expression"
+                            },
+                            "method": "POST",
+                            "headers": {
+                                "Content-Type": "application/json"
+                            },
+                            "body": {
+                                "value": "{\n\t\"EventDateTime\":\"@{utcNow()}\",\n\t\"EventState\":\"Success\",\n\t\"SourceName\":\"@{concat(pipeline().DataFactory, '/', pipeline().Pipeline, '/Get Target View Schema and Name')}\",\n\t\"SourceType\":\"DataFactoryPipelineRunActivity\",\n\t\"StatusMessage\":\"{\n\t\t\\\"EventType\\\": \\\"DataFactoryPipelineRunActivity\\\", \n\t\t\\\"DataFactoryName\\\":\\\"@{pipeline().DataFactory}\\\",\n\t\t\\\"DataFactoryPipelineName\\\":\\\"@{pipeline().Pipeline}\\\",\n\t\t\\\"DataFactoryPipelineActivityName\\\":\\\"Get Target View Schema and Name\\\",\n\t\t\\\"DataFactoryPipelineActivityOutput\\\":\\\"@{replace(string(activity('Get Target View Schema and Name').output), '\"', '')}\\\",\t\t\\\"DataFactoryPipelineRunID\\\":\\\"@{pipeline().RunID}\\\",\n\t\t\\\"DataFactoryPipelineTriggerName\\\":\\\"@{pipeline().TriggerName}\\\",\n\t\t\\\"DataFactoryPipelineTriggerType\\\":\\\"@{pipeline().TriggerType}\\\",\n\t\t\\\"DataFactoryPipelineTriggerTime\\\":\\\"@{pipeline().TriggerTime}\\\",\n\t\t\\\"Parameters\\\":{\n\t\t\t\\\"StorageAccountName\\\":\\\"@{pipeline().parameters.StorageAccountName}\\\", \n\t\t\t\\\"FileName\\\":\\\"@{pipeline().parameters.FileName}\\\",\n\t\t\t\\\"TargetSQLServerName\\\":\\\"@{pipeline().parameters.TargetSQLServerName}\\\", \n\t\t\t\\\"TargetSQLDatabaseName\\\":\\\"@{pipeline().parameters.TargetSQLDatabaseName}\\\", \n\t\t\t\\\"TargetSQLUsername\\\":\\\"@{pipeline().parameters.TargetSQLUsername}\\\"\n\t\t}, \n\t\t\\\"InterimValues\\\":{\n\t\t\t\\\"SchemaName\\\":\\\"@{activity('Get Target View Schema and Name').output.firstRow.SchemaName}\\\", \n\t\t\t\\\"TableName\\\":\\\"@{activity('Get Target View Schema and Name').output.firstRow.ViewName}\\\"\n\t\t}\n\t}\"\n}",
+                                "type": "Expression"
                             }
                         }
                     },
@@ -788,604 +825,8 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
-                        "typeProperties": {
-                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
-                            "storedProcedureParameters": {
-                                "EventState": {
-                                    "value": "Success",
-                                    "type": "String"
-                                },
-                                "SourceName": {
-                                    "value": "Drop file to generic SQL Sink/Get CSV file Structure",
-                                    "type": "String"
-                                },
-                                "SourceType": {
-                                    "value": "Data Factory Pipeline Action",
-                                    "type": "String"
-                                },
-                                "StatusMessage": {
-                                    "value": {
-                                        "value": "@concat(\n   'Success in pipeline activity - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Get CSV file Structure', '), ', \n   'CSVStructure:(', activity('Get CSV file Structure').output.structure,'), ', \n   'SchemaName:(), ', \n   'TableName:()'\n)",
-                                        "type": "Expression"
-                                    },
-                                    "type": "String"
-                                }
-                            }
-                        },
-                        "linkedServiceName": {
-                            "referenceName": "TargetDatabase",
-                            "type": "LinkedServiceReference",
-                            "parameters": {
-                                "TargetSQLServerName": {
-                                    "value": "@pipeline().parameters.TargetSQLServerName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLDatabaseName": {
-                                    "value": "@pipeline().parameters.TargetSQLDatabaseName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLUsername": {
-                                    "value": "@pipeline().parameters.TargetSQLUserName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLPassword": {
-                                    "value": "@pipeline().parameters.TargetSQLPassword",
-                                    "type": "Expression"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "name": "Log Success - Get Target Table",
-                        "type": "SqlServerStoredProcedure",
-                        "dependsOn": [
-                            {
-                                "activity": "Get Target View Schema and Name",
-                                "dependencyConditions": [
-                                    "Succeeded"
-                                ]
-                            }
+                        "userProperties": [
                         ],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
-                        "typeProperties": {
-                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
-                            "storedProcedureParameters": {
-                                "EventState": {
-                                    "value": "Success",
-                                    "type": "String"
-                                },
-                                "SourceName": {
-                                    "value": "Drop file to generic SQL Sink/Get Target Table Schema and Name",
-                                    "type": "String"
-                                },
-                                "SourceType": {
-                                    "value": "Data Factory Pipeline Action",
-                                    "type": "String"
-                                },
-                                "StatusMessage": {
-                                    "value": {
-                                        "value": "@concat(\n   'Success in pipeline activity - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Get Target View Schema and Name', '), ', \n   'SchemaName:(', activity('Get Target View Schema and Name').output.firstRow.SchemaName, '), ', \n   'TableName:(', activity('Get Target View Schema and Name').output.firstRow.ViewName, ')'\n)",
-                                        "type": "Expression"
-                                    },
-                                    "type": "String"
-                                }
-                            }
-                        },
-                        "linkedServiceName": {
-                            "referenceName": "TargetDatabase",
-                            "type": "LinkedServiceReference",
-                            "parameters": {
-                                "TargetSQLServerName": {
-                                    "value": "@pipeline().parameters.TargetSQLServerName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLDatabaseName": {
-                                    "value": "@pipeline().parameters.TargetSQLDatabaseName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLUsername": {
-                                    "value": "@pipeline().parameters.TargetSQLUserName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLPassword": {
-                                    "value": "@pipeline().parameters.TargetSQLPassword",
-                                    "type": "Expression"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "name": "Log Success - Copy from Source to Sink",
-                        "type": "SqlServerStoredProcedure",
-                        "dependsOn": [
-                            {
-                                "activity": "Copy from Source to Sink",
-                                "dependencyConditions": [
-                                    "Succeeded"
-                                ]
-                            }
-                        ],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
-                        "typeProperties": {
-                            "storedProcedureName": "[[audit].[InsertOperationsEventLog]",
-                            "storedProcedureParameters": {
-                                "EventState": {
-                                    "value": "Success",
-                                    "type": "String"
-                                },
-                                "SourceName": {
-                                    "value": "Drop file to generic SQL Sink/Copy from Source to Sink",
-                                    "type": "String"
-                                },
-                                "SourceType": {
-                                    "value": "Data Factory Pipeline Action",
-                                    "type": "String"
-                                },
-                                "StatusMessage": {
-                                    "value": {
-                                        "value": "@concat(\n   'Success in pipeline activity - ', \n   'DataFactory:(', pipeline().DataFactory,'), ', \n   'Pipeline:(', pipeline().Pipeline, '), ', \n   'FileName:(', pipeline().parameters.FileName, '), ', \n   'ActivityName:(', 'Copy from Source to Sink', '), ', \n   'RuntimeData:(', activity('Copy from Source to Sink').output,'), ', \n   'SchemaName:(', activity('Get Target View Schema and Name').output.firstRow.SchemaName, '), ', \n   'ViewName:(', activity('Get Target View Schema and Name').output.firstRow.ViewName, ')'\n)",
-                                        "type": "Expression"
-                                    },
-                                    "type": "String"
-                                }
-                            }
-                        },
-                        "linkedServiceName": {
-                            "referenceName": "TargetDatabase",
-                            "type": "LinkedServiceReference",
-                            "parameters": {
-                                "TargetSQLServerName": {
-                                    "value": "@pipeline().parameters.TargetSQLServerName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLDatabaseName": {
-                                    "value": "@pipeline().parameters.TargetSQLDatabaseName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLUsername": {
-                                    "value": "@pipeline().parameters.TargetSQLUserName",
-                                    "type": "Expression"
-                                },
-                                "TargetSQLPassword": {
-                                    "value": "@pipeline().parameters.TargetSQLPassword",
-                                    "type": "Expression"
-                                }
-                            }
-                        }
-                    }
-                ],
-                "parameters": {
-                    "FileName": {
-                        "type": "string",
-                        "defaultValue": "0030_SourceData1.csv"
-                    },
-                    "StorageAccountName": {
-                        "type": "string",
-                        "defaultValue": "4swyu27nfq4ta"
-                    },
-                    "StorageAccountKey": {
-                        "type": "string",
-                        "defaultValue": "USrMpEHcsej5yjDYVjqTRqq3N3+fgYJv9fvX4dEyHujBWBPq5ovYgNXQmVGfQwsWqJ4h1munZ5KKajVKl+xW9g=="
-                    },
-                    "TargetSQLServerName": {
-                        "type": "string",
-                        "defaultValue": "5a128a64-659d-4481-9440-4f377e30358c.database.windows.net"
-                    },
-                    "TargetSQLDatabaseName": {
-                        "type": "string",
-                        "defaultValue": "TargetDatabase"
-                    },
-                    "TargetSQLUserName": {
-                        "type": "string",
-                        "defaultValue": "demoadmin"
-                    },
-                    "TargetSQLPassword": {
-                        "type": "string",
-                        "defaultValue": "!sAAi^86sW1h"
-                    }
-                },
-                "annotations": []
-            },
-            "dependsOn": [
-                "[concat(variables('factoryId'), '/datasets/GenericCSVFileSource')]",
-                "[concat(variables('factoryId'), '/datasets/GenericSqlTableTarget')]",
-                "[concat(variables('factoryId'), '/linkedServices/TargetDatabase')]"
-            ]
-        },
-        {
-            "name": "[concat(parameters('factoryName'), '/Import Blob Storage Account Key CSV file into generic SQL table using Data Flow Activity Logging to Target SQL Server')]",
-            "type": "Microsoft.DataFactory/factories/pipelines",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "activities": [
-                    {
-                        "name": "Get CSV file Structure",
-                        "type": "GetMetadata",
-                        "dependsOn": [
-                            {
-                                "activity": "Log Start - WriteToOperationsEventLog",
-                                "dependencyConditions": [
-                                    "Succeeded"
-                                ]
-                            }
-                        ],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
-                        "typeProperties": {
-                            "dataset": {
-                                "referenceName": "GenericCSVFileSource",
-                                "type": "DatasetReference",
-                                "parameters": {
-                                    "FileName": {
-                                        "value": "@pipeline().parameters.FileName",
-                                        "type": "Expression"
-                                    },
-                                    "StorageAccountName": {
-                                        "value": "@pipeline().parameters.StorageAccountName",
-                                        "type": "Expression"
-                                    },
-                                    "StorageAccountKey": {
-                                        "value": "@pipeline().parameters.StorageAccountKey",
-                                        "type": "Expression"
-                                    }
-                                }
-                            },
-                            "fieldList": [
-                                "structure"
-                            ],
-                            "storeSettings": {
-                                "type": "AzureBlobStorageReadSettings",
-                                "recursive": true
-                            },
-                            "formatSettings": {
-                                "type": "DelimitedTextReadSettings"
-                            }
-                        }
-                    },
-                    {
-                        "name": "Get Target View Schema and Name",
-                        "type": "Lookup",
-                        "dependsOn": [
-                            {
-                                "activity": "Get CSV file Structure",
-                                "dependencyConditions": [
-                                    "Succeeded"
-                                ]
-                            }
-                        ],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
-                        "typeProperties": {
-                            "source": {
-                                "type": "AzureSqlSource",
-                                "sqlReaderStoredProcedureName": "[[utils].[sp_FindOrCreateTargetView]",
-                                "storedProcedureParameters": {
-                                    "FileName": {
-                                        "type": "String",
-                                        "value": {
-                                            "value": "@pipeline().parameters.FileName",
-                                            "type": "Expression"
-                                        }
-                                    },
-                                    "MultipleMatches": {
-                                        "type": "Boolean",
-                                        "value": null
-                                    },
-                                    "SchemaName": {
-                                        "type": "String",
-                                        "value": null
-                                    },
-                                    "SuppliedStructure": {
-                                        "type": "String",
-                                        "value": {
-                                            "value": "@{activity('Get CSV file Structure').output.structure}",
-                                            "type": "Expression"
-                                        }
-                                    },
-                                    "ViewName": {
-                                        "type": "String",
-                                        "value": null
-                                    }
-                                }
-                            },
-                            "dataset": {
-                                "referenceName": "GenericSqlTableTarget",
-                                "type": "DatasetReference",
-                                "parameters": {
-                                    "TargetSQLServerName": {
-                                        "value": "@pipeline().parameters.TargetSQLServerName",
-                                        "type": "Expression"
-                                    },
-                                    "TargetSQLDatabaseName": {
-                                        "value": "@pipeline().parameters.TargetSQLDatabaseName",
-                                        "type": "Expression"
-                                    },
-                                    "TargetSQLUsername": {
-                                        "value": "@pipeline().parameters.TargetSQLUsername",
-                                        "type": "Expression"
-                                    },
-                                    "TargetSQLPassword": {
-                                        "value": "@pipeline().parameters.TargetSQLPassword",
-                                        "type": "Expression"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "name": "Copy Generic CSV Source to Generic SQL Sink",
-                        "type": "ExecuteDataFlow",
-                        "dependsOn": [
-                            {
-                                "activity": "Get Target View Schema and Name",
-                                "dependencyConditions": [
-                                    "Succeeded"
-                                ]
-                            }
-                        ],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
-                        "typeProperties": {
-                            "dataflow": {
-                                "referenceName": "CopyGenericCSVSourcetoGenericSQLSink",
-                                "type": "DataFlowReference",
-                                "parameters": {
-                                    "FileName": {
-                                        "value": "'@{pipeline().parameters.FileName}'",
-                                        "type": "Expression"
-                                    },
-                                    "SchemaName": {
-                                        "value": "'@{activity('Get Target View Schema and Name').output.firstRow.SchemaName}'",
-                                        "type": "Expression"
-                                    },
-                                    "ViewName": {
-                                        "value": "'@{activity('Get Target View Schema and Name').output.firstRow.ViewName}'",
-                                        "type": "Expression"
-                                    },
-                                    "DataFactoryName": {
-                                        "value": "'@{pipeline().DataFactory}'",
-                                        "type": "Expression"
-                                    },
-                                    "DataFactoryPipelineName": {
-                                        "value": "'@{pipeline().Pipeline}'",
-                                        "type": "Expression"
-                                    },
-                                    "DataFactoryPipelineRunID": {
-                                        "value": "'@{pipeline().RunId}'",
-                                        "type": "Expression"
-                                    },
-                                    "StorageAccountName": {
-                                        "value": "'@{pipeline().parameters.StorageAccountName}'",
-                                        "type": "Expression"
-                                    }
-                                },
-                                "datasetParameters": {
-                                    "ReadFromCSVInBlobStorage": {
-                                        "FileName": {
-                                            "value": "@pipeline().parameters.FileName",
-                                            "type": "Expression"
-                                        },
-                                        "StorageAccountName": {
-                                            "value": "@pipeline().parameters.StorageAccountName",
-                                            "type": "Expression"
-                                        },
-                                        "StorageAccountKey": {
-                                            "value": "@pipeline().parameters.StorageAccountKey",
-                                            "type": "Expression"
-                                        }
-                                    },
-                                    "WriteToTargetSqlTable": {
-                                        "SchemaName": {
-                                            "value": "@activity('Get Target View Schema and Name').output.firstRow.SchemaName",
-                                            "type": "Expression"
-                                        },
-                                        "TableName": {
-                                            "value": "@activity('Get Target View Schema and Name').output.firstRow.ViewName",
-                                            "type": "Expression"
-                                        },
-                                        "TargetSQLServerName": {
-                                            "value": "@pipeline().parameters.TargetSQLServerName",
-                                            "type": "Expression"
-                                        },
-                                        "TargetSQLDatabaseName": {
-                                            "value": "@pipeline().parameters.TargetSQLDatabaseName",
-                                            "type": "Expression"
-                                        },
-                                        "TargetSQLUsername": {
-                                            "value": "@pipeline().parameters.TargetSQLUsername",
-                                            "type": "Expression"
-                                        },
-                                        "TargetSQLPassword": {
-                                            "value": "@pipeline().parameters.TargetSQLPassword",
-                                            "type": "Expression"
-                                        }
-                                    }
-                                }
-                            },
-                            "staging": {}
-                        }
-                    },
-                    {
-                        "name": "Log Start - WriteToOperationsEventLog",
-                        "type": "WebActivity",
-                        "dependsOn": [],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
-                        "typeProperties": {
-                            "url": {
-                                "value": "@pipeline().parameters.LoggingURL",
-                                "type": "Expression"
-                            },
-                            "method": "POST",
-                            "headers": {
-                                "Content-Type": "application/json"
-                            },
-                            "body": {
-                                "value": "{\n\t\"EventDateTime\":\"@{utcNow()}\",\n\t\"EventState\":\"Information\",\n\t\"SourceName\":\"@{concat(pipeline().DataFactory, '/', pipeline().Pipeline)}\",\n\t\"SourceType\":\"DataFactoryPipelineRun\",\n\t\"StatusMessage\":\"{\n\t\t\\\"EventType\\\": \\\"StartOfPipelineRun\\\", \n\t\t\\\"DataFactoryName\\\":\\\"@{pipeline().DataFactory}\\\",\n\t\t\\\"DataFactoryPipelineName\\\":\\\"@{pipeline().Pipeline}\\\",\n\t\t\\\"DataFactoryPipelineRunID\\\":\\\"@{pipeline().RunID}\\\",\n\t\t\\\"DataFactoryPipelineTriggerName\\\":\\\"@{pipeline().TriggerName}\\\",\n\t\t\\\"DataFactoryPipelineTriggerType\\\":\\\"@{pipeline().TriggerType}\\\",\n\t\t\\\"DataFactoryPipelineTriggerTime\\\":\\\"@{pipeline().TriggerTime}\\\",\n\t\t\\\"Parameters\\\":{\n\t\t\t\\\"StorageAccountName\\\":\\\"@{pipeline().parameters.StorageAccountName}\\\", \n\t\t\t\\\"FileName\\\":\\\"@{pipeline().parameters.FileName}\\\",\n\t\t\t\\\"TargetSQLServerName\\\":\\\"@{pipeline().parameters.TargetSQLServerName}\\\", \n\t\t\t\\\"TargetSQLDatabaseName\\\":\\\"@{pipeline().parameters.TargetSQLDatabaseName}\\\", \n\t\t\t\\\"TargetSQLUsername\\\":\\\"@{pipeline().parameters.TargetSQLUsername}\\\"\n\t\t}\n\t}\"\n}",
-                                "type": "Expression"
-                            }
-                        }
-                    },
-                    {
-                        "name": "Log Error - Get Struct - WriteToOperationsEventLog",
-                        "type": "WebActivity",
-                        "dependsOn": [
-                            {
-                                "activity": "Get CSV file Structure",
-                                "dependencyConditions": [
-                                    "Failed"
-                                ]
-                            }
-                        ],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
-                        "typeProperties": {
-                            "url": {
-                                "value": "@pipeline().parameters.LoggingURL",
-                                "type": "Expression"
-                            },
-                            "method": "POST",
-                            "headers": {
-                                "Content-Type": "application/json"
-                            },
-                            "body": {
-                                "value": "{\n\t\"EventDateTime\":\"@{utcNow()}\",\n\t\"EventState\":\"Error\",\n\t\"SourceName\":\"@{concat(pipeline().DataFactory, '/', pipeline().Pipeline, '/Get CSV file Structure')}\",\n\t\"SourceType\":\"DataFactoryPipelineRunActivity\",\n\t\"StatusMessage\":\"{\n\t\t\\\"EventType\\\": \\\"DataFactoryPipelineRunActivity\\\", \n\t\t\\\"DataFactoryName\\\":\\\"@{pipeline().DataFactory}\\\",\n\t\t\\\"DataFactoryPipelineName\\\":\\\"@{pipeline().Pipeline}\\\",\n\t\t\\\"DataFactoryPipelineActivityName\\\":\\\"Get CSV file Structure\\\",\n\t\t\\\"DataFactoryPipelineActivityError\\\":\\\"@{replace(string(activity('Get CSV file Structure').error), '\"', '')}\\\",\n\t\t\\\"DataFactoryPipelineRunID\\\":\\\"@{pipeline().RunID}\\\",\n\t\t\\\"DataFactoryPipelineTriggerName\\\":\\\"@{pipeline().TriggerName}\\\",\n\t\t\\\"DataFactoryPipelineTriggerType\\\":\\\"@{pipeline().TriggerType}\\\",\n\t\t\\\"DataFactoryPipelineTriggerTime\\\":\\\"@{pipeline().TriggerTime}\\\",\n\t\t\\\"Parameters\\\":{\n\t\t\t\\\"StorageAccountName\\\":\\\"@{pipeline().parameters.StorageAccountName}\\\", \n\t\t\t\\\"FileName\\\":\\\"@{pipeline().parameters.FileName}\\\",\n\t\t\t\\\"TargetSQLServerName\\\":\\\"@{pipeline().parameters.TargetSQLServerName}\\\", \n\t\t\t\\\"TargetSQLDatabaseName\\\":\\\"@{pipeline().parameters.TargetSQLDatabaseName}\\\", \n\t\t\t\\\"TargetSQLUsername\\\":\\\"@{pipeline().parameters.TargetSQLUsername}\\\"\n\t\t}\n\t}\"\n}",
-                                "type": "Expression"
-                            }
-                        }
-                    },
-                    {
-                        "name": "Log Error - Get Target - WriteToOperationsEventLog",
-                        "type": "WebActivity",
-                        "dependsOn": [
-                            {
-                                "activity": "Get Target View Schema and Name",
-                                "dependencyConditions": [
-                                    "Failed"
-                                ]
-                            }
-                        ],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
-                        "typeProperties": {
-                            "url": {
-                                "value": "@pipeline().parameters.LoggingURL",
-                                "type": "Expression"
-                            },
-                            "method": "POST",
-                            "headers": {
-                                "Content-Type": "application/json"
-                            },
-                            "body": {
-                                "value": "{\n\t\"EventDateTime\":\"@{utcNow()}\",\n\t\"EventState\":\"Error\",\n\t\"SourceName\":\"@{concat(pipeline().DataFactory, '/', pipeline().Pipeline, '/Get Target View Schema and Name')}\",\n\t\"SourceType\":\"DataFactoryPipelineRunActivity\",\n\t\"StatusMessage\":\"{\n\t\t\\\"EventType\\\": \\\"DataFactoryPipelineRunActivity\\\", \n\t\t\\\"DataFactoryName\\\":\\\"@{pipeline().DataFactory}\\\",\n\t\t\\\"DataFactoryPipelineName\\\":\\\"@{pipeline().Pipeline}\\\",\n\t\t\\\"DataFactoryPipelineActivityName\\\":\\\"Get Target View Schema and Name\\\",\n\t\t\\\"DataFactoryPipelineActivityError\\\":\\\"@{replace(string(activity('Get Target View Schema and Name').error), '\"', '')}\\\",\n\t\t\\\"DataFactoryPipelineRunID\\\":\\\"@{pipeline().RunID}\\\",\n\t\t\\\"DataFactoryPipelineTriggerName\\\":\\\"@{pipeline().TriggerName}\\\",\n\t\t\\\"DataFactoryPipelineTriggerType\\\":\\\"@{pipeline().TriggerType}\\\",\n\t\t\\\"DataFactoryPipelineTriggerTime\\\":\\\"@{pipeline().TriggerTime}\\\",\n\t\t\\\"Parameters\\\":{\n\t\t\t\\\"StorageAccountName\\\":\\\"@{pipeline().parameters.StorageAccountName}\\\", \n\t\t\t\\\"FileName\\\":\\\"@{pipeline().parameters.FileName}\\\",\n\t\t\t\\\"TargetSQLServerName\\\":\\\"@{pipeline().parameters.TargetSQLServerName}\\\", \n\t\t\t\\\"TargetSQLDatabaseName\\\":\\\"@{pipeline().parameters.TargetSQLDatabaseName}\\\", \n\t\t\t\\\"TargetSQLUsername\\\":\\\"@{pipeline().parameters.TargetSQLUsername}\\\"\n\t\t}\n\t}\"\n}",
-                                "type": "Expression"
-                            }
-                        }
-                    },
-                    {
-                        "name": "Log Success - Get Target - WriteToOperationsEventLog",
-                        "type": "WebActivity",
-                        "dependsOn": [
-                            {
-                                "activity": "Get Target View Schema and Name",
-                                "dependencyConditions": [
-                                    "Succeeded"
-                                ]
-                            }
-                        ],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
-                        "typeProperties": {
-                            "url": {
-                                "value": "@pipeline().parameters.LoggingURL",
-                                "type": "Expression"
-                            },
-                            "method": "POST",
-                            "headers": {
-                                "Content-Type": "application/json"
-                            },
-                            "body": {
-                                "value": "{\n\t\"EventDateTime\":\"@{utcNow()}\",\n\t\"EventState\":\"Success\",\n\t\"SourceName\":\"@{concat(pipeline().DataFactory, '/', pipeline().Pipeline, '/Get Target View Schema and Name')}\",\n\t\"SourceType\":\"DataFactoryPipelineRunActivity\",\n\t\"StatusMessage\":\"{\n\t\t\\\"EventType\\\": \\\"DataFactoryPipelineRunActivity\\\", \n\t\t\\\"DataFactoryName\\\":\\\"@{pipeline().DataFactory}\\\",\n\t\t\\\"DataFactoryPipelineName\\\":\\\"@{pipeline().Pipeline}\\\",\n\t\t\\\"DataFactoryPipelineActivityName\\\":\\\"Get Target View Schema and Name\\\",\n\t\t\\\"DataFactoryPipelineActivityOutput\\\":\\\"@{replace(string(activity('Get Target View Schema and Name').output), '\"', '')}\\\",\t\t\\\"DataFactoryPipelineRunID\\\":\\\"@{pipeline().RunID}\\\",\n\t\t\\\"DataFactoryPipelineTriggerName\\\":\\\"@{pipeline().TriggerName}\\\",\n\t\t\\\"DataFactoryPipelineTriggerType\\\":\\\"@{pipeline().TriggerType}\\\",\n\t\t\\\"DataFactoryPipelineTriggerTime\\\":\\\"@{pipeline().TriggerTime}\\\",\n\t\t\\\"Parameters\\\":{\n\t\t\t\\\"StorageAccountName\\\":\\\"@{pipeline().parameters.StorageAccountName}\\\", \n\t\t\t\\\"FileName\\\":\\\"@{pipeline().parameters.FileName}\\\",\n\t\t\t\\\"TargetSQLServerName\\\":\\\"@{pipeline().parameters.TargetSQLServerName}\\\", \n\t\t\t\\\"TargetSQLDatabaseName\\\":\\\"@{pipeline().parameters.TargetSQLDatabaseName}\\\", \n\t\t\t\\\"TargetSQLUsername\\\":\\\"@{pipeline().parameters.TargetSQLUsername}\\\"\n\t\t}, \n\t\t\\\"InterimValues\\\":{\n\t\t\t\\\"SchemaName\\\":\\\"@{activity('Get Target View Schema and Name').output.firstRow.SchemaName}\\\", \n\t\t\t\\\"TableName\\\":\\\"@{activity('Get Target View Schema and Name').output.firstRow.ViewName}\\\"\n\t\t}\n\t}\"\n}",
-                                "type": "Expression"
-                            }
-                        }
-                    },
-                    {
-                        "name": "Log Success - Get Copy Data - WriteToOperationsEventLog",
-                        "type": "WebActivity",
-                        "dependsOn": [
-                            {
-                                "activity": "Copy Generic CSV Source to Generic SQL Sink",
-                                "dependencyConditions": [
-                                    "Succeeded"
-                                ]
-                            }
-                        ],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
                         "typeProperties": {
                             "url": {
                                 "value": "@pipeline().parameters.LoggingURL",
@@ -1412,14 +853,8 @@
                                 ]
                             }
                         ],
-                        "policy": {
-                            "timeout": "7.00:00:00",
-                            "retry": 0,
-                            "retryIntervalInSeconds": 30,
-                            "secureOutput": false,
-                            "secureInput": false
-                        },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "url": {
                                 "value": "@pipeline().parameters.LoggingURL",
@@ -1436,11 +871,11 @@
                         }
                     },
                     {
-                        "name": "Log End - WriteToOperationsEventLog",
-                        "type": "WebActivity",
+                        "name": "Log Success - Get Target Table",
+                        "type": "SqlServerStoredProcedure",
                         "dependsOn": [
                             {
-                                "activity": "Log Success - Get Copy Data - WriteToOperationsEventLog",
+                                "activity": "Get Target View Schema and Name",
                                 "dependencyConditions": [
                                     "Succeeded"
                                 ]
@@ -1453,7 +888,8 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "url": {
                                 "value": "@pipeline().parameters.LoggingURL",
@@ -1470,11 +906,11 @@
                         }
                     },
                     {
-                        "name": "Log Success - Get Struct - WriteToOperationsEventLog",
-                        "type": "WebActivity",
+                        "name": "Log Success - Copy from Source to Sink",
+                        "type": "SqlServerStoredProcedure",
                         "dependsOn": [
                             {
-                                "activity": "Get CSV file Structure",
+                                "activity": "Copy from Source to Sink",
                                 "dependencyConditions": [
                                     "Succeeded"
                                 ]
@@ -1487,7 +923,8 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "url": {
                                 "value": "@pipeline().parameters.LoggingURL",
@@ -1525,7 +962,7 @@
                         "type": "string",
                         "defaultValue": ""
                     },
-                    "TargetSQLUsername": {
+                    "TargetSQLUserName": {
                         "type": "string",
                         "defaultValue": ""
                     },
@@ -1538,13 +975,21 @@
                         "defaultValue": ""
                     }
                 },
-                "annotations": []
+                "annotations": [
+                ]
             },
             "dependsOn": [
+                "[variables('factoryId')]",
                 "[concat(variables('factoryId'), '/datasets/GenericCSVFileSource')]",
                 "[concat(variables('factoryId'), '/datasets/GenericSqlTableTarget')]",
-                "[concat(variables('factoryId'), '/dataflows/CopyGenericCSVSourcetoGenericSQLSink')]"
+                "[concat(variables('factoryId'), '/linkedServices/TargetDatabase')]"
             ]
         }
-    ]
+    ],
+    "outputs": {
+        "dataFactoryIdentityId": {
+            "type": "string",
+            "value": ""
+        }
+    }
 }

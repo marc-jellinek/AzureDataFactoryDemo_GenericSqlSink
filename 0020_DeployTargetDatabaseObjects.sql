@@ -9,37 +9,7 @@ WHERE sch.name = 'utils') = 0
 END
 GO
 
-
-/*
-DROP TABLE IF EXISTS dbo.TestTable; 
-GO
-
-CREATE TABLE dbo.TestTable
-(
-    id int IDENTITY
-) -- First test case should match dbo.TestTable
-GO
-
-DROP TABLE IF EXISTS dbo.TestTable2;
-
-CREATE TABLE dbo.TestTable2
-(
-    id int IDENTITY,
-    name varchar(100)
-); -- Duplicate table, data with same schema should be routed to a new table
-GO
-
-DROP TABLE IF EXISTS dbo.TestTable3;
-
-CREATE TABLE dbo.TestTable3
-(
-    id int IDENTITY,
-    name varchar(100)
-); -- Duplicate table, data with same schema should be routed to a new table
-GO
-*/
-
--- Clean up string values, removing tabs, CR, LF, etc
+-- Clean up string values, removing tabs, CR, LF, double-quote, single-quote etc
 CREATE OR ALTER FUNCTION [utils].[CleanseString]
     (
         @InputString varchar(8000)
@@ -288,8 +258,24 @@ GO
 CREATE ROLE DataLoaders;
 GO
  
-GRANT CONTROL ON SCHEMA::[utils] TO DataLoaders;
+GRANT ALTER ON SCHEMA::[utils] TO DataLoaders;
 GO
+
+GRANT CREATE TABLE TO DataLoaders;
+GO
+
+GRANT CREATE VIEW TO DataLoaders;
+GO
+
+GRANT SELECT ON SCHEMA::[utils] TO DataLoaders;
+GO
+
+GRANT INSERT ON SCHEMA::[utils] TO Dataloaders;
+GO
+
+GRANT EXECUTE ON SCHEMA::[utils] TO DataLoaders;
+GO
+
   --More Testing
 /*
 DECLARE @SuppliedStructure varchar(8000) = '[{"name":"id", "type":"string"}]';
