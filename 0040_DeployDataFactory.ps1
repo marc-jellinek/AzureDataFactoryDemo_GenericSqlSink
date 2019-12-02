@@ -1,10 +1,11 @@
 $parameterValues = @{ `
-    factoryName = "$dataFactoryName"; 
+    dataFactoryName = "$dataFactoryName"; 
+    AzureKeyVaultLinkedService_baseUrl = "$keyVaultName.vault.azure.net"
 }
 
 $dataFactoryDeployment = New-AzResourceGroupDeployment `
-    -ResourceGroupName $resourceGroupName `
-    -TemplateFile "./0040_DeployDataFactory.template.json" `
+    -ResourceGroupName "AzDataFactoryDemo_GenericSqlSink" `
+    -TemplateFile "./arm_template.json" `
     -TemplateParameterObject $parameterValues
 
 $dataFactoryDeployment | Out-Host

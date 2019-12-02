@@ -2,7 +2,7 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "factoryName": {
+        "dataFactoryName": {
             "type": "string",
             "metadata": {
                 "Description": "Data Factory name"
@@ -10,11 +10,21 @@
         }
     },
     "variables": {
-        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"
     },
     "resources": [
+        {  
+            "name":"[parameters('dataFactoryName')]",
+            "apiVersion":"2018-06-01",
+            "type":"Microsoft.DataFactory/factories",
+            "location":"[resourceGroup().location]",
+            "identity":{  
+                "type":"SystemAssigned"
+            }, 
+            "properties":{}
+        },
         {
-            "name": "[concat(parameters('factoryName'), '/GenericCSVFileSource')]",
+            "name": "[concat(parameters('dataFactoryName'), '/GenericCSVFileSource')]",
             "type": "Microsoft.DataFactory/factories/datasets",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -60,7 +70,7 @@
             ]
         },
         {
-            "name": "[concat(parameters('factoryName'), '/GenericSqlTableTarget')]",
+            "name": "[concat(parameters('dataFactoryName'), '/GenericSqlTableTarget')]",
             "type": "Microsoft.DataFactory/factories/datasets",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -131,7 +141,7 @@
             ]
         },
         {
-            "name": "[concat(parameters('factoryName'), '/CopyGenericCSVSourcetoGenericSQLSink')]",
+            "name": "[concat(parameters('dataFactoryName'), '/CopyGenericCSVSourcetoGenericSQLSink')]",
             "type": "Microsoft.DataFactory/factories/dataflows",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -170,7 +180,7 @@
             ]
         },
         {
-            "name": "[concat(parameters('factoryName'), '/SourceBlobStorageAccount')]",
+            "name": "[concat(parameters('dataFactoryName'), '/SourceBlobStorageAccount')]",
             "type": "Microsoft.DataFactory/factories/linkedServices",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -193,7 +203,7 @@
             "dependsOn": []
         },
         {
-            "name": "[concat(parameters('factoryName'), '/TargetDatabase')]",
+            "name": "[concat(parameters('dataFactoryName'), '/TargetDatabase')]",
             "type": "Microsoft.DataFactory/factories/linkedServices",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -224,7 +234,7 @@
             "dependsOn": []
         },
         {
-            "name": "[concat(parameters('factoryName'), '/Import Blob Storage Account Key CSV file into generic SQL table using Copy Activity Logging to Target SQL Server')]",
+            "name": "[concat(parameters('dataFactoryName'), '/Import Blob Storage Account Key CSV file into generic SQL table using Copy Activity Logging to Target SQL Server')]",
             "type": "Microsoft.DataFactory/factories/pipelines",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -409,7 +419,7 @@
                                         "type": "String",
                                         "value": null
                                     }
-                                }
+                                } 
                             },
                             "dataset": {
                                 "referenceName": "GenericSqlTableTarget",

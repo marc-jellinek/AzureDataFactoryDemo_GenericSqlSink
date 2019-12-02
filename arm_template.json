@@ -1,0 +1,399 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataFactoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "mdjdatafactory"
+        },
+        "AzureKeyVaultLinkedService_baseUrl": {
+            "type": "string",
+            "defaultValue": "https://mdjKeyVault.vault.azure.net/"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"
+    },
+    "resources": [
+        {  
+            "name":"[parameters('dataFactoryName')]",
+            "apiVersion":"2018-06-01",
+            "type":"Microsoft.DataFactory/factories",
+            "location":"[resourceGroup().location]",
+            "identity":{  
+                "type":"SystemAssigned"
+            }, 
+            "properties":{}
+        },        
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/GenericSqlLinkedService')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "databaseConnectionStringSecretName": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "AzureKeyVaultLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": {
+                            "value": "@linkedService().databaseConnectionStringSecretName",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "[variables('factoryId')]", 
+                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultLinkedService')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/AzureKeyVaultLinkedService')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureKeyVault",
+                "typeProperties": {
+                    "baseUrl": "[parameters('AzureKeyVaultLinkedService_baseUrl')]"
+                }
+            },
+            "dependsOn": [
+                "[variables('factoryId')]"                
+            ]
+        },
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/GenericSqlTable')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "GenericSqlLinkedService",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "databaseConnectionStringSecretName": {
+                            "value": "@dataset().databaseConnectionStringSecretName",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "parameters": {
+                    "databaseConnectionStringSecretName": {
+                        "type": "string"
+                    },
+                    "schemaName": {
+                        "type": "string"
+                    },
+                    "tableName": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().schemaName",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().tableName",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[variables('factoryId')]", 
+                "[concat(variables('factoryId'), '/linkedServices/GenericSqlLinkedService')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/GenericBlobCSV')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "GenericCSVBlobLinkedService",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "blobConnectionStringSecretName": {
+                            "value": "@dataset().blobConnectionStringSecretName",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "parameters": {
+                    "blobConnectionStringSecretName": {
+                        "type": "string",
+                        "defaultValue": "blobtarget1ConnectionString"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "container": "default"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[variables('factoryId')]", 
+                "[concat(variables('factoryId'), '/linkedServices/GenericCSVBlobLinkedService')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/GenericCSVBlobLinkedService')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "AzureBlobStorage",
+                "parameters": {
+                    "blobConnectionStringSecretName": {
+                        "type": "string",
+                        "defaultValue": ""
+                    }
+                },
+                "annotations": [],
+                "typeProperties": {
+                    "connectionString": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "AzureKeyVaultLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": "@{linkedService().blobConnectionStringSecretName}"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[variables('factoryId')]", 
+                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultLinkedService')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/Generic Blob CSV to Generic SQL Table')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Copy Generic CSV to Generic SQL table",
+                        "type": "Copy",
+                        "dependsOn": [
+                            {
+                                "activity": "Find or Create Target View",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageReadSettings",
+                                    "recursive": true
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "AzureSqlSink"
+                            },
+                            "enableStaging": false
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "GenericBlobCSV",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "blobConnectionStringSecretName": {
+                                        "value": "@pipeline().parameters.blobConnectionStringSecretName",
+                                        "type": "Expression"
+                                    },
+                                    "FileName": {
+                                        "value": "@pipeline().parameters.FileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "GenericSqlTable",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "databaseConnectionStringSecretName": {
+                                        "value": "@pipeline().parameters.databaseConnectionStringSecretName",
+                                        "type": "Expression"
+                                    },
+                                    "schemaName": {
+                                        "value": "@activity('Find or Create Target View').output.firstRow.SchemaName",
+                                        "type": "Expression"
+                                    },
+                                    "tableName": {
+                                        "value": "@activity('Find or Create Target View').output.firstRow.ViewName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Get CSV File Structure",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "GenericBlobCSV",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "blobConnectionStringSecretName": {
+                                        "value": "@pipeline().parameters.blobConnectionStringSecretName",
+                                        "type": "Expression"
+                                    },
+                                    "FileName": {
+                                        "value": "@pipeline().parameters.FileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "structure"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Find or Create Target View",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "Get CSV File Structure",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "AzureSqlSource",
+                                "sqlReaderStoredProcedureName": "[[utils].[sp_FindOrCreateTargetView]",
+                                "storedProcedureParameters": {
+                                    "FileName": {
+                                        "type": "String",
+                                        "value": {
+                                            "value": "@pipeline().parameters.FileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "MultipleMatches": {
+                                        "type": "Boolean",
+                                        "value": null
+                                    },
+                                    "SchemaName": {
+                                        "type": "String",
+                                        "value": null
+                                    },
+                                    "SuppliedStructure": {
+                                        "type": "String",
+                                        "value": {
+                                            "value": "@{activity('Get CSV File Structure').output.structure}",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "ViewName": {
+                                        "type": "String",
+                                        "value": null
+                                    }
+                                }
+                            },
+                            "dataset": {
+                                "referenceName": "GenericSqlTable",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "databaseConnectionStringSecretName": {
+                                        "value": "@pipeline().parameters.databaseConnectionStringSecretName",
+                                        "type": "Expression"
+                                    },
+                                    "schemaName": "foo",
+                                    "tableName": "bar"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "parameters": {
+                    "blobConnectionStringSecretName": {
+                        "type": "string"
+                    },
+                    "databaseConnectionStringSecretName": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/GenericBlobCSV')]",
+                "[concat(variables('factoryId'), '/datasets/GenericSqlTable')]"
+            ]
+        }
+    ]
+}
