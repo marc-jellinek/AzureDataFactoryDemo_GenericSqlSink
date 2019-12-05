@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "userObjectId": {
+            "type": "string",
+            "metadata": {
+                "Description": "ApplicationID of the Data Factory"
+            }
+        },
+        "keyVaultName": {
+            "type": "string",
+            "metadata": {
+                "Description": "Name of the Key Vault supplying values of secrets"
+            }
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults/accessPolicies",
+            "name": "[concat(parameters('keyVaultName'), '/add')]",
+            "apiVersion": "2018-02-14",
+            "properties": {
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[parameters('userObjectId')]",
+                        "permissions": {
+                            "keys": [
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List"
+                            ],
+                            "certificates": [
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

@@ -8,7 +8,7 @@
         }, 
         "userObjectId": {
             "type": "string",
-            "defaultValue": "9e2654c3-c940-490f-8a98-e0daa71d194b"
+            "defaultValue": "9e2654c3-c940-490f-8a98-e0daa71d194b" 
         },
         "targetDatabase1ServerName": {
             "type": "string",
@@ -110,7 +110,7 @@
         }
     },
     "resources": [
-        {
+                {
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2016-10-01",
             "name": "[parameters('keyVaultName')]",
@@ -254,67 +254,6 @@
             }
         },
         {
-            "type": "Microsoft.KeyVault/vaults",
-            "apiVersion": "2016-10-01",
-            "name": "[parameters('keyVaultName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "sku": {
-                    "family": "A",
-                    "name": "Standard"
-                },
-                "tenantId": "[subscription().tenantId]",
-                "accessPolicies": [
-                    {
-                        "tenantId": "[subscription().tenantId]",
-                        "objectId": "[parameters('userObjectId')]",
-                        "permissions": {
-                            "keys": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore"
-                            ],
-                            "secrets": [
-                                "Get",
-                                "List",
-                                "Set",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore"
-                            ],
-                            "certificates": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore",
-                                "ManageContacts",
-                                "ManageIssuers",
-                                "GetIssuers",
-                                "ListIssuers",
-                                "SetIssuers",
-                                "DeleteIssuers"
-                            ]
-                        }
-                    }
-                ],
-                "enabledForDeployment": false,
-                "enabledForDiskEncryption": false,
-                "enabledForTemplateDeployment": false
-            }
-        },
-        {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
             "name": "[parameters('storageAccount2Name')]",
@@ -349,38 +288,6 @@
             }
         },
         {
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2019-04-01",
-            "name": "[parameters('storageAccount2Name')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "[parameters('storageAccount2Type')]",
-                "tier": "Standard"
-            },
-            "kind": "StorageV2",
-            "properties": {
-                "networkAcls": {
-                    "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
-                    "defaultAction": "Allow"
-                },
-                "supportsHttpsTrafficOnly": true,
-                "encryption": {
-                    "services": {
-                        "file": {
-                            "enabled": true
-                        },
-                        "blob": {
-                            "enabled": true
-                        }
-                    },
-                    "keySource": "Microsoft.Storage"
-                },
-                "accessTier": "Hot"
-            }
-        },        
-        {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2019-04-01",
             "name": "[concat(parameters('storageAccount1Name'), '/default')]",
@@ -414,22 +321,6 @@
                 }
             }
         },
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices",
-            "apiVersion": "2019-04-01",
-            "name": "[concat(parameters('storageAccount2Name'), '/default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2Name'))]"
-            ],
-            "properties": {
-                "cors": {
-                    "corsRules": []
-                },
-                "deleteRetentionPolicy": {
-                    "enabled": false
-                }
-            }
-        },        
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-04-01",
@@ -503,7 +394,7 @@
                 "administratorLoginPassword": "[parameters('targetDatabase2SqlAdminPassword')]",
                 "version": "12.0"
             },
-            "resources": [
+            "resources": [ 
                 {
                     "type": "Microsoft.Sql/servers/databases",
                     "name": "[concat(string(parameters('targetDatabase2ServerName')), '/', parameters('targetDatabase2DatabaseName'))]",
@@ -571,88 +462,11 @@
                 }
             ]
         }, 
-       {
-            "type": "Microsoft.Sql/servers",
-            "name": "[parameters('targetDatabase2ServerName')]",
-            "location": "[resourceGroup().location]",
-            "apiVersion": "2015-05-01-preview", 
-            "properties": {
-                "administratorLogin": "[parameters('targetDatabase2SqlAdminUsername')]",
-                "administratorLoginPassword": "[parameters('targetDatabase2SqlAdminPassword')]",
-                "version": "12.0"
-            },
-            "resources": [
-                {
-                    "type": "Microsoft.Sql/servers/databases",
-                    "name": "[concat(string(parameters('targetDatabase2ServerName')), '/', parameters('targetDatabase2DatabaseName'))]",
-                    "location": "[resourceGroup().location]",
-                    "apiVersion": "2017-10-01-preview",
-                    "sku": {
-                        "name": "S0", 
-                        "tier":"Standard"
-                    },
-                    "dependsOn": [
-                        "[resourceID('Microsoft.Sql/servers/', parameters('targetDatabase2ServerName'))]"
-                    ]
-                },
-                {
-                    "type": "firewallrules",
-                    "name": "AllowAllAzureIps",
-                    "location": "[resourceGroup().location]",
-                    "apiVersion": "2015-05-01-preview",
-                    "dependsOn": [
-                        "[resourceID('Microsoft.Sql/servers/', parameters('targetDatabase2ServerName'))]"
-                    ],
-                    "properties": {
-                        "startIpAddress": "0.0.0.0",
-                        "endIpAddress": "255.255.255.255"
-                    }
-                }
-            ]
-        }, 
-        {
-            "type": "Microsoft.Sql/servers",
-            "name": "[parameters('loggingDatabaseServerName')]",
-            "location": "[resourceGroup().location]",
-            "apiVersion": "2015-05-01-preview",
-            "properties": {
-                "administratorLogin": "[parameters('loggingDatabaseSqlAdminUsername')]",
-                "administratorLoginPassword": "[parameters('loggingDatabaseSqlAdminPassword')]",
-                "version": "12.0"
-            },
-            "resources": [
-                {
-                    "type": "Microsoft.Sql/servers/databases",
-                    "name": "[concat(string(parameters('loggingDatabaseServerName')), '/', parameters('loggingDatabaseDatabaseName'))]",
-                    "location": "[resourceGroup().location]",
-                    "apiVersion": "2017-10-01-preview",
-                    "sku": {
-                        "name": "S0", 
-                        "tier":"Standard"
-                    },
-                    "dependsOn": [
-                        "[resourceID('Microsoft.Sql/servers/', parameters('loggingDatabaseServerName'))]"
-                    ]
-                },
-                {
-                    "type": "firewallrules",
-                    "name": "AllowAllAzureIps",
-                    "location": "[resourceGroup().location]",
-                    "apiVersion": "2015-05-01-preview",
-                    "dependsOn": [
-                        "[resourceID('Microsoft.Sql/servers/', parameters('loggingDatabaseServerName'))]"
-                    ],
-                    "properties": {
-                        "startIpAddress": "0.0.0.0",
-                        "endIpAddress": "255.255.255.255"
-                    }
-                }
-            ]
-        }, 
+        
         {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "name": "sql",
+            "name": "WriteToOperationsEventLogDatabaseConnection",
             "location": "[resourceGroup().location]",
             "properties": {
                 "displayName": "LoggingDatabase",

@@ -62,9 +62,6 @@
         "loggingDatabaseSqlOpsPassword": {
             "value": "X@J7hs*WA&8&"
         },
-        "dataFactoryName": {
-            "value": "mdjDataFactory"
-        }, 
         "storageAccount1Name": {
             "value": "mdjstorageaccount1"
         }, 

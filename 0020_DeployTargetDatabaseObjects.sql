@@ -32,7 +32,7 @@ RETURNS varchar(8000)
                     '\', ''), 
                     '/', ''), 
                     '-', ''), 
-                    '\"', ''), 
+                    '\"', '"'),   -- convert escaped double-quote to un-escaped double-quote
                     CHAR(9), ''), 
                     CHAR(10), ''), 
                     CHAR(13), '');
@@ -62,12 +62,14 @@ RETURNS varchar(8000)
         INNER JOIN sys.types typ ON col.user_type_id = typ.user_type_id
     WHERE       sch.name = @SchemaName AND
         vws.name = @ViewName AND
-        NOT col.name = '__RowID' AND
-        NOT col.name = '__StorageAccountName' AND 
-        NOT col.name = '__FileName' AND
-        NOT col.name = '__DataFactoryName' AND
-        NOT col.name = '__DataFactoryPipelineName' AND
-        NOT col.name = '__DataFactoryPipelineRunId'
+        NOT col.name IN     (   '__RowID', 
+                                '__StorageAccountName', 
+                                '__FileName', 
+                                '__DataFactoryName', 
+                                '__DataFactoryPipelineName', 
+                                '__DataFactoryPipelineRunId', 
+                                '__InsertDateTimeUTC'
+                            )
     ORDER BY    col.column_id
     FOR JSON AUTO 
         )
@@ -129,11 +131,11 @@ END
 GO
 
 CREATE OR ALTER PROCEDURE [utils].[sp_CreateTableAndViewFromJSON]
-    @FileName varchar(1000), 
+    @FileName varchar(1000),
     @SuppliedStructure as varchar(8000),
     @SchemaName sysname OUTPUT,
-    @TableName sysname OUTPUT, 
-    @ViewName sysname OUTPUT 
+    @TableName sysname OUTPUT,
+    @ViewName sysname OUTPUT
 AS
 BEGIN
     -- expects array of objects with name and type properties generated from Azure Data Factory Get Metadata activity
@@ -159,8 +161,8 @@ BEGIN
     SET @SchemaName = 'utils';
     SET @TableName = CONVERT(sysname, @FileName) + N'-' + CONVERT(sysname, GETUTCDATE(), 126);
 
-    SET @Create = 'CREATE TABLE ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName);    
-    
+    SET @Create = 'CREATE TABLE ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName);
+
     SELECT @Columns  = '[__RowID] bigint IDENTITY PRIMARY KEY CLUSTERED, ';
 
     SELECT @Columns += columndef.name
@@ -177,10 +179,10 @@ BEGIN
     SELECT @Columns += '[__DataFactoryName] varchar(1000), ';
     SELECT @Columns += '[__DataFactoryPipelineName] varchar(1000), ';
     SELECT @Columns += '[__DataFactoryPipelineRunId] varchar(1000), ';
-    SELECT @Columns += '[__InsertDateTimeUTC] datetime2(7) DEFAULT GETDATE() ';
+    SELECT @Columns += '[__InsertDateTimeUTC] datetime2(7) DEFAULT GETUTCDATE() ';
 
     SET @sql = @Create + '(' + @Columns + ')';
-    
+
     EXEC(@sql);
 
     SET @ViewName = 'vw_' + @TableName;
@@ -215,7 +217,7 @@ END
 GO
 
 CREATE OR ALTER PROCEDURE [utils].[sp_FindOrCreateTargetView]
-    @FileName varchar(1000), 
+    @FileName varchar(1000),
     @SuppliedStructure varchar(8000),
     @SchemaName sysname OUTPUT,
     @ViewName sysname OUTPUT,
@@ -231,7 +233,7 @@ BEGIN
         @MultipleMatches = @MultipleMatches OUTPUT
 
     IF (@SchemaName IS NULL AND @ViewName IS NULL) OR -- No matching table, create new
-       (@MultipleMatches = 1)                          -- many matching tables, create a new one
+        (@MultipleMatches = 1)                          -- many matching tables, create a new one
     BEGIN
         EXEC utils.sp_CreateTableAndViewFromJSON 
             @FileName = @FileName, 
@@ -239,25 +241,17 @@ BEGIN
             @SchemaName = @SchemaName OUTPUT, 
             @TableName = @TableName OUTPUT, 
             @ViewName = @ViewName OUTPUT
-
-        SELECT  @SchemaName as SchemaName, 
-                @ViewName as ViewName, 
-                @MultipleMatches as MultipleMatches
-    END
-    ELSE
-    BEGIN
-        SELECT  @SchemaName as SchemaName, 
-                @ViewName as ViewName, 
-                @MultipleMatches as MultipleMatches
-    END
-
-
+    END 
+    
+    SELECT  @SchemaName as SchemaName,
+            @ViewName as ViewName,
+            @MultipleMatches as MultipleMatches
 END 
 GO
 
 CREATE ROLE DataLoaders;
 GO
- 
+
 GRANT ALTER ON SCHEMA::[utils] TO DataLoaders;
 GO
 

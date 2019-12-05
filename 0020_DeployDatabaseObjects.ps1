@@ -24,7 +24,7 @@ Invoke-Sqlcmd `
 
 # Create operational user in TargetDB1 as admin
 # Create schema [utils]
-# grant operational user CONTROL on schema [utils]
+# grant operational user rights on schema [utils] through group DataLoaders
 
 Invoke-Sqlcmd `
     -ServerInstance "tcp:$targetDatabase1ServerName.database.windows.net" `
@@ -49,7 +49,7 @@ Invoke-Sqlcmd `
 
 # Create operational user in TargetDB2 as admin
 # Create schema [utils]
-# grant operational user access on schema [utils]
+# grant operational user rights on schema [utils] through group DataLoaders
 
 Invoke-Sqlcmd `
     -ServerInstance "tcp:$targetDatabase2ServerName.database.windows.net" `
