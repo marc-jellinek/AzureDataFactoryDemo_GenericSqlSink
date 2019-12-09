@@ -7,6 +7,8 @@ $deployment | Out-Host
 
 $keyVaultName = $deployment.Parameters.keyVaultName.value 
 
+$dataFactoryName = $deployment.Parameters.dataFactoryName.value 
+
 $targetDatabase1ServerName = $deployment.Parameters.targetDatabase1ServerName.value
 $targetDatabase1DatabaseName = $deployment.Parameters.targetDatabase1DatabaseName.value 
 
@@ -25,18 +27,11 @@ $targetDatabase2SqlAdminPassword = $deployment.Parameters.targetDatabase2SqlAdmi
 $targetDatabase2SqlOpsUsername = $deployment.Parameters.targetDatabase2SqlOpsUsername.value 
 $targetDatabase2SqlOpsPassword = $deployment.Parameters.targetDatabase2SqlOpsPassword.value 
 
-$loggingDatabaseServerName = $deployment.Parameters.loggingDatabaseServerName.value
-$loggingDatabaseDatabaseName = $deployment.Parameters.loggingDatabaseDatabaseName.value
-
-$loggingDatabaseSqlAdminUsername = $deployment.Parameters.loggingDatabaseSqlAdminUsername.value 
-$loggingDatabaseSqlAdminPassword = $deployment.Parameters.loggingDatabaseSqlAdminPassword.value 
-
-$loggingDatabaseSqlOpsUsername = $deployment.Parameters.loggingDatabaseSqlOpsUsername.value
-$loggingDatabaseSqlOpsPassword = $deployment.Parameters.loggingDatabaseSqlOpsPassword.value
+$logAnalyticsWorkspaceName = $deployment.Parameters.logAnalyticsWorkspaceName.value
+$dataFactoryAnalyticsSolutionName = $deployment.Parameters.dataFactoryAnalyticsSolutionName.value 
 
 $storageAccount1Name = $deployment.Parameters.storageAccount1Name.value
 $storageAccount2Name = $deployment.Parameters.storageAccount2Name.value
-$loggingUrl = $deployment.Outputs.loggingUrl 
 
 $storageAccount1Key = (Get-AzStorageAccountKey `
         -ResourceGroupName $resourceGroupName `
@@ -57,6 +52,7 @@ Set-AzStorageBlobContent `
     -File "./0030_SourceData1.csv" `
     -Container "default" `
     -Context $ctx `
+    -Properties @{"ContentType" = "text/csv"} `
     -Force
 
 $ctx = New-AzStorageContext `
@@ -67,6 +63,7 @@ Set-AzStorageBlobContent `
     -File "./0030_SourceData2.csv" `
     -Container "default" `
     -Context $ctx `
+    -Properties @{"ContentType" = "text/csv"} `
     -Force   
 
 #"./0040_DeployDataFactory.ps1"

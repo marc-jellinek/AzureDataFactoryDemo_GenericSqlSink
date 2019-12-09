@@ -49,7 +49,7 @@ CREATE OR ALTER FUNCTION [utils].[GenerateJSONFromViews]
     )
 RETURNS varchar(8000)
     BEGIN
-    DECLARE @JSONStructure varchar(8000)
+    DECLARE @JSONStructure varchar(8000);
 
     SET @JSONStructure = (
             SELECT col.name as [name],
@@ -62,21 +62,22 @@ RETURNS varchar(8000)
         INNER JOIN sys.types typ ON col.user_type_id = typ.user_type_id
     WHERE       sch.name = @SchemaName AND
         vws.name = @ViewName AND
-        NOT col.name IN     (   '__RowID', 
-                                '__StorageAccountName', 
-                                '__FileName', 
-                                '__DataFactoryName', 
-                                '__DataFactoryPipelineName', 
-                                '__DataFactoryPipelineRunId', 
-                                '__InsertDateTimeUTC'
+        NOT col.name IN     (   '__sourceConnectionStringSecretName', 
+                                '__sinkConnectionStringSecretName', 
+                                '__sourceObjectName', 
+                                '__targetObjectName', 
+                                '__dataFactoryName', 
+                                '__dataFactoryPipelineName',
+                                '__dataFactoryPipelineRunId',
+                                '__insertDateTimeUTC'
                             )
     ORDER BY    col.column_id
     FOR JSON AUTO 
-        )
+        );
 
-    SET @JSONStructure = [utils].[CleanseString](@JSONStructure)
+    SET @JSONStructure = [utils].[CleanseString](@JSONStructure);
 
-    RETURN @JSONStructure
+    RETURN @JSONStructure;
 END
 GO
 
@@ -174,12 +175,14 @@ BEGIN
                                 ) columnspec
                 ) columndef;
 
-    SELECT @Columns += '[__StorageAccountName] varchar(1000), ';
-    SELECT @Columns += '[__FileName] varchar(1000), ';
-    SELECT @Columns += '[__DataFactoryName] varchar(1000), ';
-    SELECT @Columns += '[__DataFactoryPipelineName] varchar(1000), ';
-    SELECT @Columns += '[__DataFactoryPipelineRunId] varchar(1000), ';
-    SELECT @Columns += '[__InsertDateTimeUTC] datetime2(7) DEFAULT GETUTCDATE() ';
+    SELECT @Columns += '[__sourceConnectionStringSecretName] varchar(1000), ';
+    SELECT @Columns += '[__sinkConnectionStringSecretName] varchar(1000), ';
+    SELECT @Columns += '[__sourceObjectName] varchar(1000), ';
+    SELECT @Columns += '[__targetObjectName] varchar(1000), ';
+    SELECT @Columns += '[__dataFactoryName] varchar(1000), ';
+    SELECT @Columns += '[__dataFactoryPipelineName] varchar(1000), ';
+    SELECT @Columns += '[__dataFactoryPipelineRunId] varchar(1000), ';
+    SELECT @Columns += '[__insertDateTimeUTC] datetime2(7) DEFAULT GETUTCDATE() ';
 
     SET @sql = @Create + '(' + @Columns + ')';
 
@@ -201,12 +204,14 @@ BEGIN
                                 ) columnspec
                 ) columndef;
 
-    SELECT @Columns += '[__StorageAccountName], ';
-    SELECT @Columns += '[__FileName], ';
-    SELECT @Columns += '[__DataFactoryName], ';
-    SELECT @Columns += '[__DataFactoryPipelineName], ';
-    SELECT @Columns += '[__DataFactoryPipelineRunId], ';
-    SELECT @Columns += '[__InsertDateTimeUTC]';
+    SELECT @Columns += '[__sourceConnectionStringSecretName], ';
+    SELECT @Columns += '[__sinkConnectionStringSecretName], ';
+    SELECT @Columns += '[__sourceObjectName], ';
+    SELECT @Columns += '[__targetObjectName], ';
+    SELECT @Columns += '[__dataFactoryName], ';
+    SELECT @Columns += '[__dataFactoryPipelineName], ';
+    SELECT @Columns += '[__dataFactoryPipelineRunId], ';
+    SELECT @Columns += '[__insertDateTimeUTC]';
 
     SET @Columns += ' FROM ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName);
 
@@ -269,58 +274,3 @@ GO
 
 GRANT EXECUTE ON SCHEMA::[utils] TO DataLoaders;
 GO
-
-  --More Testing
-/*
-DECLARE @SuppliedStructure varchar(8000) = '[{"name":"id", "type":"string"}]';
-
-DECLARE @SchemaName sysname;
-DECLARE @ViewName sysname;
-DECLARE @MultipleMatches bit = 0;
-DECLARE @FileName varchar(1000) = '0030_SourceData1.csv'
-
-EXEC [utils].[sp_FindOrCreateTargetView] 
-    @FileName = @FileName, 
-    @SuppliedStructure = @SuppliedStructure, 
-    @SchemaName = @SchemaName OUTPUT, 
-    @ViewName = @ViewName OUTPUT, 
-    @MultipleMatches = @MultipleMatches OUTPUT
-
-SELECT  @SchemaName, @ViewName, @MultipleMatches
-*/
-
--- Testing
-/*
-
---DECLARE @SuppliedStructure varchar(8000) = '[{"name": "id", "type": "String"}]'
-DECLARE @SuppliedStructure varchar(8000) = '[{"name": "id", "type": "String"}, {"name": "name", "type": "String"}]'
-
--- Call from Data Factory Lookup.
--- Output Parameter @SchemaName passed back to the activity 
---    - The schema within which the table lives
--- Output Parameter @TableName passed back to the activity 
---    - The table which matched based on structure, or 
---    - when unmatched, the new table that was created to hold incoming data
---    - multiple matches returns the table name of the new table that was created
--- Output Parameter @MultipleMatches is there as a flag to let someone know that a new table was created and they have multiple matches based on structure
-DECLARE @SchemaName sysname;
-DECLARE @TableName sysname;
-DECLARE @MultipleMatches bit = 0;
-DECLARE @FileName varchar(1000);
-
-EXEC [utils].[sp_FindOrCreateTargetTable] 
-    @FileName = @FileName, 
-    @SuppliedStructure = @SuppliedStructure, 
-    @SchemaName = @SchemaName OUTPUT, 
-    @TableName = @TableName OUTPUT, 
-    @MultipleMatches = @MultipleMatches OUTPUT 
-
-IF @MultipleMatches = 1 
-    PRINT 'Multiple Matches - inserting into new table ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName)
-ELSE
-    PRINT 'Inserting into table ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName)
-
-SELECT @SchemaName as SchemaName, 
-    @TableName as TableName, 
-    @MultipleMatches as MultipleMatches
-*/

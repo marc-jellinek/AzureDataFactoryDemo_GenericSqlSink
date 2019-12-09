@@ -7,7 +7,7 @@ $parameterValues = @{
 
 $keyVaultSecurityDeployment = New-AzResourceGroupDeployment `
     -ResourceGroupName $resourceGroupName `
-    -TemplateFile "./0050_GrantAccessToAKVfromDataFactory.template.json" `
+    -TemplateFile "./0050_GrantAccessToAKVfromObjectId.template.json" `
     -TemplateParameterObject $parameterValues
 
 $keyVaultSecurityDeployment | Out-Host

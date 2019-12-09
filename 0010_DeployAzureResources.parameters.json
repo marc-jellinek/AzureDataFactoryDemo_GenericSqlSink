@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "dataFactoryName": {
+            "value": "mdjDataFactory"
+        },
         "keyVaultName": {
             "value": "mdjKeyVault"
         },
@@ -44,24 +47,6 @@
         "targetDatabase2SqlOpsPassword": {
             "value": "3%0Y&W1%6rct"
         },
-        "loggingDatabaseServerName": {
-            "value": "mdjloggingserver"
-        }, 
-        "loggingDatabaseDatabaseName": {
-            "value": "LoggingDB"
-        },
-        "loggingDatabaseSqlAdminUsername": {
-            "value": "mdjloggingsqladmin"
-        },
-        "loggingDatabaseSqlAdminPassword": {
-            "value": "A4W@R600TRyS"
-        },
-        "loggingDatabaseSqlOpsUsername": {
-            "value": "mdjlogginsqlops"
-        },
-        "loggingDatabaseSqlOpsPassword": {
-            "value": "X@J7hs*WA&8&"
-        },
         "storageAccount1Name": {
             "value": "mdjstorageaccount1"
         }, 
@@ -73,6 +58,9 @@
         }, 
         "storageAccount2Type": {
             "value": "Standard_LRS"
+        }, 
+        "dataFactoryAnalyticsSolutionName": {
+            "value": "mdjDataFactoryLogAnalyticsWorkspace(DataFactoryAnalytics)"
         }
     }
 }

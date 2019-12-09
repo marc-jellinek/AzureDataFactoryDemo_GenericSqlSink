@@ -1,10 +1,26 @@
-# Throwing Mud on the Wall with Azure Data Factory and AzureDataFactoryDemo_GenericSqlSink
+# Throwing Mudd on the Wall with Azure Data Factory
 
 ## This is a work in progress, it is not currently release quality
 
-Sometimes I just need data sourced from CSV files imported into a SQL Server table.  Nothing fancy, just quick-and-dirty while using security, operational and deployment best-practices.  I've done this enough times that I find it worth investing the time to create a generic, reusable and redeployable solution.
+![Harry Mudd](https://www.syfy.com/sites/syfy/files/styles/1200x680/public/wire/legacy/Harry_Mudd.jpg)
 
-I'm creating a solution that will take data from a variety of sources and push that data into a variety of sinks.  I'm starting off with reading a CSV file into a SQL Server table.  My intention is to create a matrix of solutions that all adhere to and demonstrate best practices while quickly and easily getting data (from whatever source) to its destination.
+Sometimes I just need data sourced from CSV files imported into a SQL Server table.  Nothing fancy, but I've needed it over and over again.  Why not take all that I've learned about building Data Factory Pipelines and do a no-compromises, best-practices implementation.  
+
+My goal is to be the de-facto reference implementation for Azure Data Factory pipelines from a security, operational and deployment perspective.  It provides the EL in ELT.  It takes a lot of guts to aim that high.
+
+I've done this enough times that I find it worth investing the time to create a generic, reusable and redeployable solution.
+
+I also know that I'm in the company of amazing technologists.  I'm hoping to attract them as contributors to this project.
+
+Why open-source it?  This industry has been very good to me over the years and I'd like to contribute back.  This is a component of nearly every project I've ever worked on.  There is value in having a constitently deployable solution.
+
+It also doesn't add a lot of business value.  It's plumbing.  There's no value-add here.  I'd rather spend my time and my customer's money dealing with the things that are unique and valuable to their business, not charging them to build the same plumbing over-and-over again.
+
+I'm creating a solution that will take data from a variety of sources and push that data into a variety of sinks.  
+
+I'm starting off with reading a CSV file in Azure Blob Storage into a SQL Server table.  
+
+My intention is to create a consistently deployable matrix of solutions that all adhere to and demonstrate best practices while quickly and easily getting data (from whatever source) to its destination.
 
 I'm open-sourcing this so that if someone 
 - finds a problem 
@@ -15,69 +31,72 @@ I'm open-sourcing this so that if someone
 Sources and sinks I envision supporting:
 
 - Azure SQL Database
-- CSV files
-- JSON files
 - Azure CosmosDB
 - Azure SQL Data Warehouse
-- Blob Storage
-- Azure Data Lake Storage
-- Avro
-- Parquet
+- Azure Data Warehouse/Azure Synapse
+- CSV files in blob storage
+- CSV files in Azure Data Lake store
+- JSON files in blob storage
+- JSON files in Azure Data Lake store
+- Avro files in blob storage
+- Avro files in Azure Data Lake store
+- Parquet files in blob storage
+- Parquet files in Azure Data Lake store
 
-Logging options to be supported:
-
-- CSV logging 
-- JSON logging
-- Logging to an Event Hub
-- Logging to a SQL Server table (in the target database)
-- Logging to a SQL Server table (in a dedicated database)
+Given this list, there are obvious opportunities to incorporate other storage platforms (S3, etc) and other file formats (XML, etc)
 
 Operational Monitoring Scenarios:
 
 - Use of Azure Monitor to monitor operations
 - Use of PowerBI to read from supported logging sources
 
-SQL Server connection security: 
+Connection security: 
 
-- SQL Server Connection String providing username, password and connection data through runtime parameters
+- SQL Server Connection String and connection data through runtime lookup of secrets stored in Azure Data Factory
 - Use of Azure SQL Database-Azure Active Directory integration to assign SQL Server-level rights 
 - Use of least-privilege accounts to support data movement
+- Use of database roles to assign SQL-level permissions
+- Use of Access Policy security to grant access to Azure Key Vault from Azure Data Factory
+- Use of access keys to access blob storage
+- Use of RBAC roles to access blob storage 
 
-Use of Azure Active Directory assumes that AAD is in place.  See https://docs.microsoft.com/en-us/azure/sql-database/sql-database-aad-authentication-configure
+Use of Azure Active Directory assumes that AAD integration with Azure SQL Database is in place.  See https://docs.microsoft.com/en-us/azure/sql-database/sql-database-aad-authentication-configure
 
-Blob Storage connection security 
-
-- Use of RBAC roles to assign acsess to the Data Factory
-- Use of Access keys as parameters to access blob storage
-
-Security Best Practices adhered to:
-
-- Use of Azure ARM Templates to deploy Azure Resources
-- Use of Azure ARM Template parameters to pass sensitive information at deployment time
+- Use of Azure ARM Templates and PowerShell to deploy Azure Resources
+- Use of Azure ARM Template parameters to pass Secret Names of sensitive information at runtime
 - Use of Azure Key Vault to provide secure storage of sensitive information
 - Use of PowerShell's Az module to interact with Azure
 - Use of Azure Active Directory to provide identity authentication services 
-- Use of Azure's RBAC security to provide authorization services\
-- Aggressive logging of operations to a SQL Server table in the destination database
-- Using Azure Monitor and Azure Alerting to monitor operations
+- Use of Azure Monitor and Azure Alerting to monitor operations
+- Use of Azure Monitor Workbooks and PowerBI to monitor operations
 
-AzureDataFactoryDemo_GenericSqlSink does the following:
+AzDataFactoryDemo_GenericSqlSink does the following:
 
+Quickly and easily pulls data from source to sink using security best practices.  If the target object (a relational table or a CosmosDB document data) doesn't exist in the sink, it is magically created.  
+
+The details:
 - Reads structure metadata from a CSV file stored in blob storage
 - Finds or Creates the SQL table in the target database that matches the structure of the CSV file
 - - If there are zero matches, a new table and view are created to act as the sink for the data, the table and view name of the new table is used
 - - If there is one match, the table and view name of the matching table is used
 - - If there is more than one match, the system doesn't know where it should belong, a new table and view are created to act as the sink for the data, the table and view name of the new table is used
 
-Operational metadata is logged to the target view.  The metadata collected is:
+Operational metadata is logged to the target table as additional columns. The metadata collected is:
 
-- __StorageAccountName:  Source blob storage account name
-- __FileName:  Name of the file used as the source of data
-- __DataFactoryName:  Name of the Azure Data Factory used to load the data
-- __DataFactoryPipelineName:  Name of the Azure Data Factory Pipeline used to load the data
-- __DataFactoryPipelineRunId:  ID of the Data Factory Pipeline Run that loaded the data
-- __InsertDateTimeUTC:  Full date and time the data was loaded in the UTC timezone, sourced from the Data Factory
+-   __sourceConnectionStringSecretName - Secret Name containing the connection string that points to the data source
+-   __sinkConnectionStringSecretName - Secret Name containing the connection string that points to the data sink
+-   __sourceObjectName - object data will be loaded from
+-   __targetObjectName - object data will be loaded into
+-   __dataFactoryName - Name of the Azure Data Factory used to load the data
+-   __dataFactoryPipelineName - Name of the Azure Data Factory Pipeline used to load the data
+-   __dataFactoryPipelineRunId - ID of the Data Factory Pipeline Run that loaded the data
+-   __insertDateTimeUTC - Full date and time the data was loaded in the UTC timezone, sourced from the Data Factory
+                            
 
 
-
-Thanks to Mark Kromer and Jack Ma.  They rock!
+Thanks to 
+- Michael French
+- Mark Kromer
+- Andie Letourneau
+- Jack Ma
+- Bob Rubocki

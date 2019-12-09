@@ -1,27 +1,3 @@
-# Create operational user in logging as admin, 
-# grant all rights to operational user in utils schema, 
-# grant EXEC to Audit.InsertOperationsEventLog
-Invoke-Sqlcmd `
-    -ServerInstance "tcp:$loggingDatabaseServerName.database.windows.net" `
-    -Database "$loggingDatabaseDatabaseName" `
-    -Username $loggingDatabaseSqlAdminUsername `
-    -Password $loggingDatabaseSqlAdminPassword `
-    -InputFile "./0020_DeployLoggingDatabaseObjects.sql"
-
-Invoke-Sqlcmd `
-    -ServerInstance "tcp:$loggingDatabaseServerName.database.windows.net" `
-    -Database "$loggingDatabaseDatabaseName" `
-    -Username $loggingDatabaseSqlAdminUsername `
-    -Password $loggingDatabaseSqlAdminPassword `
-    -Query "CREATE USER $loggingDatabaseSqlOpsUserName WITH PASSWORD='$loggingDatabaseSqlOpsPassword'"
-
-Invoke-Sqlcmd `
-    -ServerInstance "tcp:$loggingDatabaseServerName.database.windows.net" `
-    -Database "$loggingDatabaseDatabaseName" `
-    -Username $loggingDatabaseSqlAdminUsername `
-    -Password $loggingDatabaseSqlAdminPassword `
-    -Query "ALTER ROLE LoggingUsers ADD MEMBER $loggingDatabaseSqlOpsUsername"    
-
 # Create operational user in TargetDB1 as admin
 # Create schema [utils]
 # grant operational user rights on schema [utils] through group DataLoaders

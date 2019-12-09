@@ -2,6 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "dataFactoryName": {
+            "type": "string",
+            "defaultValue": ""
+        }, 
         "keyVaultName": {
             "type": "string",
             "defaultValue": ""
@@ -58,30 +62,6 @@
             "type": "string",
             "defaultValue": ""
         },
-        "loggingDatabaseServerName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "loggingDatabaseDatabaseName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "loggingDatabaseSqlAdminUsername": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "loggingDatabaseSqlAdminPassword": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "loggingDatabaseSqlOpsUsername": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "loggingDatabaseSqlOpsPassword": {
-            "type": "string",
-            "defaultValue": ""
-        },
         "storageAccount1Name": {
             "type": "string",
             "defaultValue": ""
@@ -96,7 +76,7 @@
             ]
         },
         "storageAccount2Name": {
-            "type": "string",
+            "type": "string", 
             "defaultValue": ""
         },
         "storageAccount2Type": {
@@ -107,10 +87,18 @@
                 "Standard_GRS",
                 "Standard_ZRS"
             ]
+        },        
+        "logAnalyticsWorkspaceName": {
+            "type": "string", 
+            "defaultValue": null
+        }, 
+        "dataFactoryAnalyticsSolutionName": {
+            "type": "string", 
+            "defaultValue": null
         }
     },
     "resources": [
-                {
+        {
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2016-10-01",
             "name": "[parameters('keyVaultName')]",
@@ -201,7 +189,8 @@
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1Name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1Name'))]", 
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
             ],
             "properties": {
                 "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount1Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount1Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
@@ -213,7 +202,8 @@
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2Name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2Name'))]", 
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
             ],
             "properties": {
                 "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount2Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount2Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
@@ -343,7 +333,7 @@
             ],
             "properties": {
                 "publicAccess": "None"
-            }
+            } 
         },        
         {
             "type": "Microsoft.Sql/servers",
@@ -422,164 +412,9 @@
                     }
                 }
             ]
-        },
-        {
-            "type": "Microsoft.Sql/servers",
-            "name": "[parameters('loggingDatabaseServerName')]",
-            "location": "[resourceGroup().location]",
-            "apiVersion": "2015-05-01-preview",
-            "properties": {
-                "administratorLogin": "[parameters('loggingDatabaseSqlAdminUsername')]",
-                "administratorLoginPassword": "[parameters('loggingDatabaseSqlAdminPassword')]",
-                "version": "12.0"
-            },
-            "resources": [
-                {
-                    "type": "Microsoft.Sql/servers/databases",
-                    "name": "[concat(string(parameters('loggingDatabaseServerName')), '/', parameters('loggingDatabaseDatabaseName'))]",
-                    "location": "[resourceGroup().location]",
-                    "apiVersion": "2017-10-01-preview",
-                    "sku": {
-                        "name": "S0",
-                        "tier": "Standard"
-                    },
-                    "dependsOn": [
-                        "[resourceID('Microsoft.Sql/servers/', parameters('loggingDatabaseServerName'))]"
-                    ]
-                },
-                {
-                    "type": "firewallrules",
-                    "name": "AllowAllAzureIps",
-                    "location": "[resourceGroup().location]",
-                    "apiVersion": "2015-05-01-preview",
-                    "dependsOn": [
-                        "[resourceID('Microsoft.Sql/servers/', parameters('loggingDatabaseServerName'))]"
-                    ],
-                    "properties": {
-                        "startIpAddress": "0.0.0.0",
-                        "endIpAddress": "255.255.255.255"
-                    }
-                }
-            ]
-        }, 
-        
-        {
-            "type": "Microsoft.Web/connections",
-            "apiVersion": "2016-06-01",
-            "name": "WriteToOperationsEventLogDatabaseConnection",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "displayName": "LoggingDatabase",
-                "parameterValues": {
-                    "server": "[concat(parameters('loggingDatabaseServerName'), '.database.windows.net')]",
-                    "database": "[parameters('loggingDatabaseDatabaseName')]",
-                    "userName": "[parameters('loggingDatabaseSqlOpsUsername')]",
-                    "password": "[parameters('loggingDatabaseSqlOpsPassword')]"
-                },
-                "customParameterValues": {
-                },
-                "api": {
-                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/sql')]"
-                }
-            }, 
-            "dependsOn": [
-                "[resourceID('Microsoft.Sql/servers/', parameters('loggingDatabaseServerName'))]"
-            ]
-        },
-        {
-            "type": "Microsoft.Logic/workflows",
-            "apiVersion": "2017-07-01",
-            "name": "WriteToOperationsEventLog",
-            "location": "[resourceGroup().location]",
-            "identity": {
-                "type": "SystemAssigned"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/connections', 'WriteToOperationsEventLogDatabaseConnection')]", 
-                "[resourceID('Microsoft.Sql/servers/', parameters('loggingDatabaseServerName'))]"
-            ],
-            "properties": {
-                "state": "Enabled",
-                "definition": {
-                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
-                    "contentVersion": "1.0.0.0",
-                    "parameters": {
-                        "$connections": {
-                            "defaultValue": {},
-                            "type": "Object"
-                        }
-                    },
-                    "triggers": {
-                        "manual": {
-                            "type": "Request",
-                            "kind": "Http",
-                            "inputs": {
-                                "schema": {
-                                    "properties": {
-                                        "EventDateTime": {
-                                            "type": "string"
-                                        },
-                                        "EventState": {
-                                            "type": "string"
-                                        },
-                                        "SourceName": {
-                                            "type": "string"
-                                        },
-                                        "SourceType": {
-                                            "type": "string"
-                                        },
-                                        "StatusMessage": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "operationOptions": "EnableSchemaValidation"
-                        }
-                    },
-                    "actions": {
-                        "Execute_stored_procedure_(V2)": {
-                            "runAfter": {},
-                            "type": "ApiConnection",
-                            "inputs": {
-                                "body": {
-                                    "EventState": "@triggerBody()?['EventState']",
-                                    "SourceName": "@triggerBody()?['SourceName']",
-                                    "SourceType": "@triggerBody()?['SourceType']",
-                                    "StatusMessage": "@triggerBody()?['StatusMessage']"
-                                },
-                                "host": {
-                                    "connection": {
-                                        "name": "@parameters('$connections')['sql']['connectionId']"
-                                    }
-                                },
-                                "method": "post",
-                                "path": "/v2/datasets/@{encodeURIComponent('mdjloggingserver.database.windows.net')},@{encodeURIComponent('LoggingDB')}/procedures/@{encodeURIComponent('[audit].[InsertOperationsEventLog]')}"
-                            }
-                        }
-                    },
-                    "outputs": {}
-                },
-                "parameters": {
-                    "$connections": {
-                        "value": {
-                            "sql": {
-                                "connectionId": "[resourceId('Microsoft.Web/connections', 'WriteToOperationsEventLogDatabaseConnection')]",
-                                "connectionName": "WriteToOperationsEventLogDatabaseConnection",
-                                "id": "[concat('/subscriptions/', subscription().subscriptionId,'/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/sql')]"
-                            }
-                        }
-                    }
-                }
-            }
         }
     ], 
     "outputs": { 
-        "loggingUrl": { 
-            "type": "string",
-            "value": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows/', 'WriteToOperationsEventLog'), '/triggers/manual'), '2017-07-01').value]"
-        }, 
         "storageAccount1ConnectionString": {
             "type": "string", 
             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount1Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount1Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
