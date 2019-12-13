@@ -7,7 +7,7 @@ Invoke-Sqlcmd `
     -Database "$targetDatabase1DatabaseName" `
     -Username $targetDatabase1SqlAdminUsername `
     -Password $targetDatabase1SqlAdminPassword `
-    -InputFile "./0020_DeployTargetDatabaseObjects.sql"
+    -InputFile "./sqlFiles/0020_DeployTargetDatabaseObjects.sql"
 
 Invoke-Sqlcmd `
     -ServerInstance "tcp:$targetDatabase1ServerName.database.windows.net" `
@@ -32,7 +32,7 @@ Invoke-Sqlcmd `
     -Database "$targetDatabase2DatabaseName" `
     -Username $targetDatabase2SqlAdminUsername `
     -Password $targetDatabase2SqlAdminPassword `
-    -InputFile "./0020_DeployTargetDatabaseObjects.sql"
+    -InputFile "./sqlFiles/0020_DeployTargetDatabaseObjects.sql"
 
 Invoke-Sqlcmd `
     -ServerInstance "tcp:$targetDatabase2ServerName.database.windows.net" `

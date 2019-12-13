@@ -4,10 +4,12 @@
     "parameters": {
         "dataFactoryName": {
             "type": "string",
-            "metadata": "Data Factory name",
             "defaultValue": null
         },
-        "AzureKeyVaultLinkedService_baseUrl": {
+        "keyVaultName": {
+            "type": "string"
+        },
+        "keyVaultLinkedService_baseUrl": {
             "type": "string",
             "defaultValue": null
         },
@@ -21,6 +23,117 @@
     },
     "resources": [
         {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[parameters('userObjectId')]",
+                        "permissions": {
+                            "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "certificates": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "ManageContacts",
+                                "ManageIssuers",
+                                "GetIssuers",
+                                "ListIssuers",
+                                "SetIssuers",
+                                "DeleteIssuers"
+                            ]
+                        }
+                    }
+                ],
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetDatabase1ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('targetDatabase1ServerName'), '.database.windows.net;Initial Catalog=', parameters('targetDatabase1DatabaseName'), ';User ID=', parameters('targetDatabase1SqlOpsUserName'), ';Password=', parameters('targetDatabase1SqlOpsPassword'))]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetDatabase2ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('targetDatabase2ServerName'), '.database.windows.net;Initial Catalog=', parameters('targetDatabase2DatabaseName'), ';User ID=', parameters('targetDatabase2SqlOpsUserName'), ';Password=', parameters('targetDatabase2SqlOpsPassword'))]"
+            }
+        }, 
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetblob1ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1Name'))]", 
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount1Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount1Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+            }
+        }, 
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetblob2ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2Name'))]", 
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount2Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount2Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+            }
+        },         
+        { 
             "name": "[parameters('dataFactoryName')]",
             "apiVersion": "2018-06-01",
             "type": "Microsoft.DataFactory/factories",
@@ -35,6 +148,7 @@
                     "type": "providers/diagnosticSettings",
                     "name": "[concat('Microsoft.Insights/', 'mdjDataFactoryDiagSettings')]",
                     "dependsOn": [
+                        "[variables('factoryId')]",
                         "[resourceId('Microsoft.DataFactory/factories', parameters('dataFactoryName'))]", 
                         "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
                     ],
@@ -67,7 +181,6 @@
                                     "days": 30,
                                     "enabled": true
                                 }
-
                             }
                         ],
                         "metrics": [
@@ -85,38 +198,6 @@
             ]
         },
         {
-            "name": "[concat(parameters('dataFactoryName'), '/GenericSqlLinkedService')]",
-            "type": "Microsoft.DataFactory/factories/linkedServices",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "parameters": {
-                    "databaseConnectionStringSecretName": {
-                        "type": "string"
-                    }
-                },
-                "annotations": [
-                ],
-                "type": "AzureSqlDatabase",
-                "typeProperties": {
-                    "connectionString": {
-                        "type": "AzureKeyVaultSecret",
-                        "store": {
-                            "referenceName": "AzureKeyVaultLinkedService",
-                            "type": "LinkedServiceReference"
-                        },
-                        "secretName": {
-                            "value": "@linkedService().databaseConnectionStringSecretName",
-                            "type": "Expression"
-                        }
-                    }
-                }
-            },
-            "dependsOn": [
-                "[variables('factoryId')]",
-                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultLinkedService')]"
-            ]
-        },
-        {
             "name": "[concat(parameters('dataFactoryName'), '/AzureKeyVaultLinkedService')]",
             "type": "Microsoft.DataFactory/factories/linkedServices",
             "apiVersion": "2018-06-01",
@@ -125,11 +206,12 @@
                 ],
                 "type": "AzureKeyVault",
                 "typeProperties": {
-                    "baseUrl": "[parameters('AzureKeyVaultLinkedService_baseUrl')]"
+                    "baseUrl": "[parameters('keyVaultLinkedService_baseUrl')]"
                 }
             },
             "dependsOn": [
-                "[variables('factoryId')]"
+                "[variables('factoryId')]", 
+                "[variables('keyVaultId')]"
             ]
         },
         {
@@ -178,14 +260,14 @@
                 "[variables('factoryId')]",
                 "[concat(variables('factoryId'), '/linkedServices/GenericSqlLinkedService')]"
             ]
-        },
+        }, 
         {
-            "name": "[concat(parameters('dataFactoryName'), '/GenericBlobCSV')]",
+            "name": "[concat(parameters('dataFactoryName'), '/GenericBlobSingleCSV')]",
             "type": "Microsoft.DataFactory/factories/datasets",
             "apiVersion": "2018-06-01",
             "properties": {
                 "linkedServiceName": {
-                    "referenceName": "GenericCSVBlobLinkedService",
+                    "referenceName": "GenericBlobSingleCSVLinkedService",
                     "type": "LinkedServiceReference",
                     "parameters": {
                         "blobConnectionStringSecretName": {
@@ -196,15 +278,20 @@
                 },
                 "parameters": {
                     "blobConnectionStringSecretName": {
-                        "type": "string",
-                        "defaultValue": "blobtarget1ConnectionString"
+                        "type": "string"
                     },
-                    "FileName": {
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "fileDirectory": {
+                        "type": "string",
+                        "defaultValue": null
+                    },
+                    "containerName": {
                         "type": "string"
                     }
                 },
-                "annotations": [
-                ],
+                "annotations": [],
                 "type": "DelimitedText",
                 "typeProperties": {
                     "location": {
@@ -213,31 +300,68 @@
                             "value": "@dataset().FileName",
                             "type": "Expression"
                         },
-                        "container": "default"
+                        "folderPath": {
+                            "value": "@dataset().fileDirectory",
+                            "type": "Expression"
+                        },
+                        "container": {
+                            "value": "@dataset().containerName",
+                            "type": "Expression"
+                        }
                     },
                     "columnDelimiter": ",",
                     "escapeChar": "\\",
                     "firstRowAsHeader": true,
                     "quoteChar": "\""
                 },
-                "schema": [
-                ]
+                "schema": []
             },
             "dependsOn": [
                 "[variables('factoryId')]",
-                "[concat(variables('factoryId'), '/linkedServices/GenericCSVBlobLinkedService')]"
+                "[concat(variables('factoryId'), '/linkedServices/GenericBlobSingleCSVLinkedService')]"
             ]
         },
+        {  
+            "name": "[concat(parameters('dataFactoryName'), '/GenericSqlLinkedService')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "databaseConnectionStringSecretName": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [
+                ],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "AzureKeyVaultLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": {
+                            "value": "@linkedService().databaseConnectionStringSecretName",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "[variables('factoryId')]",
+                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultLinkedService')]"
+            ]
+        },        
         {
-            "name": "[concat(parameters('dataFactoryName'), '/GenericCSVBlobLinkedService')]",
+            "name": "[concat(parameters('dataFactoryName'), '/GenericBlobSingleCSVLinkedService')]",
             "type": "Microsoft.DataFactory/factories/linkedServices",
             "apiVersion": "2018-06-01",
             "properties": {
                 "type": "AzureBlobStorage",
                 "parameters": {
                     "blobConnectionStringSecretName": {
-                        "type": "string",
-                        "defaultValue": ""
+                        "type": "string"
                     }
                 },
                 "annotations": [
@@ -259,7 +383,7 @@
             ]
         },
         {
-            "name": "[concat(parameters('dataFactoryName'), '/GenericBlobCSVToGenericSqlTable')]",
+            "name": "[concat(parameters('dataFactoryName'), '/GenericBlobSingleCSVToGenericSqlTable')]",
             "type": "Microsoft.DataFactory/factories/dataflows",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -268,12 +392,11 @@
                     "sources": [
                         {
                             "dataset": {
-                                "referenceName": "GenericBlobCSV",
+                                "referenceName": "GenericBlobSingleCSV",
                                 "type": "DatasetReference"
                             },
-                            "name": "ReadFromSourceCSV",
-                            "typeProperties": {
-                            }
+                            "name": "ReadFromSourceSingleCSV",
+                            "typeProperties": {}
                         }
                     ],
                     "sinks": [
@@ -287,31 +410,28 @@
                     ],
                     "transformations": [
                         {
-                            "name": "SourceCSVEnrichedWithMetadata"
+                            "name": "SourceSingleCSVEnrichedWithMetadata"
                         }
                     ],
-                    "script": "\nparameters{\n\tsourceConnectionStringSecretName as string,\n\tsinkConnectionStringSecretName as string,\n\tsourceObjectName as string,\n\ttargetObjectName as string,\n\tdataFactoryName as string,\n\tdataFactoryPipelineName as string,\n\tdataFactoryPipelineRunId as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> ReadFromSourceCSV\nReadFromSourceCSV derive({__sourceConnectionStringSecretName} = $sourceConnectionStringSecretName,\n\t\t{__sinkConnectionStringSecretName} = $sinkConnectionStringSecretName,\n\t\t{__sourceObjectName} = $sourceObjectName,\n\t\t{__targetObjectName} = $targetObjectName,\n\t\t{__dataFactoryName} = $dataFactoryName,\n\t\t{__dataFactoryPipelineName} = $dataFactoryPipelineName,\n\t\t{__dataFactoryPipelineRunId} = $dataFactoryPipelineRunId) ~> SourceCSVEnrichedWithMetadata\nSourceCSVEnrichedWithMetadata sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table') ~> WriteToGenericSqlTable"
+                    "script": "\nparameters{\n\tsourceConnectionStringSecretName as string,\n\tsinkConnectionStringSecretName as string,\n\tsourceObjectName as string,\n\ttargetObjectName as string,\n\tdataFactoryName as string,\n\tdataFactoryPipelineName as string,\n\tdataFactoryPipelineRunId as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> ReadFromSourceSingleCSV\nReadFromSourceSingleCSV derive({__sourceConnectionStringSecretName} = $sourceConnectionStringSecretName,\n\t\t{__sinkConnectionStringSecretName} = $sinkConnectionStringSecretName,\n\t\t{__sourceObjectName} = $sourceObjectName,\n\t\t{__targetObjectName} = $targetObjectName,\n\t\t{__dataFactoryName} = $dataFactoryName,\n\t\t{__dataFactoryPipelineName} = $dataFactoryPipelineName,\n\t\t{__dataFactoryPipelineRunId} = $dataFactoryPipelineRunId) ~> SourceSingleCSVEnrichedWithMetadata\nSourceSingleCSVEnrichedWithMetadata sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table') ~> WriteToGenericSqlTable"
                 }
             },
             "dependsOn": [
-                "[concat(variables('factoryId'), '/datasets/GenericBlobCSV')]",
+                "[variables('factoryId')]",
+                "[concat(variables('factoryId'), '/datasets/GenericBlobSingleCSV')]",
                 "[concat(variables('factoryId'), '/datasets/GenericSqlTable')]"
             ]
         },
         {
+            "name": "[concat(parameters('dataFactoryName'), '/Generic Blob Single CSV to Generic SQL Table using Data Flow')]",
             "type": "Microsoft.DataFactory/factories/pipelines",
             "apiVersion": "2018-06-01",
-            "name": "[concat(parameters('dataFactoryName'), '/Generic Blob CSV to Generic SQL Table')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.DataFactory/factories', parameters('dataFactoryName'))]"
-            ],
             "properties": {
                 "activities": [
                     {
                         "name": "Get CSV File Structure",
                         "type": "GetMetadata",
-                        "dependsOn": [
-                        ],
+                        "dependsOn": [],
                         "policy": {
                             "timeout": "7.00:00:00",
                             "retry": 0,
@@ -319,19 +439,26 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [
-                        ],
+                        "userProperties": [],
                         "typeProperties": {
                             "dataset": {
-                                "referenceName": "GenericBlobCSV",
+                                "referenceName": "GenericBlobSingleCSV",
                                 "type": "DatasetReference",
                                 "parameters": {
                                     "blobConnectionStringSecretName": {
                                         "value": "@pipeline().parameters.blobConnectionStringSecretName",
                                         "type": "Expression"
                                     },
-                                    "FileName": {
+                                    "fileName": {
                                         "value": "@pipeline().parameters.FileName",
+                                        "type": "Expression"
+                                    },
+                                    "fileDirectory": {
+                                        "value": "@pipeline().parameters.FileDirectory",
+                                        "type": "Expression"
+                                    },
+                                    "containerName": {
+                                        "value": "@pipeline().parameters.containerName",
                                         "type": "Expression"
                                     }
                                 }
@@ -348,8 +475,8 @@
                             }
                         }
                     },
-                    {
-                        "name": "Find or Create Target View",
+                                       {
+                        "name": "Find or Create Target Table",
                         "type": "Lookup",
                         "dependsOn": [
                             {
@@ -366,17 +493,30 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [
-                        ],
+                        "userProperties": [],
                         "typeProperties": {
                             "source": {
                                 "type": "AzureSqlSource",
-                                "sqlReaderStoredProcedureName": "[[utils].[sp_FindOrCreateTargetView]",
+                                "sqlReaderStoredProcedureName": "[[utils].[sp_FindOrCreateTargetTable]",
                                 "storedProcedureParameters": {
+                                    "ContainerName": {
+                                        "type": "String",
+                                        "value": {
+                                            "value": "@pipeline().parameters.containerName",
+                                            "type": "Expression"
+                                        }
+                                    },
                                     "FileName": {
                                         "type": "String",
                                         "value": {
-                                            "value": "@pipeline().parameters.FileName",
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "FilePath": {
+                                        "type": "String",
+                                        "value": {
+                                            "value": "@pipeline().parameters.fileDirectory",
                                             "type": "Expression"
                                         }
                                     },
@@ -395,7 +535,7 @@
                                             "type": "Expression"
                                         }
                                     },
-                                    "ViewName": {
+                                    "TableName": {
                                         "type": "String",
                                         "value": null
                                     }
@@ -416,11 +556,11 @@
                         }
                     },
                     {
-                        "name": "GenericBlobCSVtoGenericSqlTable",
+                        "name": "GenericBlobSingleCSVtoGenericSqlTable",
                         "type": "ExecuteDataFlow",
                         "dependsOn": [
                             {
-                                "activity": "Find or Create Target View",
+                                "activity": "Find or Create Target Table",
                                 "dependencyConditions": [
                                     "Succeeded"
                                 ]
@@ -433,11 +573,10 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [
-                        ],
+                        "userProperties": [],
                         "typeProperties": {
                             "dataflow": {
-                                "referenceName": "GenericBlobCSVtoGenericSqlTable",
+                                "referenceName": "GenericBlobSingleCSVToGenericSqlTable",
                                 "type": "DataFlowReference",
                                 "parameters": {
                                     "sourceConnectionStringSecretName": {
@@ -453,7 +592,7 @@
                                         "type": "Expression"
                                     },
                                     "targetObjectName": {
-                                        "value": "'concat('[', @{activity('Find or Create Target View').output.firstRow.SchemaName}, '].[', @{activity('Find or Create Target View').output.firstRow.ViewName}, ']')'",
+                                        "value": "'@{concat('[', activity('Find or Create Target Table').output.firstRow.SchemaName, '].[', activity('Find or Create Target Table').output.firstRow.TableName, ']')}'",
                                         "type": "Expression"
                                     },
                                     "dataFactoryName": {
@@ -470,34 +609,41 @@
                                     }
                                 },
                                 "datasetParameters": {
-                                    "ReadFromSource": {
+                                    "ReadFromSourceSingleCSV": {
                                         "blobConnectionStringSecretName": {
                                             "value": "@pipeline().parameters.blobConnectionStringSecretName",
                                             "type": "Expression"
                                         },
-                                        "FileName": {
+                                        "fileName": {
                                             "value": "@pipeline().parameters.FileName",
+                                            "type": "Expression"
+                                        },
+                                        "fileDirectory": {
+                                            "value": "@pipeline().parameters.FileDirectory",
+                                            "type": "Expression"
+                                        },
+                                        "containerName": {
+                                            "value": "@pipeline().parameters.containerName",
                                             "type": "Expression"
                                         }
                                     },
-                                    "WriteToSink": {
+                                    "WriteToGenericSqlTable": {
                                         "databaseConnectionStringSecretName": {
                                             "value": "@pipeline().parameters.databaseConnectionStringSecretName",
                                             "type": "Expression"
                                         },
                                         "schemaName": {
-                                            "value": "@activity('Find or Create Target View').output.firstRow.SchemaName",
+                                            "value": "@activity('Find or Create Target Table').output.firstRow.SchemaName",
                                             "type": "Expression"
                                         },
                                         "tableName": {
-                                            "value": "@activity('Find or Create Target View').output.firstRow.ViewName",
+                                            "value": "@activity('Find or Create Target Table').output.firstRow.TableName",
                                             "type": "Expression"
                                         }
                                     }
                                 }
                             },
-                            "staging": {
-                            }
+                            "staging": {}
                         }
                     }
                 ],
@@ -508,20 +654,31 @@
                     "databaseConnectionStringSecretName": {
                         "type": "string"
                     },
-                    "FileName": {
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "fileDirectory": {
+                        "type": "string"
+                    },
+                    "containerName": {
                         "type": "string"
                     }
                 },
-                "annotations": [
-                ]
-            }
+                "annotations": []
+            },
+            "dependsOn": [
+                "[variables('factoryId')]",
+                "[concat(variables('factoryId'), '/datasets/GenericBlobSingleCSV')]",
+                "[concat(variables('factoryId'), '/datasets/GenericSqlTable')]",
+                "[concat(variables('factoryId'), '/dataflows/GenericBlobSingleCSVToGenericSqlTable')]"
+            ]
         },
         {
             "type": "Microsoft.OperationalInsights/workspaces",
             "name": "[parameters('logAnalyticsWorkspaceName')]",
             "apiVersion": "2015-11-01-preview",
             "location": "[resourceGroup().location]",
-            "properties": {
+            "properties": { 
                 "sku": {
                     "name": "pergb2018"
                 },
@@ -538,7 +695,7 @@
             ],
             "plan": {
                 "name": "[concat('AzureDataFactoryAnalytics', '(', parameters('logAnalyticsWorkspaceName'), ')')]",
-                "product": "[concat('OMSGallery/', 'AzureDataFactoryAnalytics')]",
+                "product": "OMSGallery/AzureDataFactoryAnalytics",
                 "promotionCode": "",
                 "publisher": "Microsoft"
             },

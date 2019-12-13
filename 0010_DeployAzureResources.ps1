@@ -1,7 +1,7 @@
 $deployment = New-AzResourceGroupDeployment `
     -ResourceGroupName $resourceGroupName `
-    -TemplateFile "./0010_DeployAzureResources.template.json" `
-    -TemplateParameterFile "./0010_DeployAzureResources.parameters.json"
+    -TemplateFile "./templateAndParameters/0010_DeployAzureResources.template.json" `
+    -TemplateParameterFile "./templateAndParameters/0010_DeployAzureResources.parameters.json"
 
 $deployment | Out-Host
 
@@ -49,7 +49,8 @@ $ctx = New-AzStorageContext `
     -StorageAccountKey $storageAccount1Key
 
 Set-AzStorageBlobContent `
-    -File "./0030_SourceData1.csv" `
+    -File "./sourceData/csv/singleFiles/0010_SourceData1.csv" `
+    -Blob "csv/singleFiles/0010_SourceData1.csv" `
     -Container "default" `
     -Context $ctx `
     -Properties @{"ContentType" = "text/csv"} `
@@ -60,7 +61,8 @@ $ctx = New-AzStorageContext `
     -StorageAccountKey $storageAccount2Key
 
 Set-AzStorageBlobContent `
-    -File "./0030_SourceData2.csv" `
+    -File "./sourceData/csv/singleFiles/0010_SourceData2.csv" `
+    -Blob "csv/singleFiles/0010_SourceData2.csv" `
     -Container "default" `
     -Context $ctx `
     -Properties @{"ContentType" = "text/csv"} `

@@ -1,22 +1,20 @@
-# Throwing Mudd on the Wall with Azure Data Factory
+# Throwing Mudd on the Wall (MoW) with Azure Data Factory 
 
 ## This is a work in progress, it is not currently release quality
 
 ![Harry Mudd](https://www.syfy.com/sites/syfy/files/styles/1200x680/public/wire/legacy/Harry_Mudd.jpg)
 
-Sometimes I just need data sourced from CSV files imported into a SQL Server table.  Nothing fancy, but I've needed it over and over again.  Why not take all that I've learned about building Data Factory Pipelines and do a no-compromises, best-practices implementation.  
+Sometimes I just need data sourced from CSV files imported into a SQL Server table.  Nothing fancy, but I've needed it over and over again.  Why not take all that I've learned about building Data Factory Pipelines and do a no-compromises, best-practices implementation?  It will be reusable and consistent, upgradable and open.  I've done this enough times that I find it worth investing the time to create a generic, reusable and redeployable solution.
 
-My goal is to be the de-facto reference implementation for Azure Data Factory pipelines from a security, operational and deployment perspective.  It provides the EL in ELT.  It takes a lot of guts to aim that high.
+It provides the EL in ELT.  (Extract, Load, Transform)
 
-I've done this enough times that I find it worth investing the time to create a generic, reusable and redeployable solution.
-
-I also know that I'm in the company of amazing technologists.  I'm hoping to attract them as contributors to this project.
+My goal is to be the de-facto reference implementation for Azure Data Factory pipelines from a security, operational and deployment perspective.  It takes a lot of guts to aim that high.  I also know that I'm in the company of amazing technologists.  I'm hoping to attract them as contributors to this project.
 
 Why open-source it?  This industry has been very good to me over the years and I'd like to contribute back.  This is a component of nearly every project I've ever worked on.  There is value in having a constitently deployable solution.
 
-It also doesn't add a lot of business value.  It's plumbing.  There's no value-add here.  I'd rather spend my time and my customer's money dealing with the things that are unique and valuable to their business, not charging them to build the same plumbing over-and-over again.
+It also doesn't add a lot of business value and really isn't much of a competitive differentiator.  It's plumbing.  There's no value-add here.  I'd rather spend my time and my customer's money dealing with the things that are unique and valuable to their business, not charging them to build the same plumbing over-and-over again.
 
-I'm creating a solution that will take data from a variety of sources and push that data into a variety of sinks.  
+I'm creating a solution that will take data from a variety of sources and push that data into a variety of sinks.  If the sink doesn't exist, it should be magically created.
 
 I'm starting off with reading a CSV file in Azure Blob Storage into a SQL Server table.  
 
@@ -92,6 +90,20 @@ Operational metadata is logged to the target table as additional columns. The me
 -   __dataFactoryPipelineRunId - ID of the Data Factory Pipeline Run that loaded the data
 -   __insertDateTimeUTC - Full date and time the data was loaded in the UTC timezone, sourced from the Data Factory
                             
+Onboarding checklist:
+
+- Create or identify an Azure Key Vault instance that will hold your secrets
+- Create or identify data sources and data sinks
+- Create or identify the security context (AAD vs connection strings) to be used
+- Grant security contexts rights to data sources and data sinks
+- Create connection strings to data sources and sinks using security context identified above
+- Save connection strings as named Azure Key Vault secrets
+- Create or identify the Azure Data Factory that will be handling the data movement
+- Grant the Data Factory Identity access to the Azure Key Vault holding the connection strings
+- Grant the Data Factory Identity access to sources and sinks (or supply username/password or access key in the connection strings)
+- Within the Data Factory create a linked service pointing at the Key Vault holding the secrets
+- Deploy target database objects to target sinks (SQL, Synapse)
+- Set Triggers using KeyVaultSecretNames as parameters
 
 
 Thanks to 

@@ -61,6 +61,9 @@
         }, 
         "dataFactoryAnalyticsSolutionName": {
             "value": "mdjDataFactoryLogAnalyticsWorkspace(DataFactoryAnalytics)"
+        }, 
+        "logAnalyticsWorkspaceName": {
+            "value": "mdjDataFactoryLogAnalyticsWorkspace"
         }
     }
 }

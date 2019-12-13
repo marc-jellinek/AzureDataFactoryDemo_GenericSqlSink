@@ -19,33 +19,27 @@ RETURNS varchar(8000)
     DECLARE @OutputString varchar(8000)
 
     SET @OutputString = 
-                REPLACE(
-                REPLACE(
-                REPLACE(
-                REPLACE(
-                REPLACE(
-                REPLACE(
-                REPLACE(
-                REPLACE(
-                    @InputString,  
-                    ' ', ''), 
-                    '\', ''), 
-                    '/', ''), 
-                    '-', ''), 
-                    '\"', '"'),   -- convert escaped double-quote to un-escaped double-quote
-                    CHAR(9), ''), 
-                    CHAR(10), ''), 
-                    CHAR(13), '');
+        REPLACE(
+        REPLACE(
+        REPLACE(
+        REPLACE(
+        REPLACE(
+            @InputString,  
+            ' ', ''), 
+            '\"', '"'),     -- convert escaped double-quote to un-escaped double-quote
+            CHAR(9), ''),   -- remove tabs
+            CHAR(10), ''),  -- remove linefeed character
+            CHAR(13), '');  -- remove carriage return character
 
     RETURN @OutputString
 END
 GO
 
 -- create function to generate json for existing tables
-CREATE OR ALTER FUNCTION [utils].[GenerateJSONFromViews] 
+CREATE OR ALTER FUNCTION [utils].[GenerateJSONFromTables] 
     (
-        @SchemaName sysname, 
-        @ViewName sysname
+        @SchemaName varchar(8000), 
+        @TableName varchar(8000)
     )
 RETURNS varchar(8000)
     BEGIN
@@ -57,12 +51,13 @@ RETURNS varchar(8000)
                             ELSE 'String'
                         END     as [type]
     FROM sys.schemas sch
-        INNER JOIN sys.views vws ON sch.schema_id = vws.schema_id
-        INNER JOIN sys.columns col ON vws.object_id = col.object_id
+        INNER JOIN sys.tables tbl ON sch.schema_id = tbl.schema_id
+        INNER JOIN sys.columns col ON tbl.object_id = col.object_id
         INNER JOIN sys.types typ ON col.user_type_id = typ.user_type_id
     WHERE       sch.name = @SchemaName AND
-        vws.name = @ViewName AND
-        NOT col.name IN     (   '__sourceConnectionStringSecretName', 
+        tbl.name = @TableName AND
+        NOT col.name IN     (   '__RowID', 
+                                '__sourceConnectionStringSecretName', 
                                 '__sinkConnectionStringSecretName', 
                                 '__sourceObjectName', 
                                 '__targetObjectName', 
@@ -81,35 +76,35 @@ RETURNS varchar(8000)
 END
 GO
 
-CREATE OR ALTER PROCEDURE [utils].[sp_GetViewBasedOnSuppliedStructure]
+CREATE OR ALTER PROCEDURE [utils].[sp_GetTableBasedOnSuppliedStructure]
     @SuppliedStructure varchar(8000),
-    @SchemaName sysname OUTPUT,
-    @ViewName sysname OUTPUT,
+    @SchemaName varchar(8000) OUTPUT,
+    @TableName varchar(8000) OUTPUT,
     @MultipleMatches bit OUTPUT
 AS
 BEGIN
     DECLARE @CountMatches bigint = NULL;
 
-    DROP TABLE IF EXISTS #JsonViewStructure;
+    DROP TABLE IF EXISTS #JsonTableStructure;
 
     SELECT sch.name as schema_name,
-        vws.name as view_name,
-        [utils].[GenerateJSONFromViews](sch.name, vws.name) as JsonStructure
-    INTO        #JsonViewStructure
+        tbl.name as table_name,
+        [utils].[GenerateJSONFromTables](sch.name, tbl.name) as JsonStructure
+    INTO        #JsonTableStructure
     FROM sys.schemas sch
-        INNER JOIN sys.views vws ON sch.schema_id = vws.schema_id;
+        INNER JOIN sys.tables tbl ON sch.schema_id = tbl.schema_id;
 
     SET         @SuppliedStructure = [utils].[CleanseString](@SuppliedStructure);
 
-    SELECT @CountMatches = ISNULL(COUNT_BIG(*), 0)
-    FROM #JsonViewStructure j
+    SELECT      @CountMatches = ISNULL(COUNT_BIG(*), 0)
+    FROM        #JsonTableStructure j
     WHERE       j.JsonStructure = @SuppliedStructure;
 
     IF @CountMatches = 0 
     BEGIN
         SET @MultipleMatches = 0;
         SET @SchemaName = NULL;
-        SET @ViewName = NULL;
+        SET @TableName = NULL;
     END
 
     IF @CountMatches = 1
@@ -117,8 +112,8 @@ BEGIN
         SET @MultipleMatches = 0;
 
         SELECT @SchemaName = j.schema_name,
-            @ViewName = j.view_name
-        FROM #JsonViewStructure j
+            @TableName = j.table_name
+        FROM #JsonTableStructure j
         WHERE       j.JsonStructure = @SuppliedStructure;
     END
 
@@ -126,17 +121,18 @@ BEGIN
     BEGIN
         SET @MultipleMatches = 1;
         SET @SchemaName = NULL;
-        SET @ViewName = NULL;
+        SET @TableName = NULL;
     END
 END 
 GO
 
-CREATE OR ALTER PROCEDURE [utils].[sp_CreateTableAndViewFromJSON]
+CREATE OR ALTER PROCEDURE [utils].[sp_CreateTableFromJSON]
+    @ContainerName varchar(1000),
+    @FilePath varchar(1000), 
     @FileName varchar(1000),
     @SuppliedStructure as varchar(8000),
-    @SchemaName sysname OUTPUT,
-    @TableName sysname OUTPUT,
-    @ViewName sysname OUTPUT
+    @SchemaName varchar(8000) OUTPUT,
+    @TableName varchar(8000) OUTPUT
 AS
 BEGIN
     -- expects array of objects with name and type properties generated from Azure Data Factory Get Metadata activity
@@ -160,7 +156,7 @@ BEGIN
     SET @SuppliedStructure = [utils].[CleanseString](@SuppliedStructure);
 
     SET @SchemaName = 'utils';
-    SET @TableName = CONVERT(sysname, @FileName) + N'-' + CONVERT(sysname, GETUTCDATE(), 126);
+    SET @TableName = CONVERT(varchar(8000), @ContainerName) + '/' + CONVERT(varchar(8000), @FilePath) + '/' + CONVERT(varchar(8000), @FileName) + N'-' + CONVERT(varchar(8000), GETUTCDATE(), 126);
 
     SET @Create = 'CREATE TABLE ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName);
 
@@ -170,8 +166,8 @@ BEGIN
     FROM (   SELECT QUOTENAME(columnspec.Name) + ' varchar(max), ' as name
         FROM OPENJSON(@SuppliedStructure)
                                 WITH (
-                                    [Name] sysname '$.name', 
-                                    [Type] sysname '$.type'
+                                    [Name] varchar(8000) '$.name', 
+                                    [Type] varchar(8000) '$.type'
                                 ) columnspec
                 ) columndef;
 
@@ -188,69 +184,75 @@ BEGIN
 
     EXEC(@sql);
 
-    SET @ViewName = 'vw_' + @TableName;
 
-    -- create a view based on this table that excludes [__RowID] so data factory can insert into the view without mapping columns
-    SET @Create = 'CREATE VIEW ' + QUOTENAME(@SchemaName) + N'.' + QUOTENAME(@ViewName);
-    SET @Create += ' AS SELECT ';
-
-    SELECT @Columns = '';
-
-    SELECT @Columns += columndef.name
-    FROM (   SELECT QUOTENAME(columnspec.Name) + ', ' as name
-        FROM OPENJSON(@SuppliedStructure)
-                                WITH (
-                                    [Name] sysname '$.name'
-                                ) columnspec
-                ) columndef;
-
-    SELECT @Columns += '[__sourceConnectionStringSecretName], ';
-    SELECT @Columns += '[__sinkConnectionStringSecretName], ';
-    SELECT @Columns += '[__sourceObjectName], ';
-    SELECT @Columns += '[__targetObjectName], ';
-    SELECT @Columns += '[__dataFactoryName], ';
-    SELECT @Columns += '[__dataFactoryPipelineName], ';
-    SELECT @Columns += '[__dataFactoryPipelineRunId], ';
-    SELECT @Columns += '[__insertDateTimeUTC]';
-
-    SET @Columns += ' FROM ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName);
-
-    SET @sql = @Create + @Columns;
-
-    EXEC (@sql);
 END 
 GO
 
-CREATE OR ALTER PROCEDURE [utils].[sp_FindOrCreateTargetView]
+CREATE OR ALTER PROCEDURE [utils].[sp_FindOrCreateTargetTable]
+    @ContainerName varchar(1000),
+    @FilePath varchar(1000), 
     @FileName varchar(1000),
     @SuppliedStructure varchar(8000),
-    @SchemaName sysname OUTPUT,
-    @ViewName sysname OUTPUT,
+    @SchemaName varchar(8000) OUTPUT,
+    @TableName varchar(8000) OUTPUT,
     @MultipleMatches bit OUTPUT
 AS
 BEGIN
-    DECLARE @TableName sysname;
 
-    EXEC [utils].[sp_GetViewBasedOnSuppliedStructure] 
+    EXEC [utils].[sp_GetTableBasedOnSuppliedStructure] 
         @SuppliedStructure = @SuppliedStructure, 
         @SchemaName = @SchemaName OUTPUT, 
-        @ViewName = @ViewName OUTPUT, 
+        @TableName = @TableName OUTPUT, 
         @MultipleMatches = @MultipleMatches OUTPUT
 
-    IF (@SchemaName IS NULL AND @ViewName IS NULL) OR -- No matching table, create new
-        (@MultipleMatches = 1)                          -- many matching tables, create a new one
+    IF (@SchemaName IS NULL AND @TableName IS NULL) OR -- No matching table, create new
+        (@MultipleMatches = 1)                          -- many matching tables, I don't know which to load, instead create another new table
     BEGIN
-        EXEC utils.sp_CreateTableAndViewFromJSON 
+        EXEC utils.sp_CreateTableFromJSON 
+            @ContainerName = @ContainerName, 
+            @FilePath = @FilePath, 
             @FileName = @FileName, 
             @SuppliedStructure = @SuppliedStructure,
             @SchemaName = @SchemaName OUTPUT, 
-            @TableName = @TableName OUTPUT, 
-            @ViewName = @ViewName OUTPUT
+            @TableName = @TableName OUTPUT
     END 
     
     SELECT  @SchemaName as SchemaName,
-            @ViewName as ViewName,
+            @TableName as TableName,
             @MultipleMatches as MultipleMatches
+END 
+GO
+
+CREATE OR ALTER PROCEDURE [utils].[sp_RenameUtilsTable]
+    @OriginalSchemaName varchar(8000),  
+    @OriginalTableName varchar(8000), 
+    @NewSchemaName varchar(8000), 
+    @NewTableName varchar(8000)
+AS 
+BEGIN 
+    DECLARE @OriginalObjectName varchar(8000) = QUOTENAME(@OriginalSchemaName) + '.' + QUOTENAME(@OriginalTableName)
+    DECLARE @NewObjectName varchar(8000) = QUOTENAME(@NewSchemaName) + '.' + QUOTENAME(@NewTableName)
+    DECLARE @InterimObjectName varchar(8000) = QUOTENAME(@OriginalSchemaName) + '.' + QUOTENAME(@NewTableName)
+
+	DECLARE @sql varchar(8000)
+
+    -- TODO:  Find a better way to do this
+    -- Technically suseptible to SQL injection.  
+    -- Would have to be run as db_owner or other highly-priv principal, 
+    -- they already have rights to do damage.
+    -- Best to clean this up ASAP for sake of good form
+    
+    EXEC sp_rename @OriginalObjectName, @NewTableName
+
+    SET @sql = 'ALTER SCHEMA ' +  @NewSchemaName + ' TRANSFER ' + @InterimObjectName + ';'
+	EXEC (@sql)
+
+    SET @sql = 'GRANT SELECT ON ' + @NewObjectName + 'TO DataLoaders;'
+	EXEC (@sql) 
+
+    SET @sql = 'GRANT INSERT ON ' + @NewObjectName + 'TO DataLoaders;'
+	EXEC (@sql) 
+
 END 
 GO
 
@@ -261,9 +263,6 @@ GRANT ALTER ON SCHEMA::[utils] TO DataLoaders;
 GO
 
 GRANT CREATE TABLE TO DataLoaders;
-GO
-
-GRANT CREATE VIEW TO DataLoaders;
 GO
 
 GRANT SELECT ON SCHEMA::[utils] TO DataLoaders;
