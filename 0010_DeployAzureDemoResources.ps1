@@ -67,5 +67,3 @@ Set-AzStorageBlobContent `
     -Context $ctx `
     -Properties @{"ContentType" = "text/csv"} `
     -Force   
-
-#"./0040_DeployDataFactory.ps1"

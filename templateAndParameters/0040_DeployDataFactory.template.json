@@ -23,117 +23,6 @@
     },
     "resources": [
         {
-            "type": "Microsoft.KeyVault/vaults",
-            "apiVersion": "2016-10-01",
-            "name": "[parameters('keyVaultName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "sku": {
-                    "family": "A",
-                    "name": "Standard"
-                },
-                "tenantId": "[subscription().tenantId]",
-                "accessPolicies": [
-                    {
-                        "tenantId": "[subscription().tenantId]",
-                        "objectId": "[parameters('userObjectId')]",
-                        "permissions": {
-                            "keys": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore"
-                            ],
-                            "secrets": [
-                                "Get",
-                                "List",
-                                "Set",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore"
-                            ],
-                            "certificates": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore",
-                                "ManageContacts",
-                                "ManageIssuers",
-                                "GetIssuers",
-                                "ListIssuers",
-                                "SetIssuers",
-                                "DeleteIssuers"
-                            ]
-                        }
-                    }
-                ],
-                "enabledForDeployment": false,
-                "enabledForDiskEncryption": false,
-                "enabledForTemplateDeployment": false
-            }
-        },
-        {
-            "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(parameters('keyVaultName'), '/targetDatabase1ConnectionString')]",
-            "apiVersion": "2018-02-14",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-            ],
-            "properties": {
-                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('targetDatabase1ServerName'), '.database.windows.net;Initial Catalog=', parameters('targetDatabase1DatabaseName'), ';User ID=', parameters('targetDatabase1SqlOpsUserName'), ';Password=', parameters('targetDatabase1SqlOpsPassword'))]"
-            }
-        },
-        {
-            "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(parameters('keyVaultName'), '/targetDatabase2ConnectionString')]",
-            "apiVersion": "2018-02-14",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-            ],
-            "properties": {
-                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('targetDatabase2ServerName'), '.database.windows.net;Initial Catalog=', parameters('targetDatabase2DatabaseName'), ';User ID=', parameters('targetDatabase2SqlOpsUserName'), ';Password=', parameters('targetDatabase2SqlOpsPassword'))]"
-            }
-        }, 
-        {
-            "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(parameters('keyVaultName'), '/targetblob1ConnectionString')]",
-            "apiVersion": "2018-02-14",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1Name'))]", 
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-            ],
-            "properties": {
-                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount1Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount1Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
-            }
-        }, 
-        {
-            "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(parameters('keyVaultName'), '/targetblob2ConnectionString')]",
-            "apiVersion": "2018-02-14",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2Name'))]", 
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-            ],
-            "properties": {
-                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount2Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount2Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
-            }
-        },         
-        { 
             "name": "[parameters('dataFactoryName')]",
             "apiVersion": "2018-06-01",
             "type": "Microsoft.DataFactory/factories",
@@ -149,7 +38,7 @@
                     "name": "[concat('Microsoft.Insights/', 'mdjDataFactoryDiagSettings')]",
                     "dependsOn": [
                         "[variables('factoryId')]",
-                        "[resourceId('Microsoft.DataFactory/factories', parameters('dataFactoryName'))]", 
+                        "[resourceId('Microsoft.DataFactory/factories', parameters('dataFactoryName'))]",
                         "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
                     ],
                     "apiVersion": "2017-05-01-preview",
@@ -164,7 +53,7 @@
                                     "days": 30,
                                     "enabled": true
                                 }
-                            }, 
+                            },
                             {
                                 "category": "PipelineRuns",
                                 "enabled": true,
@@ -172,8 +61,8 @@
                                     "days": 30,
                                     "enabled": true
                                 }
-                                
-                            }, 
+
+                            },
                             {
                                 "category": "TriggerRuns",
                                 "enabled": true,
@@ -185,7 +74,7 @@
                         ],
                         "metrics": [
                             {
-                                "category": "AllMetrics", 
+                                "category": "AllMetrics",
                                 "enabled": true,
                                 "retentionPolicy": {
                                     "enabled": true,
@@ -210,8 +99,7 @@
                 }
             },
             "dependsOn": [
-                "[variables('factoryId')]", 
-                "[variables('keyVaultId')]"
+                "[variables('factoryId')]"
             ]
         },
         {
@@ -260,7 +148,7 @@
                 "[variables('factoryId')]",
                 "[concat(variables('factoryId'), '/linkedServices/GenericSqlLinkedService')]"
             ]
-        }, 
+        },
         {
             "name": "[concat(parameters('dataFactoryName'), '/GenericBlobSingleCSV')]",
             "type": "Microsoft.DataFactory/factories/datasets",
@@ -291,7 +179,8 @@
                         "type": "string"
                     }
                 },
-                "annotations": [],
+                "annotations": [
+                ],
                 "type": "DelimitedText",
                 "typeProperties": {
                     "location": {
@@ -314,14 +203,15 @@
                     "firstRowAsHeader": true,
                     "quoteChar": "\""
                 },
-                "schema": []
+                "schema": [
+                ]
             },
             "dependsOn": [
                 "[variables('factoryId')]",
                 "[concat(variables('factoryId'), '/linkedServices/GenericBlobSingleCSVLinkedService')]"
             ]
         },
-        {  
+                {  
             "name": "[concat(parameters('dataFactoryName'), '/GenericSqlLinkedService')]",
             "type": "Microsoft.DataFactory/factories/linkedServices",
             "apiVersion": "2018-06-01",
@@ -352,7 +242,7 @@
                 "[variables('factoryId')]",
                 "[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultLinkedService')]"
             ]
-        },        
+        },
         {
             "name": "[concat(parameters('dataFactoryName'), '/GenericBlobSingleCSVLinkedService')]",
             "type": "Microsoft.DataFactory/factories/linkedServices",
@@ -396,7 +286,8 @@
                                 "type": "DatasetReference"
                             },
                             "name": "ReadFromSourceSingleCSV",
-                            "typeProperties": {}
+                            "typeProperties": {
+                            }
                         }
                     ],
                     "sinks": [
@@ -431,7 +322,8 @@
                     {
                         "name": "Get CSV File Structure",
                         "type": "GetMetadata",
-                        "dependsOn": [],
+                        "dependsOn": [
+                        ],
                         "policy": {
                             "timeout": "7.00:00:00",
                             "retry": 0,
@@ -439,7 +331,8 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "dataset": {
                                 "referenceName": "GenericBlobSingleCSV",
@@ -475,7 +368,7 @@
                             }
                         }
                     },
-                                       {
+                    {
                         "name": "Find or Create Target Table",
                         "type": "Lookup",
                         "dependsOn": [
@@ -493,7 +386,8 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "source": {
                                 "type": "AzureSqlSource",
@@ -573,7 +467,8 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [],
+                        "userProperties": [
+                        ],
                         "typeProperties": {
                             "dataflow": {
                                 "referenceName": "GenericBlobSingleCSVToGenericSqlTable",
@@ -643,7 +538,8 @@
                                     }
                                 }
                             },
-                            "staging": {}
+                            "staging": {
+                            }
                         }
                     }
                 ],
@@ -664,7 +560,8 @@
                         "type": "string"
                     }
                 },
-                "annotations": []
+                "annotations": [
+                ]
             },
             "dependsOn": [
                 "[variables('factoryId')]",
@@ -678,7 +575,7 @@
             "name": "[parameters('logAnalyticsWorkspaceName')]",
             "apiVersion": "2015-11-01-preview",
             "location": "[resourceGroup().location]",
-            "properties": { 
+            "properties": {
                 "sku": {
                     "name": "pergb2018"
                 },

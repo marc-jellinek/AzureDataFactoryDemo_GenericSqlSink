@@ -19,4 +19,6 @@ else {
     $resourceGroupName = ""
 }
 
-#./"0010_DeployAzureResources.ps1"
+#& "./0010_DeployAzureDemoResources.ps1"
+#& "./0020_DeployTargetDatabaseObjects.ps1"
+#& "./0040_DeployDataFactory.ps1"

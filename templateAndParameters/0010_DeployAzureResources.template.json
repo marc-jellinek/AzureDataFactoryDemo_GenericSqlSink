@@ -42,7 +42,7 @@
             "type": "string",
             "defaultValue": ""
         },
-        "targetDatabase2DatabaseName": {
+        "targetDatabase2DatabaseName": { 
             "type": "string",
             "defaultValue": ""
         },
@@ -98,6 +98,117 @@
         }
     },
     "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[parameters('userObjectId')]",
+                        "permissions": {
+                            "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "certificates": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "ManageContacts",
+                                "ManageIssuers",
+                                "GetIssuers",
+                                "ListIssuers",
+                                "SetIssuers",
+                                "DeleteIssuers"
+                            ]
+                        }
+                    }
+                ],
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetDatabase1ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('targetDatabase1ServerName'), '.database.windows.net;Initial Catalog=', parameters('targetDatabase1DatabaseName'), ';User ID=', parameters('targetDatabase1SqlOpsUserName'), ';Password=', parameters('targetDatabase1SqlOpsPassword'))]"
+            } 
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetDatabase2ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('targetDatabase2ServerName'), '.database.windows.net;Initial Catalog=', parameters('targetDatabase2DatabaseName'), ';User ID=', parameters('targetDatabase2SqlOpsUserName'), ';Password=', parameters('targetDatabase2SqlOpsPassword'))]"
+            }
+        }, 
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetblob1ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1Name'))]", 
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount1Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount1Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+            }
+        }, 
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/targetblob2ConnectionString')]",
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2Name'))]", 
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount2Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount2Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+            }
+        },     
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
