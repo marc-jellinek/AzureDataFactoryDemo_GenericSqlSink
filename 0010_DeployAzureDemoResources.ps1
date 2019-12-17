@@ -49,8 +49,8 @@ $ctx = New-AzStorageContext `
     -StorageAccountKey $storageAccount1Key
 
 Set-AzStorageBlobContent `
-    -File "./demoData/csv/singleFiles/0010_SourceData1.csv" `
-    -Blob "csv/singleFiles/0010_SourceData1.csv" `
+    -File "./demoData/csv/singleFiles/0010_sourceData1.csv" `
+    -Blob "csv/singleFiles/0010_sourceData1.csv" `
     -Container "default" `
     -Context $ctx `
     -Properties @{"ContentType" = "text/csv"} `
@@ -61,8 +61,8 @@ $ctx = New-AzStorageContext `
     -StorageAccountKey $storageAccount2Key
 
 Set-AzStorageBlobContent `
-    -File "./demoData/csv/singleFiles/0010_SourceData2.csv" `
-    -Blob "csv/singleFiles/0010_SourceData2.csv" `
+    -File "./demoData/csv/singleFiles/0010_sourceData2.csv" `
+    -Blob "csv/singleFiles/0010_sourceData2.csv" `
     -Container "default" `
     -Context $ctx `
     -Properties @{"ContentType" = "text/csv"} `

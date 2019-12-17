@@ -10,4 +10,4 @@ $dataFactoryDeployment = New-AzResourceGroupDeployment `
 
 $dataFactoryDeployment | Out-Host
 
-#& "./0050_GrantAccessToAKVfromDataFactory.ps1" 
+& "./0050_GrantAccessToAKVfromDataFactory.ps1" 

@@ -1,4 +1,4 @@
--- don't forget to connect to the target server
+-- don't forget to connect to the sink server
 
 -- if utils schema doesn't exist, create it
 IF (SELECT COUNT(*)
@@ -186,7 +186,7 @@ BEGIN
 END 
 GO
 
-CREATE OR ALTER PROCEDURE [utils].[sp_FindOrCreateTargetTable]
+CREATE OR ALTER PROCEDURE [utils].[sp_FindOrCreateSinkTable]
     @azureBlobSingleCSVContainerName varchar(1000),
     @azureBlobSingleCSVFolderPath varchar(1000), 
     @azureBlobSingleCSVFileName varchar(1000),
@@ -249,6 +249,9 @@ BEGIN
 	EXEC (@sql) 
 
     SET @sql = 'GRANT INSERT ON ' + @NewObjectName + 'TO DataLoaders;'
+	EXEC (@sql) 
+
+    SET @sql = 'GRANT ALTER ON ' + @NewObjectName + 'TO DataLoaders;' -- required for TRUNCATE TABLE
 	EXEC (@sql) 
 
 END 
