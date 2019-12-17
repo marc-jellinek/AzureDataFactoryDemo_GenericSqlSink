@@ -1,0 +1,118 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataFactoryName": {
+            "type": "string",
+            "defaultValue": null
+        },
+        "logAnalyticsWorkspaceName": {
+            "type": "string",
+            "defaultValue": null
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[parameters('dataFactoryName')]",
+            "apiVersion": "2018-06-01",
+            "type": "Microsoft.DataFactory/factories",
+            "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+            },
+            "resources": [
+                {
+                    "type": "providers/diagnosticSettings",
+                    "name": "[concat('Microsoft.Insights/', parameters('dataFactoryName'), 'DiagSettings')]",
+                    "dependsOn": [
+                        "[variables('factoryId')]",
+                        "[resourceId('Microsoft.DataFactory/factories', parameters('dataFactoryName'))]",
+                        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
+                    ],
+                    "apiVersion": "2017-05-01-preview",
+                    "properties": {
+                        "name": "[concat(parameters('dataFactoryName'), 'DiagSettings')]",
+                        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
+                        "logs": [
+                            {
+                                "category": "ActivityRuns",
+                                "enabled": true,
+                                "retentionPolicy": {
+                                    "days": 30,
+                                    "enabled": true
+                                }
+                            },
+                            {
+                                "category": "PipelineRuns",
+                                "enabled": true,
+                                "retentionPolicy": {
+                                    "days": 30,
+                                    "enabled": true
+                                }
+
+                            },
+                            {
+                                "category": "TriggerRuns",
+                                "enabled": true,
+                                "retentionPolicy": {
+                                    "days": 30,
+                                    "enabled": true
+                                }
+                            }
+                        ],
+                        "metrics": [
+                            {
+                                "category": "AllMetrics",
+                                "enabled": true,
+                                "retentionPolicy": {
+                                    "enabled": true,
+                                    "days": 30
+                                }
+                            }
+                        ]
+                    }
+                }               
+            ]
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "name": "[parameters('logAnalyticsWorkspaceName')]",
+            "apiVersion": "2015-11-01-preview",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "pergb2018"
+                },
+                "retentionInDays": 30
+            }
+        },
+        {
+            "type": "Microsoft.OperationsManagement/solutions",
+            "apiVersion": "2015-11-01-preview",
+            "name": "[concat('AzureDataFactoryAnalytics', '(', parameters('logAnalyticsWorkspaceName'), ')')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
+            ],
+            "plan": {
+                "name": "[concat('AzureDataFactoryAnalytics', '(', parameters('logAnalyticsWorkspaceName'), ')')]",
+                "product": "OMSGallery/AzureDataFactoryAnalytics",
+                "promotionCode": "",
+                "publisher": "Microsoft"
+            },
+            "properties": {
+                "workspaceResourceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.OperationalInsights/workspaces/', parameters('logAnalyticsWorkspaceName'))]"
+            },
+            "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.OperationsManagement/solutions/', 'AzureDataFactoryAnalytics', '(', parameters('logAnalyticsWorkspaceName'), ')')]",
+            "copy": {
+                "name": "solutionsCopy",
+                "count": 1
+            }
+        }
+    ]
+}

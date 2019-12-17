@@ -6,14 +6,7 @@
             "type": "string",
             "defaultValue": null
         },
-        "keyVaultName": {
-            "type": "string"
-        },
         "keyVaultLinkedService_baseUrl": {
-            "type": "string",
-            "defaultValue": null
-        },
-        "logAnalyticsWorkspaceName": {
             "type": "string",
             "defaultValue": null
         }
@@ -32,62 +25,10 @@
             },
             "properties": {
             },
-            "resources": [
-                {
-                    "type": "providers/diagnosticSettings",
-                    "name": "[concat('Microsoft.Insights/', 'mdjDataFactoryDiagSettings')]",
-                    "dependsOn": [
-                        "[variables('factoryId')]",
-                        "[resourceId('Microsoft.DataFactory/factories', parameters('dataFactoryName'))]",
-                        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
-                    ],
-                    "apiVersion": "2017-05-01-preview",
-                    "properties": {
-                        "name": "mdjDataFactoryDiagSettings",
-                        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
-                        "logs": [
-                            {
-                                "category": "ActivityRuns",
-                                "enabled": true,
-                                "retentionPolicy": {
-                                    "days": 30,
-                                    "enabled": true
-                                }
-                            },
-                            {
-                                "category": "PipelineRuns",
-                                "enabled": true,
-                                "retentionPolicy": {
-                                    "days": 30,
-                                    "enabled": true
-                                }
-
-                            },
-                            {
-                                "category": "TriggerRuns",
-                                "enabled": true,
-                                "retentionPolicy": {
-                                    "days": 30,
-                                    "enabled": true
-                                }
-                            }
-                        ],
-                        "metrics": [
-                            {
-                                "category": "AllMetrics",
-                                "enabled": true,
-                                "retentionPolicy": {
-                                    "enabled": true,
-                                    "days": 30
-                                }
-                            }
-                        ]
-                    }
-                }
-            ]
+            "resources": []
         },
         {
-            "name": "[concat(parameters('dataFactoryName'), '/AzureKeyVaultLinkedService')]",
+            "name": "[concat(parameters('dataFactoryName'), '/azureKeyVaultLinkedService')]",
             "type": "Microsoft.DataFactory/factories/linkedServices",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -103,79 +44,137 @@
             ]
         },
         {
-            "name": "[concat(parameters('dataFactoryName'), '/GenericSqlTable')]",
+            "name": "[concat(parameters('dataFactoryName'), '/azureSqlDatabaseLinkedService')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "azureSqlDatabaseConnectionStringSecretName": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "azureKeyVaultLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": {
+                            "value": "@{linkedService().azureSqlDatabaseConnectionStringSecretName}",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "[variables('factoryId')]", 
+                "[concat(variables('factoryId'), '/linkedServices/azureKeyVaultLinkedService')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/azureBlobLinkedService')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "AzureBlobStorage",
+                "parameters": {
+                    "azureBlobConnectionStringSecretName": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [
+                ],
+                "typeProperties": {
+                    "connectionString": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "AzureKeyVaultLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": "@{linkedService().azureBlobConnectionStringSecretName}"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[variables('factoryId')]",
+                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultLinkedService')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/azureSqlDatabaseTableDataset')]",
             "type": "Microsoft.DataFactory/factories/datasets",
             "apiVersion": "2018-06-01",
             "properties": {
                 "linkedServiceName": {
-                    "referenceName": "GenericSqlLinkedService",
+                    "referenceName": "azureSqlDatabaseLinkedService",
                     "type": "LinkedServiceReference",
                     "parameters": {
-                        "databaseConnectionStringSecretName": {
-                            "value": "@dataset().databaseConnectionStringSecretName",
+                        "azureSqlDatabaseConnectionStringSecretName": {
+                            "value": "@dataset().azureSqlDatabaseConnectionStringSecretName",
                             "type": "Expression"
                         }
                     }
                 },
                 "parameters": {
-                    "databaseConnectionStringSecretName": {
+                    "azureSqlDatabaseConnectionStringSecretName": {
                         "type": "string"
                     },
-                    "schemaName": {
+                    "azureSqlDatabaseTableSchemaName": {
                         "type": "string"
                     },
-                    "tableName": {
+                    "azureSqlDatabaseTableTableName": {
                         "type": "string"
                     }
                 },
                 "annotations": [
                 ],
                 "type": "AzureSqlTable",
-                "schema": [
-                ],
+                "schema": [],
                 "typeProperties": {
                     "schema": {
-                        "value": "@dataset().schemaName",
+                        "value": "@dataset().azureSqlDatabaseTableSchemaName",
                         "type": "Expression"
                     },
                     "table": {
-                        "value": "@dataset().tableName",
+                        "value": "@dataset().azureSqlDatabaseTableTableName",
                         "type": "Expression"
                     }
                 }
             },
-            "dependsOn": [
+            "dependsOn": [ 
                 "[variables('factoryId')]",
-                "[concat(variables('factoryId'), '/linkedServices/GenericSqlLinkedService')]"
+                "[concat(variables('factoryId'), '/linkedServices/azureSqlDatabaseLinkedService')]"
             ]
         },
         {
-            "name": "[concat(parameters('dataFactoryName'), '/GenericBlobSingleCSV')]",
+            "name": "[concat(parameters('dataFactoryName'), '/azureBlobSingleCSVDataset')]",
             "type": "Microsoft.DataFactory/factories/datasets",
             "apiVersion": "2018-06-01",
             "properties": {
                 "linkedServiceName": {
-                    "referenceName": "GenericBlobSingleCSVLinkedService",
+                    "referenceName": "azureBlobLinkedService",
                     "type": "LinkedServiceReference",
                     "parameters": {
-                        "blobConnectionStringSecretName": {
-                            "value": "@dataset().blobConnectionStringSecretName",
+                        "azureBlobConnectionStringSecretName": {
+                            "value": "@dataset().azureBlobConnectionStringSecretName",
                             "type": "Expression"
                         }
                     }
                 },
                 "parameters": {
-                    "blobConnectionStringSecretName": {
+                    "azureBlobConnectionStringSecretName": {
                         "type": "string"
                     },
-                    "fileName": {
+                    "azureBlobSingleCSVFileName": {
                         "type": "string"
                     },
-                    "fileDirectory": {
-                        "type": "string",
-                        "defaultValue": null
+                    "azureBlobSingleCSVFolderPath": {
+                        "type": "string"
                     },
-                    "containerName": {
+                    "azureBlobSingleCSVContainerName": {
                         "type": "string"
                     }
                 },
@@ -186,15 +185,15 @@
                     "location": {
                         "type": "AzureBlobStorageLocation",
                         "fileName": {
-                            "value": "@dataset().FileName",
+                            "value": "@dataset().azureBlobSingleCSVFileName",
                             "type": "Expression"
                         },
                         "folderPath": {
-                            "value": "@dataset().fileDirectory",
+                            "value": "@dataset().azureBlobSingleCSVFolderPath",
                             "type": "Expression"
                         },
                         "container": {
-                            "value": "@dataset().containerName",
+                            "value": "@dataset().azureBlobSingleCSVContainerName",
                             "type": "Expression"
                         }
                     },
@@ -208,72 +207,12 @@
             },
             "dependsOn": [
                 "[variables('factoryId')]",
-                "[concat(variables('factoryId'), '/linkedServices/GenericBlobSingleCSVLinkedService')]"
+                "[concat(variables('factoryId'), '/linkedServices/azureBlobLinkedService')]"
             ]
         },
-                {  
-            "name": "[concat(parameters('dataFactoryName'), '/GenericSqlLinkedService')]",
-            "type": "Microsoft.DataFactory/factories/linkedServices",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "parameters": {
-                    "databaseConnectionStringSecretName": {
-                        "type": "string"
-                    }
-                },
-                "annotations": [
-                ],
-                "type": "AzureSqlDatabase",
-                "typeProperties": {
-                    "connectionString": {
-                        "type": "AzureKeyVaultSecret",
-                        "store": {
-                            "referenceName": "AzureKeyVaultLinkedService",
-                            "type": "LinkedServiceReference"
-                        },
-                        "secretName": {
-                            "value": "@linkedService().databaseConnectionStringSecretName",
-                            "type": "Expression"
-                        }
-                    }
-                }
-            },
-            "dependsOn": [
-                "[variables('factoryId')]",
-                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultLinkedService')]"
-            ]
-        },
+        
         {
-            "name": "[concat(parameters('dataFactoryName'), '/GenericBlobSingleCSVLinkedService')]",
-            "type": "Microsoft.DataFactory/factories/linkedServices",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "type": "AzureBlobStorage",
-                "parameters": {
-                    "blobConnectionStringSecretName": {
-                        "type": "string"
-                    }
-                },
-                "annotations": [
-                ],
-                "typeProperties": {
-                    "connectionString": {
-                        "type": "AzureKeyVaultSecret",
-                        "store": {
-                            "referenceName": "AzureKeyVaultLinkedService",
-                            "type": "LinkedServiceReference"
-                        },
-                        "secretName": "@{linkedService().blobConnectionStringSecretName}"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[variables('factoryId')]",
-                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultLinkedService')]"
-            ]
-        },
-        {
-            "name": "[concat(parameters('dataFactoryName'), '/GenericBlobSingleCSVToGenericSqlTable')]",
+            "name": "[concat(parameters('dataFactoryName'), '/azureBlobSingleCSVToAzureSqlDatabaseTableDataFlow')]",
             "type": "Microsoft.DataFactory/factories/dataflows",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -282,39 +221,38 @@
                     "sources": [
                         {
                             "dataset": {
-                                "referenceName": "GenericBlobSingleCSV",
+                                "referenceName": "azureBlobSingleCSVDataset",
                                 "type": "DatasetReference"
                             },
-                            "name": "ReadFromSourceSingleCSV",
-                            "typeProperties": {
-                            }
+                            "name": "readFromAzureBlobSingleCSV",
+                            "typeProperties": {}
                         }
                     ],
                     "sinks": [
                         {
                             "dataset": {
-                                "referenceName": "GenericSqlTable",
+                                "referenceName": "azureSqlDatabaseTableDataset",
                                 "type": "DatasetReference"
                             },
-                            "name": "WriteToGenericSqlTable"
+                            "name": "WriteToAzureSqlTable"
                         }
                     ],
                     "transformations": [
                         {
-                            "name": "SourceSingleCSVEnrichedWithMetadata"
+                            "name": "EnrichWithRuntimeMetadata"
                         }
                     ],
-                    "script": "\nparameters{\n\tsourceConnectionStringSecretName as string,\n\tsinkConnectionStringSecretName as string,\n\tsourceObjectName as string,\n\ttargetObjectName as string,\n\tdataFactoryName as string,\n\tdataFactoryPipelineName as string,\n\tdataFactoryPipelineRunId as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> ReadFromSourceSingleCSV\nReadFromSourceSingleCSV derive({__sourceConnectionStringSecretName} = $sourceConnectionStringSecretName,\n\t\t{__sinkConnectionStringSecretName} = $sinkConnectionStringSecretName,\n\t\t{__sourceObjectName} = $sourceObjectName,\n\t\t{__targetObjectName} = $targetObjectName,\n\t\t{__dataFactoryName} = $dataFactoryName,\n\t\t{__dataFactoryPipelineName} = $dataFactoryPipelineName,\n\t\t{__dataFactoryPipelineRunId} = $dataFactoryPipelineRunId) ~> SourceSingleCSVEnrichedWithMetadata\nSourceSingleCSVEnrichedWithMetadata sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table') ~> WriteToGenericSqlTable"
+                    "script": "\nparameters{\n\tsourceConnectionSecretName as string,\n\tsinkConnectionStringSecretName as string,\n\tsourceObjectName as string,\n\tsinkObjectName as string,\n\tdataFactoryName as string,\n\tdataFactoryPipelineName as string,\n\tdataFactoryPipelineRunId as string,\n\ttruncateTablePriorToCopy as boolean\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> readFromAzureBlobSingleCSV\nreadFromAzureBlobSingleCSV derive({__sourceConnectionStringSecretName} = $sourceConnectionSecretName,\n\t\t{__sinkConnectionStringSecretName} = $sinkConnectionStringSecretName,\n\t\t{__sourceObjectName} = $sourceObjectName,\n\t\t{__sinkObjectName} = $sinkObjectName,\n\t\t{__dataFactoryName} = $dataFactoryName,\n\t\t{__dataFactoryPipelineName} = $dataFactoryPipelineName,\n\t\t{__dataFactoryPipelineRunId} = $dataFactoryPipelineRunId) ~> EnrichWithRuntimeMetadata\nEnrichWithRuntimeMetadata sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table') ~> WriteToAzureSqlTable"
                 }
             },
             "dependsOn": [
-                "[variables('factoryId')]",
-                "[concat(variables('factoryId'), '/datasets/GenericBlobSingleCSV')]",
-                "[concat(variables('factoryId'), '/datasets/GenericSqlTable')]"
+                "[variables('factoryId')]", 
+                "[concat(variables('factoryId'), '/datasets/azureBlobSingleCSVDataset')]",
+                "[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]"
             ]
-        },
+        },        
         {
-            "name": "[concat(parameters('dataFactoryName'), '/Generic Blob Single CSV to Generic SQL Table using Data Flow')]",
+            "name": "[concat(parameters('dataFactoryName'), '/Blob Single CSV to Azure SQL Table Copy Pipeline')]",
             "type": "Microsoft.DataFactory/factories/pipelines",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -322,8 +260,7 @@
                     {
                         "name": "Get CSV File Structure",
                         "type": "GetMetadata",
-                        "dependsOn": [
-                        ],
+                        "dependsOn": [],
                         "policy": {
                             "timeout": "7.00:00:00",
                             "retry": 0,
@@ -331,27 +268,26 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [
-                        ],
+                        "userProperties": [],
                         "typeProperties": {
                             "dataset": {
-                                "referenceName": "GenericBlobSingleCSV",
+                                "referenceName": "azureBlobSingleCSVDataset",
                                 "type": "DatasetReference",
                                 "parameters": {
-                                    "blobConnectionStringSecretName": {
-                                        "value": "@pipeline().parameters.blobConnectionStringSecretName",
+                                    "azureBlobConnectionStringSecretName": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
                                         "type": "Expression"
                                     },
-                                    "fileName": {
-                                        "value": "@pipeline().parameters.FileName",
+                                    "azureBlobSingleCSVFileName": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFileName",
                                         "type": "Expression"
                                     },
-                                    "fileDirectory": {
-                                        "value": "@pipeline().parameters.FileDirectory",
+                                    "azureBlobSingleCSVFolderPath": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFolderPath",
                                         "type": "Expression"
                                     },
-                                    "containerName": {
-                                        "value": "@pipeline().parameters.containerName",
+                                    "azureBlobSingleCSVContainerName": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobSingleCSVContainerName",
                                         "type": "Expression"
                                     }
                                 }
@@ -386,40 +322,43 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [
-                        ],
+                        "userProperties": [],
                         "typeProperties": {
                             "source": {
                                 "type": "AzureSqlSource",
                                 "sqlReaderStoredProcedureName": "[[utils].[sp_FindOrCreateTargetTable]",
                                 "storedProcedureParameters": {
-                                    "ContainerName": {
+                                    "azureBlobSingleCSVContainerName": {
                                         "type": "String",
                                         "value": {
-                                            "value": "@pipeline().parameters.containerName",
+                                            "value": "@pipeline().parameters.sourceAzureBlobSingleCSVContainerName",
                                             "type": "Expression"
                                         }
                                     },
-                                    "FileName": {
+                                    "azureBlobSingleCSVFileName": {
                                         "type": "String",
                                         "value": {
-                                            "value": "@pipeline().parameters.fileName",
+                                            "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFileName",
                                             "type": "Expression"
                                         }
                                     },
-                                    "FilePath": {
+                                    "azureBlobSingleCSVFolderPath": {
                                         "type": "String",
                                         "value": {
-                                            "value": "@pipeline().parameters.fileDirectory",
+                                            "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFolderPath",
                                             "type": "Expression"
                                         }
+                                    },
+                                    "azureSqlDatabaseTableSchemaName": {
+                                        "type": "String",
+                                        "value": null
+                                    },
+                                    "azureSqlDatabaseTableTableName": {
+                                        "type": "String",
+                                        "value": null
                                     },
                                     "MultipleMatches": {
                                         "type": "Boolean",
-                                        "value": null
-                                    },
-                                    "SchemaName": {
-                                        "type": "String",
                                         "value": null
                                     },
                                     "SuppliedStructure": {
@@ -428,29 +367,268 @@
                                             "value": "@{activity('Get CSV File Structure').output.structure}",
                                             "type": "Expression"
                                         }
-                                    },
-                                    "TableName": {
-                                        "type": "String",
-                                        "value": null
                                     }
                                 }
                             },
                             "dataset": {
-                                "referenceName": "GenericSqlTable",
+                                "referenceName": "azureSqlDatabaseTableDataset",
                                 "type": "DatasetReference",
                                 "parameters": {
-                                    "databaseConnectionStringSecretName": {
-                                        "value": "@pipeline().parameters.databaseConnectionStringSecretName",
+                                    "azureSqlDatabaseConnectionStringSecretName": {
+                                        "value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
                                         "type": "Expression"
                                     },
-                                    "schemaName": "foo",
-                                    "tableName": "bar"
+                                    "azureSqlDatabaseTableSchemaName": "foo",
+                                    "azureSqlDatabaseTableTableName": "bar"
                                 }
                             }
                         }
                     },
                     {
-                        "name": "GenericBlobSingleCSVtoGenericSqlTable",
+                        "name": "Copy Blob Single CSV to Azure SQL Table",
+                        "type": "Copy",
+                        "dependsOn": [
+                            {
+                                "activity": "Find or Create Target Table",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageReadSettings",
+                                    "recursive": false,
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "AzureSqlSink",
+                                "disableMetricsCollection": false
+                            },
+                            "enableStaging": false
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "azureBlobSingleCSVDataset",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "azureBlobConnectionStringSecretName": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+                                        "type": "Expression"
+                                    },
+                                    "azureBlobSingleCSVFileName": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFileName",
+                                        "type": "Expression"
+                                    },
+                                    "azureBlobSingleCSVFolderPath": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFolderPath",
+                                        "type": "Expression"
+                                    },
+                                    "azureBlobSingleCSVContainerName": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobSingleCSVContainerName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "azureSqlDatabaseTableDataset",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "azureSqlDatabaseConnectionStringSecretName": {
+                                        "value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+                                        "type": "Expression"
+                                    },
+                                    "azureSqlDatabaseTableSchemaName": {
+                                        "value": "@activity('Find or Create Target Table').output.firstRow.azureSqlDatabaseTableSchemaName",
+                                        "type": "Expression"
+                                    },
+                                    "azureSqlDatabaseTableTableName": {
+                                        "value": "@activity('Find or Create Target Table').output.firstRow.azureSqlDatabaseTableTableName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "parameters": {
+                    "sourceAzureBlobConnectionStringSecretName": {
+                        "type": "string"
+                    },
+                    "sinkAzureSqlDatabaseConnectionStringSecretName": {
+                        "type": "string"
+                    },
+                    "sourceAzureBlobSingleCSVFileName": {
+                        "type": "string"
+                    },
+                    "sourceAzureBlobSingleCSVFolderPath": {
+                        "type": "string"
+                    },
+                    "sourceAzureBlobSingleCSVContainerName": {
+                        "type": "string"
+                    },
+                    "truncatePriorToCopy": {
+                        "type": "bool"
+                    }
+                },
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/azureBlobSingleCSVDataset')]",
+                "[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]"
+            ]
+        },        
+        {
+            "name": "[concat(parameters('dataFactoryName'), '/Blob Single CSV to Azure SQL Table Data Flow Pipeline')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get CSV File Structure",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "azureBlobSingleCSVDataset",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "azureBlobConnectionStringSecretName": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+                                        "type": "Expression"
+                                    },
+                                    "azureBlobSingleCSVFileName": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFileName",
+                                        "type": "Expression"
+                                    },
+                                    "azureBlobSingleCSVFolderPath": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFolderPath",
+                                        "type": "Expression"
+                                    },
+                                    "azureBlobSingleCSVContainerName": {
+                                        "value": "@pipeline().parameters.sourceAzureBlobSingleCSVContainerName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "structure"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Find or Create Target Table",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "Get CSV File Structure",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "AzureSqlSource",
+                                "sqlReaderStoredProcedureName": "[[utils].[sp_FindOrCreateTargetTable]",
+                                "storedProcedureParameters": {
+                                    "azureBlobSingleCSVContainerName": {
+                                        "type": "String",
+                                        "value": {
+                                            "value": "@pipeline().parameters.sourceAzureBlobSingleCSVContainerName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "azureBlobSingleCSVFileName": {
+                                        "type": "String",
+                                        "value": {
+                                            "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "azureBlobSingleCSVFolderPath": {
+                                        "type": "String",
+                                        "value": {
+                                            "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFolderPath",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "azureSqlDatabaseTableSchemaName": {
+                                        "type": "String",
+                                        "value": null
+                                    },
+                                    "azureSqlDatabaseTableTableName": {
+                                        "type": "String",
+                                        "value": null
+                                    },
+                                    "MultipleMatches": {
+                                        "type": "Boolean",
+                                        "value": null
+                                    },
+                                    "SuppliedStructure": {
+                                        "type": "String",
+                                        "value": {
+                                            "value": "@{activity('Get CSV File Structure').output.structure}",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            },
+                            "dataset": {
+                                "referenceName": "azureSqlDatabaseTableDataset",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "azureSqlDatabaseConnectionStringSecretName": {
+                                        "value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+                                        "type": "Expression"
+                                    },
+                                    "azureSqlDatabaseTableSchemaName": "foo",
+                                    "azureSqlDatabaseTableTableName": "bar"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Copy Blob Single CSV to Azure SQL Table",
                         "type": "ExecuteDataFlow",
                         "dependsOn": [
                             {
@@ -467,27 +645,26 @@
                             "secureOutput": false,
                             "secureInput": false
                         },
-                        "userProperties": [
-                        ],
+                        "userProperties": [],
                         "typeProperties": {
                             "dataflow": {
-                                "referenceName": "GenericBlobSingleCSVToGenericSqlTable",
+                                "referenceName": "azureBlobSingleCSVToAzureSqlDatabaseTableDataFlow",
                                 "type": "DataFlowReference",
                                 "parameters": {
-                                    "sourceConnectionStringSecretName": {
-                                        "value": "'@{pipeline().parameters.blobConnectionStringSecretName}'",
+                                    "sourceConnectionSecretName": {
+                                        "value": "'@{pipeline().parameters.sourceAzureBlobConnectionStringSecretName}'",
                                         "type": "Expression"
                                     },
                                     "sinkConnectionStringSecretName": {
-                                        "value": "'@{pipeline().parameters.databaseConnectionStringSecretName}'",
+                                        "value": "'@{pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName}'",
                                         "type": "Expression"
                                     },
                                     "sourceObjectName": {
-                                        "value": "'@{pipeline().parameters.FileName}'",
+                                        "value": "'@{concat(pipeline().parameters.sourceAzureBlobSingleCSVContainerName,'/', pipeline().parameters.sourceAzureBlobSingleCSVFolderPath,'/', pipeline().parameters.sourceAzureBlobSingleCSVFileName)}'",
                                         "type": "Expression"
                                     },
-                                    "targetObjectName": {
-                                        "value": "'@{concat('[', activity('Find or Create Target Table').output.firstRow.SchemaName, '].[', activity('Find or Create Target Table').output.firstRow.TableName, ']')}'",
+                                    "sinkObjectName": {
+                                        "value": "'@{concat('[', \nactivity('Find or Create Target Table').output.firstRow.azureSqlDatabaseTableSchemaName, \n'].[', activity('Find or Create Target Table').output.firstRow.azureSqlDatabaseTableTableName, ']')}'",
                                         "type": "Expression"
                                     },
                                     "dataFactoryName": {
@@ -501,109 +678,81 @@
                                     "dataFactoryPipelineRunId": {
                                         "value": "'@{pipeline().RunId}'",
                                         "type": "Expression"
-                                    }
+                                    },
+                                    "truncateTablePriorToCopy": "false()"
                                 },
                                 "datasetParameters": {
-                                    "ReadFromSourceSingleCSV": {
-                                        "blobConnectionStringSecretName": {
-                                            "value": "@pipeline().parameters.blobConnectionStringSecretName",
+                                    "readFromAzureBlobSingleCSV": {
+                                        "azureBlobConnectionStringSecretName": {
+                                            "value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
                                             "type": "Expression"
                                         },
-                                        "fileName": {
-                                            "value": "@pipeline().parameters.FileName",
+                                        "azureBlobSingleCSVFileName": {
+                                            "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFileName",
                                             "type": "Expression"
                                         },
-                                        "fileDirectory": {
-                                            "value": "@pipeline().parameters.FileDirectory",
+                                        "azureBlobSingleCSVFolderPath": {
+                                            "value": "@pipeline().parameters.sourceAzureBlobSingleCSVFolderPath",
                                             "type": "Expression"
                                         },
-                                        "containerName": {
-                                            "value": "@pipeline().parameters.containerName",
+                                        "azureBlobSingleCSVContainerName": {
+                                            "value": "@pipeline().parameters.sourceAzureBlobSingleCSVContainerName",
                                             "type": "Expression"
                                         }
                                     },
-                                    "WriteToGenericSqlTable": {
-                                        "databaseConnectionStringSecretName": {
-                                            "value": "@pipeline().parameters.databaseConnectionStringSecretName",
+                                    "WriteToAzureSqlTable": {
+                                        "azureSqlDatabaseConnectionStringSecretName": {
+                                            "value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
                                             "type": "Expression"
                                         },
-                                        "schemaName": {
-                                            "value": "@activity('Find or Create Target Table').output.firstRow.SchemaName",
+                                        "azureSqlDatabaseTableSchemaName": {
+                                            "value": "@activity('Find or Create Target Table').output.firstRow.azureSqlDatabaseTableSchemaName",
                                             "type": "Expression"
                                         },
-                                        "tableName": {
-                                            "value": "@activity('Find or Create Target Table').output.firstRow.TableName",
+                                        "azureSqlDatabaseTableTableName": {
+                                            "value": "@activity('Find or Create Target Table').output.firstRow.azureSqlDatabaseTableTableName",
                                             "type": "Expression"
                                         }
                                     }
                                 }
                             },
-                            "staging": {
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
                             }
                         }
                     }
                 ],
                 "parameters": {
-                    "blobConnectionStringSecretName": {
+                    "sourceAzureBlobConnectionStringSecretName": {
                         "type": "string"
                     },
-                    "databaseConnectionStringSecretName": {
+                    "sinkAzureSqlDatabaseConnectionStringSecretName": {
                         "type": "string"
                     },
-                    "fileName": {
+                    "sourceAzureBlobSingleCSVFileName": {
                         "type": "string"
                     },
-                    "fileDirectory": {
+                    "sourceAzureBlobSingleCSVFolderPath": {
                         "type": "string"
                     },
-                    "containerName": {
+                    "sourceAzureBlobSingleCSVContainerName": {
                         "type": "string"
+                    },
+                    "truncatePriorToCopy": {
+                        "type": "bool"
                     }
                 },
-                "annotations": [
-                ]
+                "annotations": []
             },
             "dependsOn": [
-                "[variables('factoryId')]",
-                "[concat(variables('factoryId'), '/datasets/GenericBlobSingleCSV')]",
-                "[concat(variables('factoryId'), '/datasets/GenericSqlTable')]",
-                "[concat(variables('factoryId'), '/dataflows/GenericBlobSingleCSVToGenericSqlTable')]"
+                "[variables('factoryId')]", 
+                "[concat(variables('factoryId'), '/datasets/azureBlobSingleCSVDataset')]",
+                "[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]",
+                "[concat(variables('factoryId'), '/dataflows/azureBlobSingleCSVToAzureSqlDatabaseTableDataFlow')]"
             ]
-        },
-        {
-            "type": "Microsoft.OperationalInsights/workspaces",
-            "name": "[parameters('logAnalyticsWorkspaceName')]",
-            "apiVersion": "2015-11-01-preview",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "sku": {
-                    "name": "pergb2018"
-                },
-                "retentionInDays": 30
-            }
-        },
-        {
-            "type": "Microsoft.OperationsManagement/solutions",
-            "apiVersion": "2015-11-01-preview",
-            "name": "[concat('AzureDataFactoryAnalytics', '(', parameters('logAnalyticsWorkspaceName'), ')')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
-            ],
-            "plan": {
-                "name": "[concat('AzureDataFactoryAnalytics', '(', parameters('logAnalyticsWorkspaceName'), ')')]",
-                "product": "OMSGallery/AzureDataFactoryAnalytics",
-                "promotionCode": "",
-                "publisher": "Microsoft"
-            },
-            "properties": {
-                "workspaceResourceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.OperationalInsights/workspaces/', parameters('logAnalyticsWorkspaceName'))]"
-            },
-            "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.OperationsManagement/solutions/', 'AzureDataFactoryAnalytics', '(', parameters('logAnalyticsWorkspaceName'), ')')]",
-            "copy": {
-                "name": "solutionsCopy",
-                "count": 1
-            }
-        }
+        }                
+        
     ]
 }

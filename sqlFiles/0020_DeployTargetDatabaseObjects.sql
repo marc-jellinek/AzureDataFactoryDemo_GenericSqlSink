@@ -38,8 +38,8 @@ GO
 -- create function to generate json for existing tables
 CREATE OR ALTER FUNCTION [utils].[GenerateJSONFromTables] 
     (
-        @SchemaName varchar(8000), 
-        @TableName varchar(8000)
+        @azureSqlDatabaseTableSchemaName varchar(8000), 
+        @azureSqlDatabaseTableTableName varchar(8000)
     )
 RETURNS varchar(8000)
     BEGIN
@@ -54,13 +54,13 @@ RETURNS varchar(8000)
         INNER JOIN sys.tables tbl ON sch.schema_id = tbl.schema_id
         INNER JOIN sys.columns col ON tbl.object_id = col.object_id
         INNER JOIN sys.types typ ON col.user_type_id = typ.user_type_id
-    WHERE       sch.name = @SchemaName AND
-        tbl.name = @TableName AND
+    WHERE       sch.name = @azureSqlDatabaseTableSchemaName AND
+        tbl.name = @azureSqlDatabaseTableTableName AND
         NOT col.name IN     (   '__RowID', 
                                 '__sourceConnectionStringSecretName', 
                                 '__sinkConnectionStringSecretName', 
                                 '__sourceObjectName', 
-                                '__targetObjectName', 
+                                '__sinkObjectName', 
                                 '__dataFactoryName', 
                                 '__dataFactoryPipelineName',
                                 '__dataFactoryPipelineRunId',
@@ -78,8 +78,8 @@ GO
 
 CREATE OR ALTER PROCEDURE [utils].[sp_GetTableBasedOnSuppliedStructure]
     @SuppliedStructure varchar(8000),
-    @SchemaName varchar(8000) OUTPUT,
-    @TableName varchar(8000) OUTPUT,
+    @azureSqlDatabaseTableSchemaName varchar(8000) OUTPUT,
+    @azureSqlDatabaseTableTableName varchar(8000) OUTPUT,
     @MultipleMatches bit OUTPUT
 AS
 BEGIN
@@ -103,16 +103,16 @@ BEGIN
     IF @CountMatches = 0 
     BEGIN
         SET @MultipleMatches = 0;
-        SET @SchemaName = NULL;
-        SET @TableName = NULL;
+        SET @azureSqlDatabaseTableSchemaName = NULL;
+        SET @azureSqlDatabaseTableTableName = NULL;
     END
 
     IF @CountMatches = 1
     BEGIN
         SET @MultipleMatches = 0;
 
-        SELECT @SchemaName = j.schema_name,
-            @TableName = j.table_name
+        SELECT @azureSqlDatabaseTableSchemaName = j.schema_name,
+            @azureSqlDatabaseTableTableName = j.table_name
         FROM #JsonTableStructure j
         WHERE       j.JsonStructure = @SuppliedStructure;
     END
@@ -120,19 +120,19 @@ BEGIN
     IF @CountMatches > 1
     BEGIN
         SET @MultipleMatches = 1;
-        SET @SchemaName = NULL;
-        SET @TableName = NULL;
+        SET @azureSqlDatabaseTableSchemaName = NULL;
+        SET @azureSqlDatabaseTableTableName = NULL;
     END
 END 
 GO
 
 CREATE OR ALTER PROCEDURE [utils].[sp_CreateTableFromJSON]
-    @ContainerName varchar(1000),
-    @FilePath varchar(1000), 
-    @FileName varchar(1000),
+    @azureBlobSingleCSVContainerName varchar(1000),
+    @azureBlobSingleCSVFolderPath varchar(1000), 
+    @azureBlobSingleCSVFileName varchar(1000),
     @SuppliedStructure as varchar(8000),
-    @SchemaName varchar(8000) OUTPUT,
-    @TableName varchar(8000) OUTPUT
+    @azureSqlDatabaseTableSchemaName varchar(8000) OUTPUT,
+    @azureSqlDatabaseTableTableName varchar(8000) OUTPUT
 AS
 BEGIN
     -- expects array of objects with name and type properties generated from Azure Data Factory Get Metadata activity
@@ -155,10 +155,10 @@ BEGIN
 
     SET @SuppliedStructure = [utils].[CleanseString](@SuppliedStructure);
 
-    SET @SchemaName = 'utils';
-    SET @TableName = CONVERT(varchar(8000), @ContainerName) + '/' + CONVERT(varchar(8000), @FilePath) + '/' + CONVERT(varchar(8000), @FileName) + N'-' + CONVERT(varchar(8000), GETUTCDATE(), 126);
+    SET @azureSqlDatabaseTableSchemaName = 'utils';
+    SET @azureSqlDatabaseTableTableName = CONVERT(varchar(8000), @azureBlobSingleCSVContainerName) + '/' + CONVERT(varchar(8000), @azureBlobSingleCSVFolderPath) + '/' + CONVERT(varchar(8000), @azureBlobSingleCSVFileName) + '/' + CONVERT(varchar(8000), GETUTCDATE(), 126);
 
-    SET @Create = 'CREATE TABLE ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName);
+    SET @Create = 'CREATE TABLE ' + QUOTENAME(@azureSqlDatabaseTableSchemaName) + '.' + QUOTENAME(@azureSqlDatabaseTableTableName);
 
     SELECT @Columns  = '[__RowID] bigint IDENTITY PRIMARY KEY CLUSTERED, ';
 
@@ -174,7 +174,7 @@ BEGIN
     SELECT @Columns += '[__sourceConnectionStringSecretName] varchar(1000), ';
     SELECT @Columns += '[__sinkConnectionStringSecretName] varchar(1000), ';
     SELECT @Columns += '[__sourceObjectName] varchar(1000), ';
-    SELECT @Columns += '[__targetObjectName] varchar(1000), ';
+    SELECT @Columns += '[__sinkObjectName] varchar(1000), ';
     SELECT @Columns += '[__dataFactoryName] varchar(1000), ';
     SELECT @Columns += '[__dataFactoryPipelineName] varchar(1000), ';
     SELECT @Columns += '[__dataFactoryPipelineRunId] varchar(1000), ';
@@ -183,42 +183,40 @@ BEGIN
     SET @sql = @Create + '(' + @Columns + ')';
 
     EXEC(@sql);
-
-
 END 
 GO
 
 CREATE OR ALTER PROCEDURE [utils].[sp_FindOrCreateTargetTable]
-    @ContainerName varchar(1000),
-    @FilePath varchar(1000), 
-    @FileName varchar(1000),
+    @azureBlobSingleCSVContainerName varchar(1000),
+    @azureBlobSingleCSVFolderPath varchar(1000), 
+    @azureBlobSingleCSVFileName varchar(1000),
     @SuppliedStructure varchar(8000),
-    @SchemaName varchar(8000) OUTPUT,
-    @TableName varchar(8000) OUTPUT,
+    @azureSqlDatabaseTableSchemaName varchar(8000) OUTPUT,
+    @azureSqlDatabaseTableTableName varchar(8000) OUTPUT,
     @MultipleMatches bit OUTPUT
 AS
 BEGIN
 
     EXEC [utils].[sp_GetTableBasedOnSuppliedStructure] 
         @SuppliedStructure = @SuppliedStructure, 
-        @SchemaName = @SchemaName OUTPUT, 
-        @TableName = @TableName OUTPUT, 
+        @azureSqlDatabaseTableSchemaName = @azureSqlDatabaseTableSchemaName OUTPUT, 
+        @azureSqlDatabaseTableTableName = @azureSqlDatabaseTableTableName OUTPUT, 
         @MultipleMatches = @MultipleMatches OUTPUT
 
-    IF (@SchemaName IS NULL AND @TableName IS NULL) OR -- No matching table, create new
+    IF (@azureSqlDatabaseTableSchemaName IS NULL AND @azureSqlDatabaseTableTableName IS NULL) OR -- No matching table, create new
         (@MultipleMatches = 1)                          -- many matching tables, I don't know which to load, instead create another new table
     BEGIN
         EXEC utils.sp_CreateTableFromJSON 
-            @ContainerName = @ContainerName, 
-            @FilePath = @FilePath, 
-            @FileName = @FileName, 
+            @azureBlobSingleCSVContainerName = @azureBlobSingleCSVContainerName, 
+            @azureBlobSingleCSVFolderPath = @azureBlobSingleCSVFolderPath, 
+            @azureBlobSingleCSVFileName = @azureBlobSingleCSVFileName, 
             @SuppliedStructure = @SuppliedStructure,
-            @SchemaName = @SchemaName OUTPUT, 
-            @TableName = @TableName OUTPUT
+            @azureSqlDatabaseTableSchemaName = @azureSqlDatabaseTableSchemaName OUTPUT, 
+            @azureSqlDatabaseTableTableName = @azureSqlDatabaseTableTableName OUTPUT
     END 
     
-    SELECT  @SchemaName as SchemaName,
-            @TableName as TableName,
+    SELECT  @azureSqlDatabaseTableSchemaName as azureSqlDatabaseTableSchemaName,
+            @azureSqlDatabaseTableTableName as azureSqlDatabaseTableTableName,
             @MultipleMatches as MultipleMatches
 END 
 GO
