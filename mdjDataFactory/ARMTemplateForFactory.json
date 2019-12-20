@@ -1122,6 +1122,89 @@
 				"[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]",
 				"[concat(variables('factoryId'), '/datasets/azureBlobSingleCSVNoFileNameDataset')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "azureSqlDatabaseTableToAzureBlobSingleCSVDataFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "azureSqlDatabaseTableToAzureBlobSingleCSVDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {
+									"sourceConnectionSecretName": {
+										"value": "'@{concat('targetdatabase1connectionstring', '')}'",
+										"type": "Expression"
+									},
+									"sinkConnectionStringSecretName": {
+										"value": "'@{concat('targetblob1connectionstring', '')}'",
+										"type": "Expression"
+									},
+									"sourceObjectName": {
+										"value": "'@{concat('[dbo]', '[Integers]')}'",
+										"type": "Expression"
+									},
+									"sinkObjectName": {
+										"value": "'@{concat('/default/output/csv/singleFiles/', 'xxxxx')}'",
+										"type": "Expression"
+									},
+									"dataFactoryName": {
+										"value": "'@{pipeline().DataFactory}'",
+										"type": "Expression"
+									},
+									"dataFactoryPipelineName": {
+										"value": "'@{pipeline().Pipeline}'",
+										"type": "Expression"
+									},
+									"dataFactoryPipelineRunId": {
+										"value": "'@{pipeline().RunId}'",
+										"type": "Expression"
+									},
+									"sinkFileNameNoPath": {
+										"value": "'@{concat('xxxxxx','')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"readFromAzureSqlDatabase": {
+										"azureSqlDatabaseConnectionStringSecretName": "targetdatabase1connectionstring",
+										"azureSqlDatabaseTableSchemaName": "dbo",
+										"azureSqlDatabaseTableTableName": "Integers"
+									},
+									"writeToAzureBlobSingleCSV": {
+										"azureBlobConnectionStringSecretName": "targetblob1connectionstring",
+										"azureBlobSingleCSVFolderPath": "output/csv/singleFiles",
+										"azureBlobSingleCSVContainerName": "default"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/azureSqlDatabaseTableToAzureBlobSingleCSVDataFlow')]"
+			]
 		}
 	]
 }
