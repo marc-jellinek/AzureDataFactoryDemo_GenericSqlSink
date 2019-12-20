@@ -47,8 +47,8 @@
 								"value": "'@{pipeline().RunId}'",
 								"type": "Expression"
 							},
-							"sinkObjectNameNoFileName": {
-								"value": "'@{pipeline().parameters.sinkAzureBlobSingleCSVFolderPath}'",
+							"sinkFileNameNoPath": {
+								"value": "'@{pipeline().parameters.sinkAzureBlobSingleCSVFileName}'",
 								"type": "Expression"
 							}
 						},
