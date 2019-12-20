@@ -1,0 +1,32 @@
+{
+	"name": "azureSqlDatabaseTableToAzureBlobSingleCSVDataFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "azureSqlDatabaseTableDataset",
+						"type": "DatasetReference"
+					},
+					"name": "readFromAzureSqlDatabase"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "azureBlobSingleCSVNoFileNameDataset",
+						"type": "DatasetReference"
+					},
+					"name": "writeToAzureBlobSingleCSV"
+				}
+			],
+			"transformations": [
+				{
+					"name": "enrichWithRuntimeMetadata"
+				}
+			],
+			"script": "\nparameters{\n\tsourceConnectionSecretName as string,\n\tsinkConnectionStringSecretName as string,\n\tsourceObjectName as string,\n\tsinkObjectName as string,\n\tdataFactoryName as string,\n\tdataFactoryPipelineName as string,\n\tdataFactoryPipelineRunId as string,\n\tsinkObjectNameNoFileName as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> readFromAzureSqlDatabase\nreadFromAzureSqlDatabase derive({__sourceConnectionStringSecretName} = $sourceConnectionSecretName,\n\t\t{__sinkConnectionStringSecretName} = $sinkConnectionStringSecretName,\n\t\t{__sourceObjectName} = $sourceObjectName,\n\t\t{__sinkObjectName} = $sinkObjectName,\n\t\t{__dataFactoryName} = $dataFactoryName,\n\t\t{__dataFactoryPipelineName} = $dataFactoryPipelineName,\n\t\t{__dataFactoryPipelineRunId} = $dataFactoryPipelineRunId) ~> enrichWithRuntimeMetadata\nenrichWithRuntimeMetadata sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[($sinkObjectNameNoFileName)],\n\tpartitionBy('hash', 1),\n\tquoteAll: true) ~> writeToAzureBlobSingleCSV"
+		}
+	}
+}
