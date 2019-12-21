@@ -48,7 +48,7 @@
 								"type": "Expression"
 							},
 							"sinkFileNameNoPath": {
-								"value": "'@{concat('xxxxxx','')}'",
+								"value": "'@{concat('xxxxxx','.csv')}'",
 								"type": "Expression"
 							}
 						},
