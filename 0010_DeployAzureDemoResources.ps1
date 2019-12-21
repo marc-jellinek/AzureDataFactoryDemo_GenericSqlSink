@@ -1,7 +1,7 @@
 $deployment = New-AzResourceGroupDeployment `
     -ResourceGroupName $resourceGroupName `
-    -TemplateFile "./templateAndParameters/0010_deployAzureResources.template.json" `
-    -TemplateParameterFile "./templateAndParameters/0010_deployAzureResources.parameters.json"
+    -TemplateFile "./templateAndParameters/0010_deployAzureDemoResources.template.json" `
+    -TemplateParameterFile "./templateAndParameters/0010_deployAzureDemoResources.parameters.json"
 
 $deployment | Out-Host
 

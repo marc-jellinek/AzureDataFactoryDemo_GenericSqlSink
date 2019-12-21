@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataFactoryName": {
+            "type": "String"
+        },
+        "gitAccountName": {
+            "type": "String"
+        },
+        "gitRepositoryName": {
+            "type": "String"
+        },
+        "gitBranchName": {
+            "defaultValue": "master",
+            "type": "String"
+        },
+        "gitRootFolder": {
+            "defaultValue": "/",
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DataFactory/factories",
+            "apiVersion": "2018-06-01",
+            "name": "[parameters('dataFactoryName')]",
+            "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "repoConfiguration": {
+                    "type": "FactoryGitHubConfiguration",
+                    "accountName": "[parameters('gitAccountName')]",
+                    "repositoryName": "[parameters('gitRepositoryName')]",
+                    "collaborationBranch": "[parameters('gitBranchName')]",
+                    "rootFolder": "[parameters('gitRootFolder')]"
+                }
+            }
+        }
+    ]
+}
