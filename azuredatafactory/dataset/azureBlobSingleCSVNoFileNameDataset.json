@@ -1,0 +1,47 @@
+{
+	"name": "azureBlobSingleCSVNoFileNameDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azureBlobLinkedService",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"azureBlobConnectionStringSecretName": {
+					"value": "@dataset().azureBlobConnectionStringSecretName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"azureBlobConnectionStringSecretName": {
+				"type": "string"
+			},
+			"azureBlobSingleCSVFolderPath": {
+				"type": "string"
+			},
+			"azureBlobSingleCSVContainerName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": {
+					"value": "@dataset().azureBlobSingleCSVFolderPath",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().azureBlobSingleCSVContainerName",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
