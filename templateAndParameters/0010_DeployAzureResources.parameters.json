@@ -58,12 +58,6 @@
         }, 
         "storageAccount2Type": {
             "value": "Standard_LRS"
-        }, 
-        "dataFactoryAnalyticsSolutionName": {
-            "value": "mdjDataFactoryLogAnalyticsWorkspace(DataFactoryAnalytics)"
-        }, 
-        "logAnalyticsWorkspaceName": {
-            "value": "mdjDataFactoryLogAnalyticsWorkspace"
         }
     }
 }

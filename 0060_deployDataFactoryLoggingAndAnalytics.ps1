@@ -1,6 +1,6 @@
 $parameterValues = @{ `
     dataFactoryName = "$dataFactoryName"; `
-    logAnalyticsWorkspaceName = "$logAnalyticsWorkspaceName" `
+    logAnalyticsWorkspaceName = "$dataFactoryName LogAnalyticsWorkspace" `
 }
 
 $dataFactoryDeployment = New-AzResourceGroupDeployment `

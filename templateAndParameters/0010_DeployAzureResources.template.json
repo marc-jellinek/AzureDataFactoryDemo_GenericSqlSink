@@ -27,7 +27,7 @@
             "defaultValue": ""
         },
         "targetDatabase1SqlAdminPassword": {
-            "type": "string",
+            "type": "secureString",
             "defaultValue": ""
         },
         "targetDatabase1SqlOpsUsername": {
@@ -35,7 +35,7 @@
             "defaultValue": ""
         },
         "targetDatabase1SqlOpsPassword": {
-            "type": "string",
+            "type": "secureString",
             "defaultValue": ""
         },
         "targetDatabase2ServerName": {
@@ -51,7 +51,7 @@
             "defaultValue": ""
         },
         "targetDatabase2SqlAdminPassword": {
-            "type": "string",
+            "type": "secureString",
             "defaultValue": ""
         },
         "targetDatabase2SqlOpsUsername": {
@@ -59,7 +59,7 @@
             "defaultValue": ""
         },
         "targetDatabase2SqlOpsPassword": {
-            "type": "string",
+            "type": "secureString",
             "defaultValue": ""
         },
         "storageAccount1Name": {
@@ -87,14 +87,6 @@
                 "Standard_GRS",
                 "Standard_ZRS"
             ]
-        },        
-        "logAnalyticsWorkspaceName": {
-            "type": "string", 
-            "defaultValue": null
-        }, 
-        "dataFactoryAnalyticsSolutionName": {
-            "type": "string", 
-            "defaultValue": null
         }
     },
     "resources": [

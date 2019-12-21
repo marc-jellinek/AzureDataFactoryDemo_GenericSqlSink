@@ -27,9 +27,6 @@ $targetDatabase2SqlAdminPassword = $deployment.Parameters.targetDatabase2SqlAdmi
 $targetDatabase2SqlOpsUsername = $deployment.Parameters.targetDatabase2SqlOpsUsername.value 
 $targetDatabase2SqlOpsPassword = $deployment.Parameters.targetDatabase2SqlOpsPassword.value 
 
-$logAnalyticsWorkspaceName = $deployment.Parameters.logAnalyticsWorkspaceName.value
-$dataFactoryAnalyticsSolutionName = $deployment.Parameters.dataFactoryAnalyticsSolutionName.value 
-
 $storageAccount1Name = $deployment.Parameters.storageAccount1Name.value
 $storageAccount2Name = $deployment.Parameters.storageAccount2Name.value
 

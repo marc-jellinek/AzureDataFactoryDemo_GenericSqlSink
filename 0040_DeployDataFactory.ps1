@@ -5,7 +5,7 @@ $parameterValues = @{ `
 
 $dataFactoryDeployment = New-AzResourceGroupDeployment `
     -ResourceGroupName $resourceGroupName `
-    -TemplateFile "./templateAndParameters/0040_DeployDataFactory.template.json" `
+    -TemplateFile "./templateAndParameters/0040_deployDataFactory.template.json" `
     -TemplateParameterObject $parameterValues
 
 $dataFactoryDeployment | Out-Host
