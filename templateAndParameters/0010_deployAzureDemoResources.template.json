@@ -153,7 +153,7 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(parameters('keyVaultName'), '/targetDatabase1ConnectionString')]",
+            "name": "[concat(parameters('keyVaultName'), '/database1ConnectionString')]",
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -165,7 +165,7 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(parameters('keyVaultName'), '/targetDatabase2ConnectionString')]",
+            "name": "[concat(parameters('keyVaultName'), '/database2ConnectionString')]",
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -177,7 +177,7 @@
         }, 
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(parameters('keyVaultName'), '/targetblob1ConnectionString')]",
+            "name": "[concat(parameters('keyVaultName'), '/blob1ConnectionString')]",
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -190,7 +190,7 @@
         }, 
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(parameters('keyVaultName'), '/targetblob2ConnectionString')]",
+            "name": "[concat(parameters('keyVaultName'), '/blob2ConnectionString')]",
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [

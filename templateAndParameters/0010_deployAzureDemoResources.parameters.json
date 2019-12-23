@@ -12,37 +12,37 @@
             "value": "9e2654c3-c940-490f-8a98-e0daa71d194b"
         }, 
         "targetDatabase1ServerName": {
-            "value": "mdjtargetdatabaseserver1"
+            "value": "mdjdatabaseserver1"
         },
         "targetDatabase1DatabaseName": {
-            "value": "TargetDB1"
+            "value": "DB1"
         },
         "targetDatabase1SqlAdminUsername": {
-            "value": "mdjtargetdatabase1sqladmin"
+            "value": "mdjdatabase1sqladmin"
         },
         "targetDatabase1SqlAdminPassword": {
             "value": "z^43SFZv6^f3"
         },
         "targetDatabase1SqlOpsUsername": {
-            "value": "mdjtargetdatabase1sqlops"
+            "value": "mdjdatabase1sqlops"
         },
         "targetDatabase1SqlOpsPassword": {
             "value": "pPK^d5KajrN4"
         },
         "targetDatabase2ServerName": {
-            "value": "mdjtargetdatabaseserver2"
+            "value": "mdjdatabaseserver2"
         },
         "targetDatabase2DatabaseName": {
-            "value": "TargetDB2"
+            "value": "DB2"
         }, 
         "targetDatabase2SqlAdminUsername": {
-            "value": "mdjtargetdatabase2sqladmin"
+            "value": "mdjdatabase2sqladmin"
         },
         "targetDatabase2SqlAdminPassword": {
             "value": "UcQpOwR8v2l@"
         },
         "targetDatabase2SqlOpsUsername": {
-            "value": "mdjtargetdatabase2sqlops"
+            "value": "mdjdatabase2sqlops"
         },
         "targetDatabase2SqlOpsPassword": {
             "value": "3%0Y&W1%6rct"

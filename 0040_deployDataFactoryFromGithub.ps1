@@ -1,6 +1,6 @@
 $parameterValues = @{ `
     dataFactoryName = "$dataFactoryName"; `
-    gitAccountName = "https://github.com/marc-jellinek"; `
+    gitAccountName = "marc-jellinek"; `
     gitRepositoryName = "AzureDataFactoryDemo_GenericSqlSink"; `
     gitBranchName = "master"; `
     gitRootFolder = "azuredatafactory"; `
