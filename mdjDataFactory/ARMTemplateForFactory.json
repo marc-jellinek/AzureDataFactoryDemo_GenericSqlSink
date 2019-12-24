@@ -615,14 +615,7 @@
 					{
 						"name": "Copy Azure SQL Table to Blob Single CSV",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Delete Sink File Prior to Copy",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -693,62 +686,6 @@
 								}
 							}
 						]
-					},
-					{
-						"name": "Delete Sink File Prior to Copy",
-						"type": "IfCondition",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@pipeline().parameters.deleteSinkFilePriorToCopy",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "Delete Sink File",
-									"type": "Delete",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataset": {
-											"referenceName": "azureBlobSingleCSVFileNameDataset",
-											"type": "DatasetReference",
-											"parameters": {
-												"azureBlobConnectionStringSecretName": {
-													"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
-													"type": "Expression"
-												},
-												"azureBlobSingleCSVFileName": {
-													"value": "@pipeline().parameters.sinkAzureBlobSingleCSVFileName",
-													"type": "Expression"
-												},
-												"azureBlobSingleCSVFolderPath": {
-													"value": "@pipeline().parameters.sinkAzureBlobSingleCSVFolderPath",
-													"type": "Expression"
-												},
-												"azureBlobSingleCSVContainerName": {
-													"value": "@pipeline().parameters.sinkAzureBlobSingleCSVContainerName",
-													"type": "Expression"
-												}
-											}
-										},
-										"enableLogging": false,
-										"storeSettings": {
-											"type": "AzureBlobStorageReadSettings",
-											"recursive": false
-										}
-									}
-								}
-							]
-						}
 					}
 				],
 				"parameters": {
@@ -772,9 +709,6 @@
 					},
 					"sinkAzureBlobSingleCSVFileName": {
 						"type": "string"
-					},
-					"deleteSinkFilePriorToCopy": {
-						"type": "bool"
 					}
 				},
 				"annotations": []
