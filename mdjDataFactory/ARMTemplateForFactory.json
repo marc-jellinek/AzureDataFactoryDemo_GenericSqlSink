@@ -1564,6 +1564,142 @@
 				"[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]",
 				"[concat(variables('factoryId'), '/datasets/azureBlobSingleCSVNoFileNameDataset')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Azure SQL Table to Azure SQL Table')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Source Table Structure",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "azureSqlDatabaseTableDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureSqlDatabaseConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableSchemaName": {
+										"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableTableName": {
+										"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableTableName",
+										"type": "Expression"
+									}
+								}
+							},
+							"fieldList": [
+								"structure"
+							]
+						}
+					},
+					{
+						"name": "Find or Create Sink Table",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Get Source Table Structure",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[utils].[sp_FindOrCreateSinkTable_AzureSqlDatabaseTableSource]",
+								"storedProcedureParameters": {
+									"azureBlobSingleCSVContainerName": {
+										"type": "String"
+									},
+									"azureBlobSingleCSVFileName": {
+										"type": "String"
+									},
+									"azureBlobSingleCSVFolderPath": {
+										"type": "String"
+									},
+									"azureSqlDatabaseTableSchemaName": {
+										"type": "String",
+										"value": null
+									},
+									"azureSqlDatabaseTableTableName": {
+										"type": "String",
+										"value": null
+									},
+									"MultipleMatches": {
+										"type": "Boolean",
+										"value": null
+									},
+									"SuppliedStructure": {
+										"type": "String"
+									},
+									"azureBlobStorageConnectionStringSecretName": {
+										"type": "String"
+									}
+								}
+							},
+							"dataset": {
+								"referenceName": "azureSqlDatabaseTableDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureSqlDatabaseConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableSchemaName": "foo",
+									"azureSqlDatabaseTableTableName": "bar"
+								}
+							}
+						}
+					}
+				],
+				"parameters": {
+					"sourceAzureSqlDatabaseConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sourceAzureSqlDatabaseTableSchemaName": {
+						"type": "string"
+					},
+					"sourceAzureSqlDatabaseTableTableName": {
+						"type": "string"
+					},
+					"sinkAzureSqlDatabaseConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sinkAzureSqlDatabaseTableSchemaName": {
+						"type": "string"
+					},
+					"sinkAzureSqlDatabaseTableTableName": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]"
+			]
 		}
 	]
 }
