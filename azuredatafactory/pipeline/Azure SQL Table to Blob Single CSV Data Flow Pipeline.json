@@ -84,7 +84,10 @@
 						}
 					},
 					"compute": {
-						"coreCount": 8,
+						"coreCount": {
+							"value": "@pipeline().parameters.coreCount",
+							"type": "Expression"
+						},
 						"computeType": "General"
 					}
 				}
@@ -111,6 +114,9 @@
 			},
 			"sinkAzureBlobSingleCSVFileName": {
 				"type": "string"
+			},
+			"coreCount": {
+				"type": "int"
 			}
 		},
 		"annotations": []
