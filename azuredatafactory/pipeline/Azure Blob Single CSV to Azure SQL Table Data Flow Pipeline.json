@@ -112,6 +112,13 @@
 									"value": "@{activity('Get CSV File Structure').output.structure}",
 									"type": "Expression"
 								}
+							},
+							"sourceAzureBlobConnectionStringSecretName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+									"type": "Expression"
+								}
 							}
 						}
 					},
