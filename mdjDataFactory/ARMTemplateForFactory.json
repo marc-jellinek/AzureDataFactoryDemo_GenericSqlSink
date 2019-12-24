@@ -1148,6 +1148,60 @@
 				"[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]",
 				"[concat(variables('factoryId'), '/datasets/azureBlobSingleCSVNoFileNameDataset')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/azureBlobSingleJsonFileNameDataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "azureBlobLinkedService",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"azureBlobConnectionStringSecretName": {
+							"value": "@dataset().azureBlobConnectionStringSecretName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"azureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"azureBlobSingleJsonContainerName": {
+						"type": "string"
+					},
+					"azureBlobSingleJsonFolderPath": {
+						"type": "string"
+					},
+					"azureBlobSingleJsonFileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().azureBlobSingleJsonFileName",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().azureBlobSingleJsonFolderPath",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().azureBlobSingleJsonContainerName",
+							"type": "Expression"
+						}
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/azureBlobLinkedService')]"
+			]
 		}
 	]
 }
