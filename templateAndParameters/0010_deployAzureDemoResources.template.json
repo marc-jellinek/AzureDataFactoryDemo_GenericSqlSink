@@ -14,51 +14,51 @@
             "type": "string",
             "defaultValue": "9e2654c3-c940-490f-8a98-e0daa71d194b" 
         },
-        "targetDatabase1ServerName": {
+        "database1ServerName": {
             "type": "string",
             "defaultValue": ""
         },
-        "targetDatabase1DatabaseName": { 
+        "database1DatabaseName": { 
             "type": "string",
             "defaultValue": ""
         },
-        "targetDatabase1SqlAdminUsername": {
+        "database1SqlAdminUsername": {
             "type": "string",
             "defaultValue": ""
         },
-        "targetDatabase1SqlAdminPassword": {
+        "database1SqlAdminPassword": {
             "type": "secureString",
             "defaultValue": ""
         },
-        "targetDatabase1SqlOpsUsername": {
+        "database1SqlOpsUsername": {
             "type": "string",
             "defaultValue": ""
         },
-        "targetDatabase1SqlOpsPassword": {
+        "database1SqlOpsPassword": {
             "type": "secureString",
             "defaultValue": ""
         },
-        "targetDatabase2ServerName": {
+        "database2ServerName": {
             "type": "string",
             "defaultValue": ""
         },
-        "targetDatabase2DatabaseName": { 
+        "database2DatabaseName": { 
             "type": "string",
             "defaultValue": ""
         },
-        "targetDatabase2SqlAdminUsername": {
+        "database2SqlAdminUsername": {
             "type": "string",
             "defaultValue": ""
         },
-        "targetDatabase2SqlAdminPassword": {
+        "database2SqlAdminPassword": {
             "type": "secureString",
             "defaultValue": ""
         },
-        "targetDatabase2SqlOpsUsername": {
+        "database2SqlOpsUsername": {
             "type": "string",
             "defaultValue": ""
         },
-        "targetDatabase2SqlOpsPassword": {
+        "database2SqlOpsPassword": {
             "type": "secureString",
             "defaultValue": ""
         },
@@ -160,7 +160,7 @@
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
             ],
             "properties": {
-                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('targetDatabase1ServerName'), '.database.windows.net;Initial Catalog=', parameters('targetDatabase1DatabaseName'), ';User ID=', parameters('targetDatabase1SqlOpsUserName'), ';Password=', parameters('targetDatabase1SqlOpsPassword'))]"
+                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('Database1ServerName'), '.database.windows.net;Initial Catalog=', parameters('Database1DatabaseName'), ';User ID=', parameters('Database1SqlOpsUserName'), ';Password=', parameters('Database1SqlOpsPassword'))]"
             } 
         },
         {
@@ -172,7 +172,7 @@
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
             ],
             "properties": {
-                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('targetDatabase2ServerName'), '.database.windows.net;Initial Catalog=', parameters('targetDatabase2DatabaseName'), ';User ID=', parameters('targetDatabase2SqlOpsUserName'), ';Password=', parameters('targetDatabase2SqlOpsPassword'))]"
+                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('Database2ServerName'), '.database.windows.net;Initial Catalog=', parameters('Database2DatabaseName'), ';User ID=', parameters('Database2SqlOpsUserName'), ';Password=', parameters('Database2SqlOpsPassword'))]"
             }
         }, 
         {
@@ -329,18 +329,18 @@
         },        
         {
             "type": "Microsoft.Sql/servers",
-            "name": "[parameters('targetDatabase1ServerName')]",
+            "name": "[parameters('database1ServerName')]",
             "location": "[resourceGroup().location]",
             "apiVersion": "2015-05-01-preview",
             "properties": {
-                "administratorLogin": "[parameters('targetDatabase1SqlAdminUsername')]",
-                "administratorLoginPassword": "[parameters('targetDatabase1SqlAdminPassword')]",
+                "administratorLogin": "[parameters('database1SqlAdminUsername')]",
+                "administratorLoginPassword": "[parameters('database1SqlAdminPassword')]",
                 "version": "12.0"
             },
             "resources": [
                 {
                     "type": "Microsoft.Sql/servers/databases",
-                    "name": "[concat(string(parameters('targetDatabase1ServerName')), '/', parameters('targetDatabase1DatabaseName'))]",
+                    "name": "[concat(string(parameters('database1ServerName')), '/', parameters('database1DatabaseName'))]",
                     "location": "[resourceGroup().location]",
                     "apiVersion": "2017-10-01-preview",
                     "sku": {
@@ -348,7 +348,7 @@
                         "tier": "Standard"
                     },
                     "dependsOn": [
-                        "[resourceID('Microsoft.Sql/servers/', parameters('targetDatabase1ServerName'))]"
+                        "[resourceID('Microsoft.Sql/servers/', parameters('database1ServerName'))]"
                     ]
                 },
                 {
@@ -357,7 +357,7 @@
                     "location": "[resourceGroup().location]",
                     "apiVersion": "2015-05-01-preview",
                     "dependsOn": [
-                        "[resourceID('Microsoft.Sql/servers/', parameters('targetDatabase1ServerName'))]"
+                        "[resourceID('Microsoft.Sql/servers/', parameters('database1ServerName'))]"
                     ],
                     "properties": {
                         "startIpAddress": "0.0.0.0",
@@ -368,18 +368,18 @@
         },
         {
             "type": "Microsoft.Sql/servers",
-            "name": "[parameters('targetDatabase2ServerName')]",
+            "name": "[parameters('database2ServerName')]",
             "location": "[resourceGroup().location]",
             "apiVersion": "2015-05-01-preview",
             "properties": {
-                "administratorLogin": "[parameters('targetDatabase2SqlAdminUsername')]",
-                "administratorLoginPassword": "[parameters('targetDatabase2SqlAdminPassword')]",
+                "administratorLogin": "[parameters('database2SqlAdminUsername')]",
+                "administratorLoginPassword": "[parameters('database2SqlAdminPassword')]",
                 "version": "12.0"
             },
             "resources": [ 
                 {
                     "type": "Microsoft.Sql/servers/databases",
-                    "name": "[concat(string(parameters('targetDatabase2ServerName')), '/', parameters('targetDatabase2DatabaseName'))]",
+                    "name": "[concat(string(parameters('database2ServerName')), '/', parameters('database2DatabaseName'))]",
                     "location": "[resourceGroup().location]",
                     "apiVersion": "2017-10-01-preview",
                     "sku": {
@@ -387,7 +387,7 @@
                         "tier": "Standard"
                     },
                     "dependsOn": [
-                        "[resourceID('Microsoft.Sql/servers/', parameters('targetDatabase2ServerName'))]"
+                        "[resourceID('Microsoft.Sql/servers/', parameters('database2ServerName'))]"
                     ]
                 },
                 {
@@ -396,7 +396,7 @@
                     "location": "[resourceGroup().location]",
                     "apiVersion": "2015-05-01-preview",
                     "dependsOn": [
-                        "[resourceID('Microsoft.Sql/servers/', parameters('targetDatabase2ServerName'))]"
+                        "[resourceID('Microsoft.Sql/servers/', parameters('database2ServerName'))]"
                     ],
                     "properties": {
                         "startIpAddress": "0.0.0.0",
@@ -406,14 +406,5 @@
             ]
         }
     ], 
-    "outputs": { 
-        "storageAccount1ConnectionString": {
-            "type": "string", 
-            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount1Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount1Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
-        }, 
-        "storageAccount2ConnectionString": {
-            "type": "string", 
-            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount2Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount2Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
-        }
-    }    
+    "outputs": {}    
 }
