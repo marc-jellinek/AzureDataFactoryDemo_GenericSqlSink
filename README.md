@@ -1,4 +1,4 @@
-# Throwing Mudd on the Wall (TMoW) with Azure Data Factory 
+# Throwing Mudd on the Wall (TMoW) - Instant ELt using Azure Data Factory
 
 ## This is a work in progress, it is not currently release quality
 
@@ -6,17 +6,15 @@
 
 Sometimes I just need data sourced from CSV files imported into a SQL Server table.  Nothing fancy, but I've needed it over and over again.  Why not take all that I've learned about building Data Factory Pipelines and do a no-compromises, best-practices implementation?  It will be reusable and consistent, upgradable and open.  I've done this enough times that I find it worth investing the time to create a generic, reusable and redeployable solution.
 
-It provides the EL in ELT.  (Extract, Load, Transform)
+It provides the EL in ELt.  (Extract, Load, Transform)
 
-My goal is to be the de-facto reference implementation for Azure Data Factory pipelines from a security, operational and deployment perspective.  It takes a lot of guts to aim that high.  I also know that I'm in the company of amazing technologists.  I'm hoping to attract them as contributors to this project.
+My goal is to be the de-facto reference implementation for Azure Data Factory pipelines from a security, operational and deployment perspective.  It takes a lot of guts to aim that high.  I also know that I'm in the company of amazing technologists.  I'm hoping to attract them as contributors to this project.  Constructive criticism, especially with proscriptive direction, is always welcome.
 
 Why open-source it?  This industry has been very good to me over the years and I'd like to contribute back.  This is a component of nearly every project I've ever worked on.  There is value in having a constitently deployable solution.
 
 It also doesn't add a lot of business value and really isn't much of a competitive differentiator.  It's plumbing.  There's no value-add here.  I'd rather spend my time and my customer's money dealing with the things that are unique and valuable to their business, not charging them to build the same plumbing over-and-over again.
 
 I'm creating a solution that will take data from a variety of sources and push that data into a variety of sinks.  If the sink doesn't exist, it should be magically created.
-
-I'm starting off with reading a CSV file in Azure Blob Storage into a SQL Server table.  
 
 My intention is to create a consistently deployable matrix of solutions that all adhere to and demonstrate best practices while quickly and easily getting data (from whatever source) to its destination.
 
@@ -30,7 +28,6 @@ Sources and sinks I envision supporting:
 
 - Azure SQL Database
 - Azure CosmosDB
-- Azure SQL Data Warehouse
 - Azure Data Warehouse/Azure Synapse
 - CSV files in blob storage
 - CSV files in Azure Data Lake store
@@ -46,7 +43,6 @@ Given this list, there are obvious opportunities to incorporate other storage pl
 Operational Monitoring Scenarios:
 
 - Use of Azure Monitor to monitor operations
-- Use of PowerBI to read from supported logging sources
 
 Connection security: 
 
@@ -70,41 +66,40 @@ Use of Azure Active Directory assumes that AAD integration with Azure SQL Databa
 
 AzDataFactoryDemo_GenericSqlSink does the following:
 
-Quickly and easily pulls data from source to sink using security best practices.  If the target object (a relational table or a CosmosDB document data) doesn't exist in the sink, it is magically created.  
+Quickly and easily pulls data from source to sink using security best practices.  If the target object (a relational table or a CosmosDB document) doesn't exist in the sink, it is magically created.  
 
 The details:
 - Reads structure metadata from a CSV file stored in blob storage
 - Finds or Creates the SQL table in the target database that matches the structure of the CSV file
-- - If there are zero matches, a new table and view are created to act as the sink for the data, the table and view name of the new table is used
-- - If there is one match, the table and view name of the matching table is used
-- - If there is more than one match, the system doesn't know where it should belong, a new table and view are created to act as the sink for the data, the table and view name of the new table is used
+- - If there are zero matches, a new table is created to act as the sink for the data, the table name of the new table is used
+- - If there is one match, the table name of the matching table is used
+- - If there is more than one match, the system doesn't know where it should belong, a new table is created to act as the sink for the data, the table name of the new table is used
 
 Operational metadata is logged to the target table as additional columns. The metadata collected is:
 
--   __sourceConnectionStringSecretName - Secret Name containing the connection string that points to the data source
--   __sinkConnectionStringSecretName - Secret Name containing the connection string that points to the data sink
+-   __sourceConnectionStringSecretName - Secret containing the connection string that points to the data source
+-   __sinkConnectionStringSecretName - Secret containing the connection string that points to the data sink
 -   __sourceObjectName - object data will be loaded from
 -   __targetObjectName - object data will be loaded into
 -   __dataFactoryName - Name of the Azure Data Factory used to load the data
 -   __dataFactoryPipelineName - Name of the Azure Data Factory Pipeline used to load the data
 -   __dataFactoryPipelineRunId - ID of the Data Factory Pipeline Run that loaded the data
--   __insertDateTimeUTC - Full date and time the data was loaded in the UTC timezone, sourced from the Data Factory
+-   __insertDateTimeUTC - Full date and time the data was loaded in the UTC timezone
                             
 Onboarding checklist:
 
 - Create or identify an Azure Key Vault instance that will hold your secrets
 - Create or identify data sources and data sinks
 - Create or identify the security context (AAD vs connection strings) to be used
-- Grant security contexts rights to data sources and data sinks
-- Create connection strings to data sources and sinks using security context identified above
+- Grant security contexts rights to data sources and data sinks 
+- Deploy sink Azure SQL Database objects to sink databases
+- Create connection strings to data sources using security context identified above
 - Save connection strings as named Azure Key Vault secrets
 - Create or identify the Azure Data Factory that will be handling the data movement
 - Grant the Data Factory Identity access to the Azure Key Vault holding the connection strings
 - Grant the Data Factory Identity access to sources and sinks (or supply username/password or access key in the connection strings)
 - Within the Data Factory create a linked service pointing at the Key Vault holding the secrets
-- Deploy target database objects to target sinks (SQL, Synapse)
 - Set Triggers using KeyVaultSecretNames as parameters
-
 
 Thanks to 
 - Michael French
