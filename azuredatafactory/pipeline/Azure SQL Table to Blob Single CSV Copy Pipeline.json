@@ -89,7 +89,7 @@
 					},
 					"ifTrueActivities": [
 						{
-							"name": "Delete Sink File Prior to Copy",
+							"name": "Delete Sink File",
 							"type": "Delete",
 							"dependsOn": [],
 							"policy": {
