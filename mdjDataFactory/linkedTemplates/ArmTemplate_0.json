@@ -908,7 +908,10 @@
 							},
 							"staging": {},
 							"compute": {
-								"coreCount": 8,
+								"coreCount": {
+									"value": "@pipeline().parameters.coreCount",
+									"type": "Expression"
+								},
 								"computeType": "General"
 							}
 						}
@@ -988,6 +991,9 @@
 					},
 					"truncatePriorToCopy": {
 						"type": "bool"
+					},
+					"coreCount": {
+						"type": "int"
 					}
 				},
 				"annotations": []
@@ -1088,7 +1094,10 @@
 							},
 							"staging": {},
 							"compute": {
-								"coreCount": 8,
+								"coreCount": {
+									"value": "@pipeline().parameters.coreCount",
+									"type": "Expression"
+								},
 								"computeType": "General"
 							}
 						}
@@ -1115,6 +1124,9 @@
 					},
 					"sinkAzureBlobSingleCSVFileName": {
 						"type": "string"
+					},
+					"coreCount": {
+						"type": "int"
 					}
 				},
 				"annotations": []
