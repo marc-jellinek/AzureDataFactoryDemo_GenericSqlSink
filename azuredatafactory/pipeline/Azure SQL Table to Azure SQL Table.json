@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Get Source Metadata",
+				"name": "Get Source Table Structure",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
@@ -33,7 +33,9 @@
 							}
 						}
 					},
-					"fieldList": []
+					"fieldList": [
+						"structure"
+					]
 				}
 			},
 			{
@@ -41,7 +43,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Get Source Metadata",
+						"activity": "Get Source Table Structure",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -61,25 +63,13 @@
 						"sqlReaderStoredProcedureName": "[utils].[sp_FindOrCreateSinkTable_AzureSqlDatabaseTableSource]",
 						"storedProcedureParameters": {
 							"azureBlobSingleCSVContainerName": {
-								"type": "String",
-								"value": {
-									"value": "@pipeline().parameters.sourceAzureBlobSingleCSVContainerName",
-									"type": "Expression"
-								}
+								"type": "String"
 							},
 							"azureBlobSingleCSVFileName": {
-								"type": "String",
-								"value": {
-									"value": "@pipeline().parameters.sourceAzureBlobSingleCSVFileName",
-									"type": "Expression"
-								}
+								"type": "String"
 							},
 							"azureBlobSingleCSVFolderPath": {
-								"type": "String",
-								"value": {
-									"value": "@pipeline().parameters.sourceAzureBlobSingleCSVFolderPath",
-									"type": "Expression"
-								}
+								"type": "String"
 							},
 							"azureSqlDatabaseTableSchemaName": {
 								"type": "String",
@@ -94,18 +84,10 @@
 								"value": null
 							},
 							"SuppliedStructure": {
-								"type": "String",
-								"value": {
-									"value": "@{activity('Get CSV File Structure').output.structure}",
-									"type": "Expression"
-								}
+								"type": "String"
 							},
 							"azureBlobStorageConnectionStringSecretName": {
-								"type": "String",
-								"value": {
-									"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
-									"type": "Expression"
-								}
+								"type": "String"
 							}
 						}
 					},
