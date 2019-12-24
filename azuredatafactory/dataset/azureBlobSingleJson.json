@@ -1,0 +1,48 @@
+{
+	"name": "azureBlobSingleJson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azureBlobLinkedService",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"azureBlobConnectionStringSecretName": {
+					"value": "@dataset().azureBlobConnectionStringSecretName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"azureBlobConnectionStringSecretName": {
+				"type": "string"
+			},
+			"azureBlobSingleJsonContainerName": {
+				"type": "string"
+			},
+			"azureBlobSingleJsonFolderPath": {
+				"type": "string"
+			},
+			"azureBlobSingleJsonFileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().azureBlobSingleJsonFileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().azureBlobSingleJsonFolderPath",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().azureBlobSingleJsonContainerName",
+					"type": "Expression"
+				}
+			}
+		}
+	}
+}
