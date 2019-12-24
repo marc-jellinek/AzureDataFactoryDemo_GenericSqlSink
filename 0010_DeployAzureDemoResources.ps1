@@ -9,23 +9,23 @@ $keyVaultName = $deployment.Parameters.keyVaultName.value
 
 $dataFactoryName = $deployment.Parameters.dataFactoryName.value 
 
-$targetDatabase1ServerName = $deployment.Parameters.targetDatabase1ServerName.value
-$targetDatabase1DatabaseName = $deployment.Parameters.targetDatabase1DatabaseName.value 
+$database1ServerName = $deployment.Parameters.database1ServerName.value
+$database1DatabaseName = $deployment.Parameters.database1DatabaseName.value 
 
-$targetDatabase1SqlAdminUsername = $deployment.Parameters.targetDatabase1SqlAdminUsername.value 
-$targetDatabase1SqlAdminPassword = $deployment.Parameters.targetDatabase1SqlAdminPassword.value 
+$database1SqlAdminUsername = $deployment.Parameters.database1SqlAdminUsername.value 
+$database1SqlAdminPassword = $deployment.Parameters.database1SqlAdminPassword.value 
 
-$targetDatabase1SqlOpsUsername = $deployment.Parameters.targetDatabase1SqlOpsUsername.value 
-$targetDatabase1SqlOpsPassword = $deployment.Parameters.targetDatabase1SqlOpsPassword.value 
+$database1SqlOpsUsername = $deployment.Parameters.database1SqlOpsUsername.value 
+$database1SqlOpsPassword = $deployment.Parameters.database1SqlOpsPassword.value 
 
-$targetDatabase2ServerName = $deployment.Parameters.targetDatabase2ServerName.value
-$targetDatabase2DatabaseName = $deployment.Parameters.targetDatabase2DatabaseName.value 
+$database2ServerName = $deployment.Parameters.database2ServerName.value
+$database2DatabaseName = $deployment.Parameters.database2DatabaseName.value 
 
-$targetDatabase2SqlAdminUsername = $deployment.Parameters.targetDatabase2SqlAdminUsername.value 
-$targetDatabase2SqlAdminPassword = $deployment.Parameters.targetDatabase2SqlAdminPassword.value 
+$database2SqlAdminUsername = $deployment.Parameters.database2SqlAdminUsername.value 
+$database2SqlAdminPassword = $deployment.Parameters.database2SqlAdminPassword.value 
 
-$targetDatabase2SqlOpsUsername = $deployment.Parameters.targetDatabase2SqlOpsUsername.value 
-$targetDatabase2SqlOpsPassword = $deployment.Parameters.targetDatabase2SqlOpsPassword.value 
+$database2SqlOpsUsername = $deployment.Parameters.database2SqlOpsUsername.value 
+$database2SqlOpsPassword = $deployment.Parameters.database2SqlOpsPassword.value 
 
 $storageAccount1Name = $deployment.Parameters.storageAccount1Name.value
 $storageAccount2Name = $deployment.Parameters.storageAccount2Name.value

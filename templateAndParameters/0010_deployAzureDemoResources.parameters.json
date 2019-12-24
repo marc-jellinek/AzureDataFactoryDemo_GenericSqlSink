@@ -11,40 +11,40 @@
         "userObjectId": {
             "value": "9e2654c3-c940-490f-8a98-e0daa71d194b"
         }, 
-        "targetDatabase1ServerName": {
-            "value": "mdjtargetdatabaseserver1"
+        "database1ServerName": {
+            "value": "mdjdatabaseserver1"
         },
-        "targetDatabase1DatabaseName": {
-            "value": "TargetDB1"
+        "database1DatabaseName": {
+            "value": "DB1"
         },
-        "targetDatabase1SqlAdminUsername": {
-            "value": "mdjtargetdatabase1sqladmin"
+        "database1SqlAdminUsername": {
+            "value": "mdjdatabase1sqladmin"
         },
-        "targetDatabase1SqlAdminPassword": {
+        "database1SqlAdminPassword": {
             "value": "z^43SFZv6^f3"
         },
-        "targetDatabase1SqlOpsUsername": {
-            "value": "mdjtargetdatabase1sqlops"
+        "database1SqlOpsUsername": {
+            "value": "mdjdatabase1sqlops"
         },
-        "targetDatabase1SqlOpsPassword": {
+        "database1SqlOpsPassword": {
             "value": "pPK^d5KajrN4"
         },
-        "targetDatabase2ServerName": {
-            "value": "mdjtargetdatabaseserver2"
+        "database2ServerName": {
+            "value": "mdjdatabaseserver2"
         },
-        "targetDatabase2DatabaseName": {
-            "value": "TargetDB2"
+        "database2DatabaseName": {
+            "value": "DB2"
         }, 
-        "targetDatabase2SqlAdminUsername": {
-            "value": "mdjtargetdatabase2sqladmin"
+        "database2SqlAdminUsername": {
+            "value": "mdjdatabase2sqladmin"
         },
-        "targetDatabase2SqlAdminPassword": {
+        "database2SqlAdminPassword": {
             "value": "UcQpOwR8v2l@"
         },
-        "targetDatabase2SqlOpsUsername": {
-            "value": "mdjtargetdatabase2sqlops"
+        "database2SqlOpsUsername": {
+            "value": "mdjdatabase2sqlops"
         },
-        "targetDatabase2SqlOpsPassword": {
+        "database2SqlOpsPassword": {
             "value": "3%0Y&W1%6rct"
         },
         "storageAccount1Name": {
