@@ -1,5 +1,5 @@
 {
-	"name": "azureBlobSingleJson",
+	"name": "azureBlobSingleJsonFileNameDataset",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "azureBlobLinkedService",
