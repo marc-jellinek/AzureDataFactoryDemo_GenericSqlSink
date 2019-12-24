@@ -71,7 +71,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[utils].[sp_FindOrCreateSinkTable]",
+						"sqlReaderStoredProcedureName": "[utils].[sp_FindOrCreateSinkTable_SingleCsvSource]",
 						"storedProcedureParameters": {
 							"azureBlobSingleCSVContainerName": {
 								"type": "String",
