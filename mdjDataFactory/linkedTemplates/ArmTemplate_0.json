@@ -364,7 +364,7 @@
 											"type": "Expression"
 										}
 									},
-									"sourceAzureBlobConnectionStringSecretName": {
+									"azureBlobStorageConnectionStringSecretName": {
 										"type": "String",
 										"value": {
 											"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
@@ -808,7 +808,7 @@
 											"type": "Expression"
 										}
 									},
-									"sourceAzureBlobConnectionStringSecretName": {
+									"azureBlobStorageConnectionStringSecretName": {
 										"type": "String",
 										"value": {
 											"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
