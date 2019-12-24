@@ -127,6 +127,7 @@ END
 GO
 
 CREATE OR ALTER PROCEDURE [utils].[sp_CreateTableFromJSON]
+    @azureBlobStorageConnectionStringSecretName varchar(1000), 
     @azureBlobSingleCSVContainerName varchar(1000),
     @azureBlobSingleCSVFolderPath varchar(1000), 
     @azureBlobSingleCSVFileName varchar(1000),
@@ -156,7 +157,7 @@ BEGIN
     SET @SuppliedStructure = [utils].[CleanseString](@SuppliedStructure);
 
     SET @azureSqlDatabaseTableSchemaName = 'utils';
-    SET @azureSqlDatabaseTableTableName = CONVERT(varchar(8000), @azureBlobSingleCSVContainerName) + '/' + CONVERT(varchar(8000), @azureBlobSingleCSVFolderPath) + '/' + CONVERT(varchar(8000), @azureBlobSingleCSVFileName) + '/' + CONVERT(varchar(8000), GETUTCDATE(), 126);
+    SET @azureSqlDatabaseTableTableName = CONVERT(varchar(8000), @azureBlobStorageConnectionStringSecretName) + '/' + CONVERT(varchar(8000), @azureBlobSingleCSVContainerName) + '/' + CONVERT(varchar(8000), @azureBlobSingleCSVFolderPath) + '/' + CONVERT(varchar(8000), @azureBlobSingleCSVFileName) + '/' + CONVERT(varchar(8000), GETUTCDATE(), 126);
 
     SET @Create = 'CREATE TABLE ' + QUOTENAME(@azureSqlDatabaseTableSchemaName) + '.' + QUOTENAME(@azureSqlDatabaseTableTableName);
 
@@ -187,6 +188,7 @@ END
 GO
 
 CREATE OR ALTER PROCEDURE [utils].[sp_FindOrCreateSinkTable]
+    @azureBlobStorageConnectionStringSecretName varchar(1000), 
     @azureBlobSingleCSVContainerName varchar(1000),
     @azureBlobSingleCSVFolderPath varchar(1000), 
     @azureBlobSingleCSVFileName varchar(1000),
@@ -207,6 +209,7 @@ BEGIN
         (@MultipleMatches = 1)                          -- many matching tables, I don't know which to load, instead create another new table
     BEGIN
         EXEC utils.sp_CreateTableFromJSON 
+            @azureBlobStorageConnectionStringSecretName = @azureBlobStorageConnectionStringSecretName, 
             @azureBlobSingleCSVContainerName = @azureBlobSingleCSVContainerName, 
             @azureBlobSingleCSVFolderPath = @azureBlobSingleCSVFolderPath, 
             @azureBlobSingleCSVFileName = @azureBlobSingleCSVFileName, 
