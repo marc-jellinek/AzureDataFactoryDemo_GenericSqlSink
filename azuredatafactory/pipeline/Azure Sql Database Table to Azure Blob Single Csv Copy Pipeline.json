@@ -1,5 +1,5 @@
 {
-	"name": "Azure Sql Database Table to Azure Blob Single Csv",
+	"name": "Azure Sql Database Table to Azure Blob Single Csv Copy Pipeline",
 	"properties": {
 		"activities": [
 			{
