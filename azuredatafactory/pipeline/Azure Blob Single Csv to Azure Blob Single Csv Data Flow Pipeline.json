@@ -1,0 +1,32 @@
+{
+	"name": "Azure Blob Single Csv to Azure Blob Single Csv Data Flow Pipeline",
+	"properties": {
+		"parameters": {
+			"sourceAzureBlobConnectionStringSecretName": {
+				"type": "string"
+			},
+			"sourceAzureBlobSingleCsvContainerName": {
+				"type": "string"
+			},
+			"sourceAzureBlobSingleCsvFolderPath": {
+				"type": "string"
+			},
+			"sourceAzureBlobSingleCsvFileName": {
+				"type": "string"
+			},
+			"sinkAzureBlobConnectionStringSecretName": {
+				"type": "string"
+			},
+			"sinkAzureBlobSingleCsvContainerName": {
+				"type": "string"
+			},
+			"sinkAzureBlobSingleCsvFolderPath": {
+				"type": "string"
+			},
+			"sinkAzureBlobSingleCsvFileName": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
