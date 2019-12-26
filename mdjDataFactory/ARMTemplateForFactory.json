@@ -881,7 +881,7 @@
 												"type": "Expression"
 											},
 											"azureSqlDatabaseTableTableName": {
-												"value": "@activity('Find or Create Sink Table').output.firstRow.azureSqlDatabaseTableTableName",
+												"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableTableName",
 												"type": "Expression"
 											}
 										}
@@ -968,11 +968,11 @@
 											"type": "Expression"
 										},
 										"azureSqlDatabaseTableSchemaName": {
-											"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureDatabaseTableSchemaName",
+											"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableSchemaName",
 											"type": "Expression"
 										},
 										"azureSqlDatabaseTableTableName": {
-											"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureDatabaseTableTableName",
+											"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableTableName",
 											"type": "Expression"
 										}
 									}
