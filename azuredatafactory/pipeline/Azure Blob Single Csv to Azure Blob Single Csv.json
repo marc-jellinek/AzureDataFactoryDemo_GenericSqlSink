@@ -1,9 +1,9 @@
 {
-	"name": "Azure SQL Table to Blob Single CSV Copy Pipeline",
+	"name": "Azure Blob Single Csv to Azure Blob Single Csv",
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy Azure SQL Table to Blob Single CSV",
+				"name": "Source to Sink",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -16,8 +16,15 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
-						"queryTimeout": "02:00:00"
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
 					"sink": {
 						"type": "DelimitedTextSink",
@@ -34,19 +41,23 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "azureSqlDatabaseTableDataset",
+						"referenceName": "azureBlobSingleCSVFileNameDataset",
 						"type": "DatasetReference",
 						"parameters": {
-							"azureSqlDatabaseConnectionStringSecretName": {
-								"value": "@pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName",
+							"azureBlobConnectionStringSecretName": {
+								"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
 								"type": "Expression"
 							},
-							"azureSqlDatabaseTableSchemaName": {
-								"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName",
+							"azureBlobSingleCSVFileName": {
+								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
 								"type": "Expression"
 							},
-							"azureSqlDatabaseTableTableName": {
-								"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableTableName",
+							"azureBlobSingleCSVFolderPath": {
+								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
+								"type": "Expression"
+							},
+							"azureBlobSingleCSVContainerName": {
+								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
 								"type": "Expression"
 							}
 						}
@@ -62,15 +73,15 @@
 								"type": "Expression"
 							},
 							"azureBlobSingleCSVFileName": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleCSVFileName",
+								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFileName",
 								"type": "Expression"
 							},
 							"azureBlobSingleCSVFolderPath": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleCSVFolderPath",
+								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFolderPath",
 								"type": "Expression"
 							},
 							"azureBlobSingleCSVContainerName": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleCSVContainerName",
+								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvContainerName",
 								"type": "Expression"
 							}
 						}
@@ -79,29 +90,34 @@
 			}
 		],
 		"parameters": {
-			"sourceAzureSqlDatabaseConnectionStringSecretName": {
+			"sourceAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sourceAzureSqlDatabaseTableSchemaName": {
+			"sourceAzureBlobSingleCsvContainerName": {
 				"type": "string"
 			},
-			"sourceAzureSqlDatabaseTableTableName": {
+			"sourceAzureBlobSingleCsvFolderPath": {
+				"type": "string"
+			},
+			"sourceAzureBlobSingleCsvFileName": {
 				"type": "string"
 			},
 			"sinkAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleCSVContainerName": {
+			"sinkAzureBlobSingleCsvContainerName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleCSVFolderPath": {
+			"sinkAzureBlobSingleCsvFolderPath": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleCSVFileName": {
+			"sinkAzureBlobSingleCsvFileName": {
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "Azure Blob Single Csv Source"
+		},
 		"annotations": []
-	},
-	"type": "Microsoft.DataFactory/factories/pipelines"
+	}
 }

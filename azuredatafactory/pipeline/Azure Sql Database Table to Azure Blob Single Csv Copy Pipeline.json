@@ -1,9 +1,9 @@
 {
-	"name": "Azure SQL Table to Blob Single Json Copy Pipeline",
+	"name": "Azure Sql Database Table to Azure Blob Single Csv Copy Pipeline",
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy Azure SQL Table to Blob Single Json",
+				"name": "Source to Sink",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -20,14 +20,14 @@
 						"queryTimeout": "02:00:00"
 					},
 					"sink": {
-						"type": "JsonSink",
+						"type": "DelimitedTextSink",
 						"storeSettings": {
 							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
-							"type": "JsonWriteSettings",
+							"type": "DelimitedTextWriteSettings",
 							"quoteAllText": true,
-							"filePattern": "arrayOfObjects"
+							"fileExtension": ".csv"
 						}
 					},
 					"enableStaging": false
@@ -54,23 +54,23 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "azureBlobSingleJsonFileNameDataset",
+						"referenceName": "azureBlobSingleCSVFileNameDataset",
 						"type": "DatasetReference",
 						"parameters": {
 							"azureBlobConnectionStringSecretName": {
 								"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
 								"type": "Expression"
 							},
-							"azureBlobSingleJsonContainerName": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleJsonContainerName",
+							"azureBlobSingleCSVFileName": {
+								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFileName",
 								"type": "Expression"
 							},
-							"azureBlobSingleJsonFolderPath": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFolderPath",
+							"azureBlobSingleCSVFolderPath": {
+								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFolderPath",
 								"type": "Expression"
 							},
-							"azureBlobSingleJsonFileName": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFileName",
+							"azureBlobSingleCSVContainerName": {
+								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvContainerName",
 								"type": "Expression"
 							}
 						}
@@ -91,15 +91,18 @@
 			"sinkAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleJsonContainerName": {
+			"sinkAzureBlobSingleCsvContainerName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleJsonFolderPath": {
+			"sinkAzureBlobSingleCsvFolderPath": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleJsonFileName": {
+			"sinkAzureBlobSingleCsvFileName": {
 				"type": "string"
 			}
+		},
+		"folder": {
+			"name": "Azure Sql Database Table Source"
 		},
 		"annotations": []
 	}
