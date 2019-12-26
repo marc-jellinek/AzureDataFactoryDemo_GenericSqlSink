@@ -25,7 +25,7 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Azure Blob Single CSV to Azure Sql Database Table Copy Pipeline')]",
+			"name": "[concat(parameters('factoryName'), '/Azure Blob Single Csv to Azure Sql Database Table Copy Pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -306,7 +306,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Azure Blob Single CSV to Azure Sql Database Table Data Flow Pipeline')]",
+			"name": "[concat(parameters('factoryName'), '/Azure Blob Single Csv to Azure Sql Database Table Data Flow Pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -653,6 +653,9 @@
 					"azureSqlDatabaseTableTableName": {
 						"type": "string"
 					}
+				},
+				"folder": {
+					"name": "utilities"
 				},
 				"annotations": []
 			},
