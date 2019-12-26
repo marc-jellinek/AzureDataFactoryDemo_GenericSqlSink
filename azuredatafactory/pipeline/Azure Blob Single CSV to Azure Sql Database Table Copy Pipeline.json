@@ -72,6 +72,37 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "utils.sp_FindOrCreateSinkTable",
+						"storedProcedureParameters": {
+							"multipleMatches": {
+								"type": "Boolean",
+								"value": null
+							},
+							"sinkAzureSqlDatabaseConnectionStringSecretName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+									"type": "Expression"
+								}
+							},
+							"sinkAzureSqlDatabaseTableSchemaName": {
+								"type": "String",
+								"value": "utils"
+							},
+							"sinkAzureSqlDatabaseTableTableName": {
+								"type": "String",
+								"value": {
+									"value": "@{concat(\n   pipeline().parameters.sourceAzureBlobConnectionStringSecretName, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvContainerName, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvFolderPath, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvFileName, \n   '/', \n   utcNow()\n)}",
+									"type": "Expression"
+								}
+							},
+							"suppliedStructure": {
+								"type": "String",
+								"value": {
+									"value": "@string(activity('Get Source Structure').output.structure)",
+									"type": "Expression"
+								}
+							}
+						},
 						"queryTimeout": "02:00:00"
 					},
 					"dataset": {
@@ -86,6 +117,54 @@
 							"azureSqlDatabaseTableTableName": "bar"
 						}
 					}
+				}
+			},
+			{
+				"name": "Truncate Sink Table",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Find or Create Sink Table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.truncatePriorToCopy",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Exec Pipeline Truncate Sink Table",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Azure Sql Database Truncate Table Pipeline",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"azureSqlDatabaseConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableSchemaName": {
+										"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableSchemaName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableTableName": {
+										"value": "@activity('Find or Create Sink Table').output.firstRow.azureSqlDatabaseTableTableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
 				}
 			}
 		],
