@@ -1,6 +1,106 @@
 {
 	"name": "Azure Sql Database Table to Azure Blob Single Csv",
 	"properties": {
+		"activities": [
+			{
+				"name": "Source to Sink",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "azureSqlDatabaseTableDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"azureSqlDatabaseConnectionStringSecretName": {
+								"value": "@pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName",
+								"type": "Expression"
+							},
+							"azureSqlDatabaseTableSchemaName": {
+								"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName",
+								"type": "Expression"
+							},
+							"azureSqlDatabaseTableTableName": {
+								"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableTableName",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "azureBlobSingleCSVFileNameDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"azureBlobConnectionStringSecretName": {
+								"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
+								"type": "Expression"
+							},
+							"azureBlobSingleCSVFileName": {
+								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFileName",
+								"type": "Expression"
+							},
+							"azureBlobSingleCSVFolderPath": {
+								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFolderPath",
+								"type": "Expression"
+							},
+							"azureBlobSingleCSVContainerName": {
+								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvContainerName",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"sourceAzureSqlDatabaseConnectionStringSecretName": {
+				"type": "string"
+			},
+			"sourceAzureSqlDatabaseTableSchemaName": {
+				"type": "string"
+			},
+			"sourceAzureSqlDatabaseTableTableName": {
+				"type": "string"
+			},
+			"sinkAzureBlobConnectionStringSecretName": {
+				"type": "string"
+			},
+			"sinkAzureBlobSingleCsvContainerName": {
+				"type": "string"
+			},
+			"sinkAzureBlobSingleCsvFolderPath": {
+				"type": "string"
+			},
+			"sinkAzureBlobSingleCsvFileName": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "Azure Sql Database Table Source"
 		},
