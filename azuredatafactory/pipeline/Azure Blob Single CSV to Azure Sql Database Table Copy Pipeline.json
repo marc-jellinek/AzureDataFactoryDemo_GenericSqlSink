@@ -237,11 +237,11 @@
 								"type": "Expression"
 							},
 							"azureSqlDatabaseTableSchemaName": {
-								"value": "@activity('Find or Create Sink Table').output.firstRow.azureSqlDatabaseTableSchemaName",
+								"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableSchemaName",
 								"type": "Expression"
 							},
 							"azureSqlDatabaseTableTableName": {
-								"value": "@activity('Find or Create Sink Table').output.firstRow.azureSqlDatabaseTableTableName",
+								"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableTableName",
 								"type": "Expression"
 							}
 						}
