@@ -49,6 +49,9 @@
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "utilities"
+		},
 		"annotations": []
 	}
 }
