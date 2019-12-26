@@ -188,7 +188,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "azureBlobSingleCSVToAzureSqlDatabaseTableDataFlow",
+						"referenceName": "azureBlobSingleCsvToAzureSqlDatabaseTableDataFlow",
 						"type": "DataFlowReference",
 						"parameters": {
 							"sourceConnectionSecretName": {
