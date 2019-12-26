@@ -115,6 +115,9 @@
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "Azure Blob Single Csv Source"
+		},
 		"annotations": []
 	}
 }
