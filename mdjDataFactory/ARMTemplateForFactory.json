@@ -297,6 +297,9 @@
 						"type": "bool"
 					}
 				},
+				"folder": {
+					"name": "Azure Blob Single Csv Source"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
@@ -592,6 +595,9 @@
 						"type": "bool"
 					}
 				},
+				"folder": {
+					"name": "Azure Blob Single Csv Source"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
@@ -655,7 +661,7 @@
 					}
 				},
 				"folder": {
-					"name": "utilities"
+					"name": "Utilities"
 				},
 				"annotations": []
 			},
