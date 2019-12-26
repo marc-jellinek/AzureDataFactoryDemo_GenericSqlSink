@@ -1,5 +1,5 @@
 {
-	"name": "Azure Blob Single CSV to Azure SQL Table Copy Pipeline",
+	"name": "BACKUP Azure Blob Single CSV to Azure SQL Table Copy Pipeline",
 	"properties": {
 		"activities": [
 			{
