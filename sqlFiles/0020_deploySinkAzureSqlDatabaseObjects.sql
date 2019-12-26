@@ -218,42 +218,6 @@ BEGIN
 END 
 GO
 
-CREATE OR ALTER PROCEDURE [utils].[sp_RenameUtilsTable]
-    @OriginalSchemaName varchar(8000),  
-    @OriginalTableName varchar(8000), 
-    @NewSchemaName varchar(8000), 
-    @NewTableName varchar(8000)
-AS 
-BEGIN 
-    DECLARE @OriginalObjectName varchar(8000) = QUOTENAME(@OriginalSchemaName) + '.' + QUOTENAME(@OriginalTableName)
-    DECLARE @NewObjectName varchar(8000) = QUOTENAME(@NewSchemaName) + '.' + QUOTENAME(@NewTableName)
-    DECLARE @InterimObjectName varchar(8000) = QUOTENAME(@OriginalSchemaName) + '.' + QUOTENAME(@NewTableName)
-
-	DECLARE @sql varchar(8000)
-
-    -- TODO:  Find a better way to do this
-    -- Technically suseptible to SQL injection.  
-    -- Would have to be run as db_owner or other highly-priv principal, 
-    -- they already have rights to do damage.
-    -- Best to clean this up ASAP for sake of good form
-    
-    EXEC sp_rename @OriginalObjectName, @NewTableName
-
-    SET @sql = 'ALTER SCHEMA ' +  @NewSchemaName + ' TRANSFER ' + @InterimObjectName + ';'
-	EXEC (@sql)
-
-    SET @sql = 'GRANT SELECT ON ' + @NewObjectName + 'TO DataLoaders;'
-	EXEC (@sql) 
-
-    SET @sql = 'GRANT INSERT ON ' + @NewObjectName + 'TO DataLoaders;'
-	EXEC (@sql) 
-
-    SET @sql = 'GRANT ALTER ON ' + @NewObjectName + 'TO DataLoaders;' -- required for TRUNCATE TABLE
-	EXEC (@sql) 
-
-END 
-GO
-
 CREATE ROLE DataLoaders;
 GO
 
@@ -271,3 +235,37 @@ GO
 
 GRANT EXECUTE ON SCHEMA::[utils] TO DataLoaders;
 GO
+
+CREATE OR ALTER PROCEDURE [utils].[sp_RenameUtilsTable]
+    @OriginalSchemaName varchar(8000),  
+    @OriginalTableName varchar(8000), 
+    @NewSchemaName varchar(8000), 
+    @NewTableName varchar(8000)
+AS 
+BEGIN 
+    DECLARE @OriginalObjectName varchar(8000) = QUOTENAME(@OriginalSchemaName) + '.' + QUOTENAME(@OriginalTableName)
+    DECLARE @NewObjectName varchar(8000) = QUOTENAME(@NewSchemaName) + '.' + QUOTENAME(@NewTableName)
+    DECLARE @InterimObjectName varchar(8000) = QUOTENAME(@OriginalSchemaName) + '.' + QUOTENAME(@NewTableName)
+
+	DECLARE @sql varchar(8000)
+
+    -- TODO:  Find a better way to do this
+    -- Would have to be run as db_owner or other highly-priv principal, 
+    
+    EXEC sp_rename @OriginalObjectName, @NewTableName
+
+    SET @sql = 'ALTER SCHEMA ' +  QUOTENAME(@NewSchemaName) + ' TRANSFER ' + @InterimObjectName + ';'
+	EXEC (@sql)
+
+    SET @sql = 'GRANT SELECT ON ' + @NewObjectName + 'TO DataLoaders;'
+	EXEC (@sql) 
+
+    SET @sql = 'GRANT INSERT ON ' + @NewObjectName + 'TO DataLoaders;'
+	EXEC (@sql) 
+
+    SET @sql = 'GRANT ALTER ON ' + @NewObjectName + 'TO DataLoaders;' -- required for TRUNCATE TABLE
+	EXEC (@sql) 
+
+END 
+GO
+
