@@ -29,14 +29,10 @@ Sources and sinks I envision supporting:
 - Azure SQL Database
 - Azure CosmosDB
 - Azure Data Warehouse/Azure Synapse
-- CSV files in blob storage
-- CSV files in Azure Data Lake store
-- JSON files in blob storage
-- JSON files in Azure Data Lake store
-- Avro files in blob storage
-- Avro files in Azure Data Lake store
-- Parquet files in blob storage
-- Parquet files in Azure Data Lake store
+- CSV files in Azure Blob Storage/Azure Data Lake store
+- JSON files in Azure Blob Storage/Azure Data Lake store
+- Avro files in Azure Blob Storage/Azure Data Lake store
+- Parquet files in Azure Blob Storage/Azure Data Lake store
 
 Given this list, there are obvious opportunities to incorporate other storage platforms (S3, etc) and other file formats (XML, etc)
 

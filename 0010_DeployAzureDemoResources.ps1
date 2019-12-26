@@ -1,34 +1,34 @@
-$deployment = New-AzResourceGroupDeployment `
+$azureDemoResourcesDeployment = New-AzResourceGroupDeployment `
     -ResourceGroupName $resourceGroupName `
     -TemplateFile "./templateAndParameters/0010_deployAzureDemoResources.template.json" `
     -TemplateParameterFile "./templateAndParameters/0010_deployAzureDemoResources.parameters.json"
 
 $deployment | Out-Host
 
-$keyVaultName = $deployment.Parameters.keyVaultName.value 
+$keyVaultName = $azureDemoResourcesDeployment.Parameters.keyVaultName.value 
 
-$dataFactoryName = $deployment.Parameters.dataFactoryName.value 
+$dataFactoryName = $azureDemoResourcesDeployment.Parameters.dataFactoryName.value 
 
-$database1ServerName = $deployment.Parameters.database1ServerName.value
-$database1DatabaseName = $deployment.Parameters.database1DatabaseName.value 
+$database1ServerName = $azureDemoResourcesDeployment.Parameters.database1ServerName.value
+$database1DatabaseName = $azureDemoResourcesDeployment.Parameters.database1DatabaseName.value 
 
-$database1SqlAdminUsername = $deployment.Parameters.database1SqlAdminUsername.value 
-$database1SqlAdminPassword = $deployment.Parameters.database1SqlAdminPassword.value 
+$database1SqlAdminUsername = $azureDemoResourcesDeployment.Parameters.database1SqlAdminUsername.value 
+$database1SqlAdminPassword = $azureDemoResourcesDeployment.Parameters.database1SqlAdminPassword.value 
 
-$database1SqlOpsUsername = $deployment.Parameters.database1SqlOpsUsername.value 
-$database1SqlOpsPassword = $deployment.Parameters.database1SqlOpsPassword.value 
+$database1SqlOpsUsername = $azureDemoResourcesDeployment.Parameters.database1SqlOpsUsername.value 
+$database1SqlOpsPassword = $azureDemoResourcesDeployment.Parameters.database1SqlOpsPassword.value 
 
-$database2ServerName = $deployment.Parameters.database2ServerName.value
-$database2DatabaseName = $deployment.Parameters.database2DatabaseName.value 
+$database2ServerName = $azureDemoResourcesDeployment.Parameters.database2ServerName.value
+$database2DatabaseName = $azureDemoResourcesDeployment.Parameters.database2DatabaseName.value 
 
-$database2SqlAdminUsername = $deployment.Parameters.database2SqlAdminUsername.value 
-$database2SqlAdminPassword = $deployment.Parameters.database2SqlAdminPassword.value 
+$database2SqlAdminUsername = $azureDemoResourcesDeployment.Parameters.database2SqlAdminUsername.value 
+$database2SqlAdminPassword = $azureDemoResourcesDeployment.Parameters.database2SqlAdminPassword.value 
 
-$database2SqlOpsUsername = $deployment.Parameters.database2SqlOpsUsername.value 
-$database2SqlOpsPassword = $deployment.Parameters.database2SqlOpsPassword.value 
+$database2SqlOpsUsername = $azureDemoResourcesDeployment.Parameters.database2SqlOpsUsername.value 
+$database2SqlOpsPassword = $azureDemoResourcesDeployment.Parameters.database2SqlOpsPassword.value 
 
-$storageAccount1Name = $deployment.Parameters.storageAccount1Name.value
-$storageAccount2Name = $deployment.Parameters.storageAccount2Name.value
+$storageAccount1Name = $azureDemoResourcesDeployment.Parameters.storageAccount1Name.value
+$storageAccount2Name = $azureDemoResourcesDeployment.Parameters.storageAccount2Name.value
 
 $storageAccount1Key = (Get-AzStorageAccountKey `
         -ResourceGroupName $resourceGroupName `
@@ -47,7 +47,7 @@ $ctx = New-AzStorageContext `
 
 Set-AzStorageBlobContent `
     -File "./demoData/csv/singleFiles/0010_sourceData1.csv" `
-    -Blob "csv/singleFiles/0010_sourceData1.csv" `
+    -Blob "input/csv/singleFiles/0010_sourceData1.csv" `
     -Container "default" `
     -Context $ctx `
     -Properties @{"ContentType" = "text/csv"} `
@@ -59,7 +59,7 @@ $ctx = New-AzStorageContext `
 
 Set-AzStorageBlobContent `
     -File "./demoData/csv/singleFiles/0010_sourceData2.csv" `
-    -Blob "csv/singleFiles/0010_sourceData2.csv" `
+    -Blob "input/csv/singleFiles/0010_sourceData2.csv" `
     -Container "default" `
     -Context $ctx `
     -Properties @{"ContentType" = "text/csv"} `

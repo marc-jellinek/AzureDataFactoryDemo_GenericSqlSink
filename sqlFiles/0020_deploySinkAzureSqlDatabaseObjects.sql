@@ -70,17 +70,15 @@ RETURNS varchar(8000)
     FOR JSON AUTO 
         );
 
-    SET @JSONStructure = [utils].[CleanseString](@JSONStructure);
-
     RETURN @JSONStructure;
 END
 GO
 
 CREATE OR ALTER PROCEDURE [utils].[sp_GetTableBasedOnSuppliedStructure]
-    @SuppliedStructure varchar(8000),
+    @suppliedStructure varchar(8000),
     @azureSqlDatabaseTableSchemaName varchar(8000) OUTPUT,
     @azureSqlDatabaseTableTableName varchar(8000) OUTPUT,
-    @MultipleMatches bit OUTPUT
+    @multipleMatches bit OUTPUT
 AS
 BEGIN
     DECLARE @CountMatches bigint = NULL;
@@ -89,37 +87,37 @@ BEGIN
 
     SELECT sch.name as schema_name,
         tbl.name as table_name,
-        [utils].[GenerateJSONFromTables](sch.name, tbl.name) as JsonStructure
+        [utils].[CleanseString]([utils].[GenerateJSONFromTables](sch.name, tbl.name)) as JsonStructure
     INTO        #JsonTableStructure
     FROM sys.schemas sch
         INNER JOIN sys.tables tbl ON sch.schema_id = tbl.schema_id;
 
-    SET         @SuppliedStructure = [utils].[CleanseString](@SuppliedStructure);
+    SET         @suppliedStructure = [utils].[CleanseString](@suppliedStructure);
 
     SELECT      @CountMatches = ISNULL(COUNT_BIG(*), 0)
     FROM        #JsonTableStructure j
-    WHERE       j.JsonStructure = @SuppliedStructure;
+    WHERE       j.JsonStructure = @suppliedStructure;
 
     IF @CountMatches = 0 
     BEGIN
-        SET @MultipleMatches = 0;
+        SET @multipleMatches = 0;
         SET @azureSqlDatabaseTableSchemaName = NULL;
         SET @azureSqlDatabaseTableTableName = NULL;
     END
 
     IF @CountMatches = 1
     BEGIN
-        SET @MultipleMatches = 0;
+        SET @multipleMatches = 0;
 
         SELECT @azureSqlDatabaseTableSchemaName = j.schema_name,
             @azureSqlDatabaseTableTableName = j.table_name
         FROM #JsonTableStructure j
-        WHERE       j.JsonStructure = @SuppliedStructure;
+        WHERE       j.JsonStructure = @suppliedStructure;
     END
 
     IF @CountMatches > 1
     BEGIN
-        SET @MultipleMatches = 1;
+        SET @multipleMatches = 1;
         SET @azureSqlDatabaseTableSchemaName = NULL;
         SET @azureSqlDatabaseTableTableName = NULL;
     END
@@ -127,11 +125,7 @@ END
 GO
 
 CREATE OR ALTER PROCEDURE [utils].[sp_CreateTableFromJSON]
-    @azureBlobStorageConnectionStringSecretName varchar(1000), 
-    @azureBlobSingleCSVContainerName varchar(1000),
-    @azureBlobSingleCSVFolderPath varchar(1000), 
-    @azureBlobSingleCSVFileName varchar(1000),
-    @SuppliedStructure as varchar(8000),
+    @suppliedStructure as varchar(8000),
     @azureSqlDatabaseTableSchemaName varchar(8000) OUTPUT,
     @azureSqlDatabaseTableTableName varchar(8000) OUTPUT
 AS
@@ -154,10 +148,7 @@ BEGIN
     DECLARE @Create varchar(8000);
     DECLARE @Columns varchar(8000) = N'';
 
-    SET @SuppliedStructure = [utils].[CleanseString](@SuppliedStructure);
-
-    SET @azureSqlDatabaseTableSchemaName = 'utils';
-    SET @azureSqlDatabaseTableTableName = CONVERT(varchar(8000), @azureBlobStorageConnectionStringSecretName) + '/' + CONVERT(varchar(8000), @azureBlobSingleCSVContainerName) + '/' + CONVERT(varchar(8000), @azureBlobSingleCSVFolderPath) + '/' + CONVERT(varchar(8000), @azureBlobSingleCSVFileName) + '/' + CONVERT(varchar(8000), GETUTCDATE(), 126);
+    SET @suppliedStructure = [utils].[CleanseString](@suppliedStructure);
 
     SET @Create = 'CREATE TABLE ' + QUOTENAME(@azureSqlDatabaseTableSchemaName) + '.' + QUOTENAME(@azureSqlDatabaseTableTableName);
 
@@ -165,7 +156,7 @@ BEGIN
 
     SELECT @Columns += columndef.name
     FROM (   SELECT QUOTENAME(columnspec.Name) + ' varchar(max), ' as name
-        FROM OPENJSON(@SuppliedStructure)
+        FROM OPENJSON(@suppliedStructure)
                                 WITH (
                                     [Name] varchar(8000) '$.name', 
                                     [Type] varchar(8000) '$.type'
@@ -188,39 +179,42 @@ END
 GO
 
 CREATE OR ALTER PROCEDURE [utils].[sp_FindOrCreateSinkTable]
-    @azureBlobStorageConnectionStringSecretName varchar(1000), 
-    @azureBlobSingleCSVContainerName varchar(1000),
-    @azureBlobSingleCSVFolderPath varchar(1000), 
-    @azureBlobSingleCSVFileName varchar(1000),
-    @SuppliedStructure varchar(8000),
-    @azureSqlDatabaseTableSchemaName varchar(8000) OUTPUT,
-    @azureSqlDatabaseTableTableName varchar(8000) OUTPUT,
-    @MultipleMatches bit OUTPUT
+    @suppliedStructure varchar(8000),    
+    @sinkAzureSqlDatabaseConnectionStringSecretName varchar(8000), 
+    @sinkAzureSqlDatabaseTableSchemaName varchar(8000) OUTPUT,
+    @sinkAzureSqlDatabaseTableTableName varchar(8000) OUTPUT,
+    @multipleMatches bit OUTPUT
 AS
 BEGIN
 
-    EXEC [utils].[sp_GetTableBasedOnSuppliedStructure] 
-        @SuppliedStructure = @SuppliedStructure, 
-        @azureSqlDatabaseTableSchemaName = @azureSqlDatabaseTableSchemaName OUTPUT, 
-        @azureSqlDatabaseTableTableName = @azureSqlDatabaseTableTableName OUTPUT, 
-        @MultipleMatches = @MultipleMatches OUTPUT
+     DECLARE @foundTableSchemaName varchar(8000) 
+    DECLARE @foundTableTableName varchar(8000)
 
-    IF (@azureSqlDatabaseTableSchemaName IS NULL AND @azureSqlDatabaseTableTableName IS NULL) OR -- No matching table, create new
-        (@MultipleMatches = 1)                          -- many matching tables, I don't know which to load, instead create another new table
+    EXEC [utils].[sp_GetTableBasedOnSuppliedStructure] 
+        @suppliedStructure = @suppliedStructure, 
+        @azureSqlDatabaseTableSchemaName = @foundTableSchemaName OUTPUT, 
+        @azureSqlDatabaseTableTableName = @foundTableTableName OUTPUT, 
+        @multipleMatches = @multipleMatches OUTPUT
+
+    IF (@foundTableSchemaName IS NULL AND @foundTableTableName IS NULL) OR -- No matching table, create new
+        (@multipleMatches = 1)                          -- many matching tables, I don't know which to load, instead create another new table
     BEGIN
         EXEC utils.sp_CreateTableFromJSON 
-            @azureBlobStorageConnectionStringSecretName = @azureBlobStorageConnectionStringSecretName, 
-            @azureBlobSingleCSVContainerName = @azureBlobSingleCSVContainerName, 
-            @azureBlobSingleCSVFolderPath = @azureBlobSingleCSVFolderPath, 
-            @azureBlobSingleCSVFileName = @azureBlobSingleCSVFileName, 
-            @SuppliedStructure = @SuppliedStructure,
-            @azureSqlDatabaseTableSchemaName = @azureSqlDatabaseTableSchemaName OUTPUT, 
-            @azureSqlDatabaseTableTableName = @azureSqlDatabaseTableTableName OUTPUT
+            @suppliedStructure = @suppliedStructure,
+            @azureSqlDatabaseTableSchemaName = @sinkAzureSqlDatabaseTableSchemaName OUTPUT, 
+            @azureSqlDatabaseTableTableName = @sinkAzureSqlDatabaseTableTableName OUTPUT
+
+		SELECT  @sinkAzureSqlDatabaseTableSchemaName as sinkAzureSqlDatabaseTableSchemaName,
+            @sinkAzureSqlDatabaseTableTableName as sinkAzureSqlDatabaseTableTableName,
+            @multipleMatches as multipleMatches
+
     END 
+	ELSE
+	BEGIN
+		SELECT @foundTableSchemaName as sinkAzureSqlDatabaseTableSchemaName, 
+				@foundTableTableName as sinkAzureSqlDatabaseTableTableName
+	END
     
-    SELECT  @azureSqlDatabaseTableSchemaName as azureSqlDatabaseTableSchemaName,
-            @azureSqlDatabaseTableTableName as azureSqlDatabaseTableTableName,
-            @MultipleMatches as MultipleMatches
 END 
 GO
 
