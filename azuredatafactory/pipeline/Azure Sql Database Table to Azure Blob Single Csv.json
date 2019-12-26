@@ -1,0 +1,6 @@
+{
+	"name": "Azure Sql Database Table to Azure Blob Single Csv",
+	"properties": {
+		"annotations": []
+	}
+}
