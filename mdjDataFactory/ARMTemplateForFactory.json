@@ -628,7 +628,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "azureBlobSingleCSVToAzureSqlDatabaseTableDataFlow",
+								"referenceName": "azureBlobSingleCsvToAzureSqlDatabaseTableDataFlow",
 								"type": "DataFlowReference",
 								"parameters": {
 									"sourceConnectionSecretName": {
@@ -731,7 +731,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/azureBlobSingleCSVFileNameDataset')]",
 				"[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]",
-				"[concat(variables('factoryId'), '/dataflows/azureBlobSingleCSVToAzureSqlDatabaseTableDataFlow')]",
+				"[concat(variables('factoryId'), '/dataflows/azureBlobSingleCsvToAzureSqlDatabaseTableDataFlow')]",
 				"[concat(variables('factoryId'), '/pipelines/Azure Sql Database Truncate Table Pipeline')]"
 			]
 		},
@@ -870,7 +870,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "azureSqlDatabaseTableToAzureBlobSingleCSVDataFlow",
+								"referenceName": "azureSqlDatabaseTableToAzureBlobSingleCsvDataFlow",
 								"type": "DataFlowReference",
 								"parameters": {
 									"sourceConnectionSecretName": {
@@ -974,7 +974,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/azureSqlDatabaseTableToAzureBlobSingleCSVDataFlow')]"
+				"[concat(variables('factoryId'), '/dataflows/azureSqlDatabaseTableToAzureBlobSingleCsvDataFlow')]"
 			]
 		},
 		{
@@ -1317,7 +1317,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/azureBlobSingleCSVToAzureSqlDatabaseTableDataFlow')]",
+			"name": "[concat(parameters('factoryName'), '/azureBlobSingleCsvToAzureSqlDatabaseTableDataFlow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1356,7 +1356,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/azureSqlDatabaseTableToAzureBlobSingleCSVDataFlow')]",
+			"name": "[concat(parameters('factoryName'), '/azureSqlDatabaseTableToAzureBlobSingleCsvDataFlow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
