@@ -265,12 +265,6 @@
 			"sinkAzureSqlDatabaseConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sinkAzureSqlDatabaseTableSchemaName": {
-				"type": "string"
-			},
-			"sinkAzureSqlDatabaseTableTableName": {
-				"type": "string"
-			},
 			"truncatePriorToCopy": {
 				"type": "bool"
 			}
