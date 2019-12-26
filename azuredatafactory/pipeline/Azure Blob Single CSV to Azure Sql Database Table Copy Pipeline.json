@@ -158,7 +158,7 @@
 										"type": "Expression"
 									},
 									"azureSqlDatabaseTableTableName": {
-										"value": "@activity('Find or Create Sink Table').output.firstRow.azureSqlDatabaseTableTableName",
+										"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableTableName",
 										"type": "Expression"
 									}
 								}
