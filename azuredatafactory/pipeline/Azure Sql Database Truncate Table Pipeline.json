@@ -1,0 +1,54 @@
+{
+	"name": "Azure Sql Database Truncate Table Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Truncate Table",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "sp_executesql",
+					"storedProcedureParameters": {
+						"stmt": {
+							"value": {
+								"value": "@{concat(\n   'TRUNCATE TABLE [', \n   pipeline().parameters.azureSqlDatabaseTableSchemaName, \n   '].[', \n   pipeline().parameters.azureSqlDatabaseTableTableName, \n   ']'\n)}",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "azureSqlDatabaseLinkedService",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"azureSqlDatabaseConnectionStringSecretName": {
+							"value": "@pipeline().parameters.azureSqlDatabaseConnectionStringSecretName",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"azureSqlDatabaseConnectionStringSecretName": {
+				"type": "string"
+			},
+			"azureSqlDatabaseTableSchemaName": {
+				"type": "string"
+			},
+			"azureSqlDatabaseTableTableName": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
