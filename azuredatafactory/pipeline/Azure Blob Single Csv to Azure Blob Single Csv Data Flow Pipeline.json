@@ -117,10 +117,6 @@
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"pipeline": {
-									"referenceName": "Azure Blob Delete Single File",
-									"type": "PipelineReference"
-								},
 								"waitOnCompletion": true,
 								"parameters": {
 									"azureBlobConnectionStringSecretName": {
@@ -174,6 +170,9 @@
 			"deleteSourceFile": {
 				"type": "bool"
 			}
+		},
+		"folder": {
+			"name": "Azure Blob Single Csv Source"
 		},
 		"annotations": []
 	}
