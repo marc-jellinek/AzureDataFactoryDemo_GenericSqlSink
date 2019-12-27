@@ -364,7 +364,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Azure Blob Delete Single File')]",
+			"name": "[concat(parameters('factoryName'), '/Azure Blob Delete Single File Pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1068,7 +1068,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"pipeline": {
-											"referenceName": "Azure Blob Delete Single File",
+											"referenceName": "Azure Blob Delete Single File Pipeline",
 											"type": "PipelineReference"
 										},
 										"waitOnCompletion": true,
@@ -1132,7 +1132,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/azureBlobSingleCSVFileNameDataset')]",
-				"[concat(variables('factoryId'), '/pipelines/Azure Blob Delete Single File')]"
+				"[concat(variables('factoryId'), '/pipelines/Azure Blob Delete Single File Pipeline')]"
 			]
 		},
 		{
@@ -1258,7 +1258,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"pipeline": {
-											"referenceName": "Azure Blob Delete Single File",
+											"referenceName": "Azure Blob Delete Single File Pipeline",
 											"type": "PipelineReference"
 										},
 										"waitOnCompletion": true,
@@ -1315,11 +1315,14 @@
 						"type": "bool"
 					}
 				},
+				"folder": {
+					"name": "Azure Blob Single Csv Source"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/azureBlobSingleCsvToAzureBlobSingleCsvDataFlow')]",
-				"[concat(variables('factoryId'), '/pipelines/Azure Blob Delete Single File')]"
+				"[concat(variables('factoryId'), '/pipelines/Azure Blob Delete Single File Pipeline')]"
 			]
 		},
 		{
