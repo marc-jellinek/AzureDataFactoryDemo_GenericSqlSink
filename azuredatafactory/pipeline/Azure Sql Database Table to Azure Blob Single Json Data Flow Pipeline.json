@@ -34,6 +34,22 @@
 							"sinkObjectName": {
 								"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobSingleJsonContainerName, \n   '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFolderPath, \n   '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFileName\n)}'",
 								"type": "Expression"
+							},
+							"dataFactoryName": {
+								"value": "'@{pipeline().DataFactory}'",
+								"type": "Expression"
+							},
+							"dataFactoryPipelineName": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
+							},
+							"dataFactoryPipelineRunId": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							},
+							"sinkFileNameNoPath": {
+								"value": "'@{pipeline().parameters.sinkAzureBlobSingleJsonFileName}'",
+								"type": "Expression"
 							}
 						},
 						"datasetParameters": {
