@@ -117,6 +117,10 @@
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Azure Blob Delete Single File Pipeline",
+									"type": "PipelineReference"
+								},
 								"waitOnCompletion": true,
 								"parameters": {
 									"azureBlobConnectionStringSecretName": {
