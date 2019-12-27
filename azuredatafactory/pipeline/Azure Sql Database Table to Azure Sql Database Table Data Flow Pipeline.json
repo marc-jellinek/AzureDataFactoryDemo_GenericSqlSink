@@ -179,6 +179,36 @@
 					"dataflow": {
 						"referenceName": "azureSqlDatabaseTableToAzureSqlDatabaseTableDataFlow",
 						"type": "DataFlowReference",
+						"parameters": {
+							"sourceConnectionSecretName": {
+								"value": "'@{pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName}'",
+								"type": "Expression"
+							},
+							"sinkConnectionStringSecretName": {
+								"value": "'@{pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName}'",
+								"type": "Expression"
+							},
+							"sourceObjectName": {
+								"value": "'@{concat(\n   '[', \n   pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName, \n   '].[', \n   pipeline().parameters.sourceAzureSqlDatabaseTableTableName, \n   ']'\n)}'",
+								"type": "Expression"
+							},
+							"sinkObjectName": {
+								"value": "'@{concat(\n   '[', \n   pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName,\n   '].[', \n   pipeline().parameters.sinkAzureSqlDatabaseTableTableName, \n   ']'\n)}'",
+								"type": "Expression"
+							},
+							"dataFactoryName": {
+								"value": "'@{pipeline().DataFactory}'",
+								"type": "Expression"
+							},
+							"dataFactoryPipelineName": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
+							},
+							"dataFactoryPipelineRunId": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							}
+						},
 						"datasetParameters": {
 							"readFromAzureSqlDatabase": {
 								"azureSqlDatabaseConnectionStringSecretName": {
