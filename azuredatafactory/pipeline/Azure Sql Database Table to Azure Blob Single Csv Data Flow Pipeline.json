@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "azureSqlDatabaseTableToAzureBlobSingleCSVDataFlow",
+				"name": "azureSqlDatabaseTableToAzureBlobSingleCsvDataFlow",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
