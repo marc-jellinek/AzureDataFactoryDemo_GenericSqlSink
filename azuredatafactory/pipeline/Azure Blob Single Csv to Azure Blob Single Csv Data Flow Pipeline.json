@@ -92,6 +92,58 @@
 						"computeType": "General"
 					}
 				}
+			},
+			{
+				"name": "Decide If Delete Original File",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "azureBlobSingleCsvToAzureBlobSingleCsvDataFlow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.deleteSourceFile",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Exec Pipeline Azure Blob Delete Single File",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Azure Blob Delete Single File",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"azureBlobConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureBlobContainerName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
+										"type": "Expression"
+									},
+									"azureBlobFolderPath": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
+										"type": "Expression"
+									},
+									"azureBlobFileName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
 			}
 		],
 		"parameters": {
@@ -118,6 +170,9 @@
 			},
 			"sinkAzureBlobSingleCsvFileName": {
 				"type": "string"
+			},
+			"deleteSourceFile": {
+				"type": "bool"
 			}
 		},
 		"annotations": []
