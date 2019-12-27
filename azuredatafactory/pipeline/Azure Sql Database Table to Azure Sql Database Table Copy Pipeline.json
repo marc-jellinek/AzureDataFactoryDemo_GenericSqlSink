@@ -1,0 +1,29 @@
+{
+	"name": "Azure Sql Database Table to Azure Sql Database Table Copy Pipeline",
+	"properties": {
+		"parameters": {
+			"sourceAzureSqlDatabaseConnectionStringSecretName": {
+				"type": "string"
+			},
+			"sourceAzureSqlDatabaseTableSchemaName": {
+				"type": "string"
+			},
+			"sourceAzureSqlDatabaseTableTableName": {
+				"type": "string"
+			},
+			"sinkAzureSqlDatabaseConnectionStringSecretName": {
+				"type": "string"
+			},
+			"sinkAzureSqlDatabaseTableSchemaName": {
+				"type": "string"
+			},
+			"sinkAzureSqlDatabaseTableTableName": {
+				"type": "string"
+			},
+			"truncatePriorToCopy": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
