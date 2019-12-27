@@ -1,4 +1,4 @@
-$parameterValues = @{ `
+$dataFactoryParameterValues = @{ `
     dataFactoryName = "$dataFactoryName"; `
     gitAccountName = "marc-jellinek"; `
     gitRepositoryName = "AzureDataFactoryDemo_GenericSqlSink"; `
@@ -9,7 +9,7 @@ $parameterValues = @{ `
 $dataFactoryDeployment = New-AzResourceGroupDeployment `
     -ResourceGroupName $resourceGroupName `
     -TemplateFile "./templateAndParameters/0040_deployDataFactoryFromGithub.template.json" `
-    -TemplateParameterObject $parameterValues
+    -TemplateParameterObject $dataFactoryParameterValues
 
 $dataFactoryDeployment | Out-Host
 
