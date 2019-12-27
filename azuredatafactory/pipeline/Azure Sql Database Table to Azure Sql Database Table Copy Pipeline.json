@@ -1,6 +1,243 @@
 {
 	"name": "Azure Sql Database Table to Azure Sql Database Table Copy Pipeline",
 	"properties": {
+		"activities": [
+			{
+				"name": "Get Source Structure",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "azureSqlDatabaseTableDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"azureSqlDatabaseConnectionStringSecretName": {
+								"value": "@pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName",
+								"type": "Expression"
+							},
+							"azureSqlDatabaseTableSchemaName": {
+								"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName",
+								"type": "Expression"
+							},
+							"azureSqlDatabaseTableTableName": {
+								"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableTableName",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"structure"
+					]
+				}
+			},
+			{
+				"name": "Find or Create Sink Table",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Get Source Structure",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "utils.sp_FindOrCreateSinkTable",
+						"storedProcedureParameters": {
+							"multipleMatches": {
+								"type": "Boolean",
+								"value": null
+							},
+							"sinkAzureSqlDatabaseConnectionStringSecretName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+									"type": "Expression"
+								}
+							},
+							"sinkAzureSqlDatabaseTableSchemaName": {
+								"type": "String",
+								"value": "utils"
+							},
+							"sinkAzureSqlDatabaseTableTableName": {
+								"type": "String",
+								"value": {
+									"value": "@{concat(\n   pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName, \n   '/', \n   pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName, \n   '/', \n   pipeline().parameters.sourceAzureSqlDatabaseTableTableName, \n   '/', \n   utcNow()\n)}",
+									"type": "Expression"
+								}
+							},
+							"suppliedStructure": {
+								"type": "String",
+								"value": {
+									"value": "@string(activity('Get Source Structure').output.structure)",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "azureSqlDatabaseTableDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"azureSqlDatabaseConnectionStringSecretName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+								"type": "Expression"
+							},
+							"azureSqlDatabaseTableSchemaName": "foo",
+							"azureSqlDatabaseTableTableName": "bar"
+						}
+					}
+				}
+			},
+			{
+				"name": "Decide If Truncate Sink Table",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Find or Create Sink Table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.truncatePriorToCopy",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Exec Pipeline Truncate Sink Table",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Azure Sql Database Truncate Table Pipeline",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"azureSqlDatabaseConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableSchemaName": {
+										"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableSchemaName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableTableName": {
+										"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableTableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Source to Sink",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Decide If Truncate Sink Table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "azureBlobSingleCSVFileNameDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"azureBlobConnectionStringSecretName": {
+								"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+								"type": "Expression"
+							},
+							"azureBlobSingleCSVFileName": {
+								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
+								"type": "Expression"
+							},
+							"azureBlobSingleCSVFolderPath": {
+								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
+								"type": "Expression"
+							},
+							"azureBlobSingleCSVContainerName": {
+								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "azureSqlDatabaseTableDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"azureSqlDatabaseConnectionStringSecretName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+								"type": "Expression"
+							},
+							"azureSqlDatabaseTableSchemaName": {
+								"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableSchemaName",
+								"type": "Expression"
+							},
+							"azureSqlDatabaseTableTableName": {
+								"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableTableName",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
 		"parameters": {
 			"sourceAzureSqlDatabaseConnectionStringSecretName": {
 				"type": "string"
