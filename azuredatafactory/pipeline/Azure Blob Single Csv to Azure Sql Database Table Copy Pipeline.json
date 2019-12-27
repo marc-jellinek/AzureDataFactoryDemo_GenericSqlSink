@@ -270,7 +270,7 @@
 			}
 		},
 		"folder": {
-			"name": "Azure Blob Single Csv Source"
+			"name": "Source Azure Blob Single Csv"
 		},
 		"annotations": []
 	}
