@@ -28,7 +28,7 @@
             "resources": [
                 {
                     "type": "providers/diagnosticSettings",
-                    "name": "[concat('Microsoft.Insights/', parameters('dataFactoryName'), 'DiagSettings')]",
+                    "name": "[concat('Microsoft.OperationalInsights/', parameters('dataFactoryName'), 'DiagSettings')]",
                     "dependsOn": [
                         "[variables('factoryId')]",
                         "[resourceId('Microsoft.DataFactory/factories', parameters('dataFactoryName'))]",

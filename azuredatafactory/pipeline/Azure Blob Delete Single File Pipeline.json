@@ -1,5 +1,5 @@
 {
-	"name": "Azure Blob Delete Single File",
+	"name": "Azure Blob Delete Single File Pipeline",
 	"properties": {
 		"activities": [
 			{
