@@ -1,5 +1,5 @@
 {
-	"name": "azureBlobSingleCSVToAzureSqlDatabaseTableDataFlow",
+	"name": "azureBlobSingleCsvToAzureSqlDatabaseTableDataFlow",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
