@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Delete Single File",
+				"name": "Delete Single File Pipeline",
 				"type": "Delete",
 				"dependsOn": [],
 				"policy": {
@@ -58,6 +58,9 @@
 			"azureBlobFileName": {
 				"type": "string"
 			}
+		},
+		"folder": {
+			"name": "Utilities"
 		},
 		"annotations": []
 	}
