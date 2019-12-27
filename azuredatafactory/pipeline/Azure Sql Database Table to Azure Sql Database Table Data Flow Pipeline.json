@@ -157,9 +157,16 @@
 				}
 			},
 			{
-				"name": "dataflow1",
+				"name": "azureSqlDatabaseTableToAzureSqlDatabaseTableDataFlow",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Decide If Truncate Sink Table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -171,7 +178,37 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "azureSqlDatabaseTableToAzureSqlDatabaseTableDataFlow",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"readFromAzureSqlDatabase": {
+								"azureSqlDatabaseConnectionStringSecretName": {
+									"value": "@pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName",
+									"type": "Expression"
+								},
+								"azureSqlDatabaseTableSchemaName": {
+									"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName",
+									"type": "Expression"
+								},
+								"azureSqlDatabaseTableTableName": {
+									"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableTableName",
+									"type": "Expression"
+								}
+							},
+							"writeToAzureSqlDatabaseTable": {
+								"azureSqlDatabaseConnectionStringSecretName": {
+									"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+									"type": "Expression"
+								},
+								"azureSqlDatabaseTableSchemaName": {
+									"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName",
+									"type": "Expression"
+								},
+								"azureSqlDatabaseTableTableName": {
+									"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableTableName",
+									"type": "Expression"
+								}
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
