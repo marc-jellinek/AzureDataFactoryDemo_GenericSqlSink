@@ -1,5 +1,5 @@
 {
-	"name": "azureBlobSingleCSVNoFileNameDataset",
+	"name": "azureBlobSingleCsvNoFileNameDataset",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "azureBlobLinkedService",

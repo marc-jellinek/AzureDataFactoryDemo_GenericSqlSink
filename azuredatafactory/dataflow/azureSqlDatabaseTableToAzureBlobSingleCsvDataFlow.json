@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "azureBlobSingleCSVNoFileNameDataset",
+						"referenceName": "azureBlobSingleCsvNoFileNameDataset",
 						"type": "DatasetReference"
 					},
 					"name": "writeToAzureBlobSingleCSV"

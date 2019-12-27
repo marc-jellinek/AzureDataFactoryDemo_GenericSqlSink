@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "azureBlobSingleCSVFileNameDataset",
+						"referenceName": "azureBlobSingleCsvFileNameDataset",
 						"type": "DatasetReference"
 					},
 					"name": "readFromAzureBlobSingleCSV"
@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "azureBlobSingleCSVNoFileNameDataset",
+						"referenceName": "azureBlobSingleCsvNoFileNameDataset",
 						"type": "DatasetReference"
 					},
 					"name": "writeToAzureBlobSingleCsv"

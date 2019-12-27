@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "azureBlobSingleCSVFileNameDataset",
+						"referenceName": "azureBlobSingleCsvFileNameDataset",
 						"type": "DatasetReference"
 					},
 					"name": "readFromAzureBlobSingleCSV"

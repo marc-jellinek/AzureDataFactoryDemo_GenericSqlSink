@@ -41,7 +41,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "azureBlobSingleCSVFileNameDataset",
+						"referenceName": "azureBlobSingleCsvFileNameDataset",
 						"type": "DatasetReference",
 						"parameters": {
 							"azureBlobConnectionStringSecretName": {
@@ -65,7 +65,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "azureBlobSingleCSVFileNameDataset",
+						"referenceName": "azureBlobSingleCsvFileNameDataset",
 						"type": "DatasetReference",
 						"parameters": {
 							"azureBlobConnectionStringSecretName": {

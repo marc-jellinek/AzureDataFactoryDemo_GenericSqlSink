@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "azureBlobSingleCSVFileNameDataset",
+						"referenceName": "azureBlobSingleCsvFileNameDataset",
 						"type": "DatasetReference",
 						"parameters": {
 							"azureBlobConnectionStringSecretName": {
@@ -205,7 +205,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "azureBlobSingleCSVFileNameDataset",
+						"referenceName": "azureBlobSingleCsvFileNameDataset",
 						"type": "DatasetReference",
 						"parameters": {
 							"azureBlobConnectionStringSecretName": {
