@@ -177,15 +177,8 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": false,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00"
 					},
 					"sink": {
 						"type": "AzureSqlSink"
@@ -194,23 +187,19 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "azureBlobSingleCSVFileNameDataset",
+						"referenceName": "azureSqlDatabaseTableDataset",
 						"type": "DatasetReference",
 						"parameters": {
-							"azureBlobConnectionStringSecretName": {
-								"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+							"azureSqlDatabaseConnectionStringSecretName": {
+								"value": "@pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVFileName": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
+							"azureSqlDatabaseTableSchemaName": {
+								"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVFolderPath": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
-								"type": "Expression"
-							},
-							"azureBlobSingleCSVContainerName": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
+							"azureSqlDatabaseTableTableName": {
+								"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableTableName",
 								"type": "Expression"
 							}
 						}
