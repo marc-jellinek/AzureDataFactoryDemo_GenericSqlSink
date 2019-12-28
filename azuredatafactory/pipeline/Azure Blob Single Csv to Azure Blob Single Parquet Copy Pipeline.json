@@ -108,7 +108,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "Azure Blob Delete Single File Pipeline",
+									"referenceName": "Azure Blob Delete Single Csv File Pipeline",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true,
