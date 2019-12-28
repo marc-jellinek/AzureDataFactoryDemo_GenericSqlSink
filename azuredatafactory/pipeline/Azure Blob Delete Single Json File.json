@@ -1,0 +1,67 @@
+{
+	"name": "Azure Blob Delete Single Json File",
+	"properties": {
+		"activities": [
+			{
+				"name": "Delete Single File Pipeline",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "azureBlobSingleJsonFileNameDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"azureBlobConnectionStringSecretName": {
+								"value": "@pipeline().parameters.azureBlobConnectionStringSecretName",
+								"type": "Expression"
+							},
+							"azureBlobSingleJsonContainerName": {
+								"value": "@pipeline().parameters.azureBlobContainerName",
+								"type": "Expression"
+							},
+							"azureBlobSingleJsonFolderPath": {
+								"value": "@pipeline().parameters.azureBlobFolderPath",
+								"type": "Expression"
+							},
+							"azureBlobSingleJsonFileName": {
+								"value": "@pipeline().parameters.azureBlobFileName",
+								"type": "Expression"
+							}
+						}
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": false
+					}
+				}
+			}
+		],
+		"parameters": {
+			"azureBlobConnectionStringSecretName": {
+				"type": "string"
+			},
+			"azureBlobContainerName": {
+				"type": "string"
+			},
+			"azureBlobFolderPath": {
+				"type": "string"
+			},
+			"azureBlobFileName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Utilities"
+		},
+		"annotations": []
+	}
+}
