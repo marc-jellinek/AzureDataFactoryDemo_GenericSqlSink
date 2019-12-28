@@ -1076,7 +1076,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "azureBlobSingleParquetDataset",
+								"referenceName": "azureBlobSingleParquetFileNameDataset",
 								"type": "DatasetReference",
 								"parameters": {
 									"azureBlobConnectionStringSecretName": {
