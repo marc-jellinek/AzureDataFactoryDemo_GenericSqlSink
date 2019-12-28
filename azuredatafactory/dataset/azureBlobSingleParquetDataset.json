@@ -1,0 +1,50 @@
+{
+	"name": "azureBlobSingleParquetDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azureBlobLinkedService",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"azureBlobConnectionStringSecretName": {
+					"value": "@dataset().azureBlobConnectionStringSecretName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"azureBlobConnectionStringSecretName": {
+				"type": "string"
+			},
+			"azureBlobSingleParquetContainerName": {
+				"type": "string"
+			},
+			"azureBlobSingleParquetFolderPath": {
+				"type": "string"
+			},
+			"azureBlobSingleParquetFileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().azureBlobSingleParquetFileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().azureBlobSingleParquetFolderPath",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().azureBlobSingleParquetContainerName",
+					"type": "Expression"
+				}
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
