@@ -1,6 +1,9 @@
 {
 	"name": "azureBlobSingleCsvToAzureSqlDatabaseTableDataFlow",
 	"properties": {
+		"folder": {
+			"name": "Source Azure Blob Single Csv"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

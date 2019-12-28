@@ -102,7 +102,7 @@
 			}
 		},
 		"folder": {
-			"name": "Source Azure Sql Database Table"
+			"name": "Source Azure Sql Database Table/Copy"
 		},
 		"annotations": []
 	}

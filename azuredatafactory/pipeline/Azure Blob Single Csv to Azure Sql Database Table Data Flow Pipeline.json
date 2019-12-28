@@ -283,7 +283,7 @@
 			}
 		},
 		"folder": {
-			"name": "Source Azure Blob Single Csv"
+			"name": "Source Azure Blob Single Csv/Data Flow"
 		},
 		"annotations": []
 	}

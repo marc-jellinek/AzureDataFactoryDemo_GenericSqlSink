@@ -22,6 +22,9 @@
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "Source Azure Sql Database Table"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [],

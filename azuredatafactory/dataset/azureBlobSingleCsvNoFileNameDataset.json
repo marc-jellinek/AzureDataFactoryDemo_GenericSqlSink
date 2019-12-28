@@ -22,6 +22,9 @@
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "Source Azure Blob Single Csv"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
