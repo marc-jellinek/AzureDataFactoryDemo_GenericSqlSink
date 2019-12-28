@@ -30,15 +30,19 @@ $database2SqlOpsPassword = $azureDemoResourcesDeployment.Parameters.database2Sql
 $storageAccount1Name = $azureDemoResourcesDeployment.Parameters.storageAccount1Name.value
 $storageAccount2Name = $azureDemoResourcesDeployment.Parameters.storageAccount2Name.value
 
-$storageAccount1Key = (Get-AzStorageAccountKey `
+$storageAccount1Key = (
+    Get-AzStorageAccountKey `
         -ResourceGroupName $resourceGroupName `
         -AccountName $storageAccount1Name `
-    | Where-Object { $_.KeyName -eq 'key1' }).Value
+        | Where-Object { $_.KeyName -eq 'key1' }
+    ).Value
 
-$storageAccount2Key = (Get-AzStorageAccountKey `
+$storageAccount2Key = (
+    Get-AzStorageAccountKey `
         -ResourceGroupName $resourceGroupName `
         -AccountName $storageAccount2Name `
-    | Where-Object { $_.KeyName -eq 'key1' }).Value
+        | Where-Object { $_.KeyName -eq 'key1' }
+    ).Value
 
 # upload test data to blob storage accounts
 $ctx = New-AzStorageContext `

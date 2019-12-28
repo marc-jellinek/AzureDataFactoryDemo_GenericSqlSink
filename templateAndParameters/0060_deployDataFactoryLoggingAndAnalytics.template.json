@@ -22,62 +22,7 @@
             "location": "[resourceGroup().location]",
             "identity": {
                 "type": "SystemAssigned"
-            },
-            "properties": {
-            },
-            "resources": [
-                {
-                    "type": "providers/diagnosticSettings",
-                    "name": "[concat('Microsoft.OperationalInsights/', parameters('dataFactoryName'), 'DiagSettings')]",
-                    "dependsOn": [
-                        "[variables('factoryId')]",
-                        "[resourceId('Microsoft.DataFactory/factories', parameters('dataFactoryName'))]",
-                        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
-                    ],
-                    "apiVersion": "2017-05-01-preview",
-                    "properties": {
-                        "name": "[parameters('logAnalyticsWorkspaceName')]",
-                        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
-                        "logs": [
-                            {
-                                "category": "ActivityRuns",
-                                "enabled": true,
-                                "retentionPolicy": {
-                                    "days": 30,
-                                    "enabled": true
-                                }
-                            },
-                            {
-                                "category": "PipelineRuns",
-                                "enabled": true,
-                                "retentionPolicy": {
-                                    "days": 30,
-                                    "enabled": true
-                                }
-
-                            },
-                            {
-                                "category": "TriggerRuns",
-                                "enabled": true,
-                                "retentionPolicy": {
-                                    "days": 30,
-                                    "enabled": true
-                                }
-                            }
-                        ],
-                        "metrics": [
-                            {
-                                "category": "AllMetrics",
-                                "enabled": true,
-                                "retentionPolicy": {
-                                    "enabled": true,
-                                    "days": 30
-                                }
-                            }
-                        ]
-                    }
-                }               
-            ]
+            }
         },
         {
             "type": "Microsoft.OperationalInsights/workspaces",
@@ -89,6 +34,56 @@
                     "name": "pergb2018"
                 },
                 "retentionInDays": 30
+            }
+        },
+        {
+            "type": "Microsoft.DataFactory/factories/providers/diagnosticSettings",
+            "name": "[concat(parameters('logAnalyticsWorkspaceName'), '/Microsoft.Insights/diagnostics')]",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2017-05-01-preview",
+            "properties": {
+                "name": "diagnostics",
+                "storageAccountId": null,
+                "eventHubAuthorizationRuleId": null,
+                "eventHubName": null,
+                "workspaceId": "[concat('/subscriptions', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.OperationalInsights/workspaces/', parameters('logAnalyticsWorkspaceName'))]",
+                "logs": [
+                    {
+                        "category": "PipelineRuns",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "enabled": true,
+                            "days": 30
+                        }
+                    },
+                    {
+                        "category": "TriggerRuns",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "enabled": true,
+                            "days": 30
+                        }
+                    },
+                    {
+                        "category": "ActivityRuns",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "enabled": true,
+                            "days": 30
+                        }
+                    }
+                ],
+                "metrics": [
+                    {
+                        "category": "AllMetrics",
+                        "timeGrain": "PT1M",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "enabled": false,
+                            "days": 0
+                        }
+                    }
+                ]
             }
         },
         {
