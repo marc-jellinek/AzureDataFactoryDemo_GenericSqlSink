@@ -1,5 +1,5 @@
 {
-	"name": "Azure Blob Single Json to Azure Blob Single Csv",
+	"name": "azureBlobSingleJsontoAzureBlobSingleCsv",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
