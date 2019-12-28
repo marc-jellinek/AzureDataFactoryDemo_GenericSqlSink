@@ -1,5 +1,5 @@
 {
-	"name": "azureBlobSingleParquetDataset",
+	"name": "azureBlobSingleParquetFileNameDataset",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "azureBlobLinkedService",
