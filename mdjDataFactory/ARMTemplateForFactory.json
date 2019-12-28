@@ -3688,6 +3688,252 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/azureBlobSingleJsonFileNameDataset')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Azure Sql Database Table to Azure Blob Single Parquet Copy Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Source to Sink",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00"
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings",
+									"quoteAllText": true,
+									"filePattern": "arrayOfObjects"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "azureSqlDatabaseTableDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureSqlDatabaseConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableSchemaName": {
+										"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableTableName": {
+										"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableTableName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azureBlobSingleJsonFileNameDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureBlobConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureBlobSingleJsonContainerName": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleParquetContainerName",
+										"type": "Expression"
+									},
+									"azureBlobSingleJsonFolderPath": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFolderPath",
+										"type": "Expression"
+									},
+									"azureBlobSingleJsonFileName": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFileName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"parameters": {
+					"sourceAzureSqlDatabaseConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sourceAzureSqlDatabaseTableSchemaName": {
+						"type": "string"
+					},
+					"sourceAzureSqlDatabaseTableTableName": {
+						"type": "string"
+					},
+					"sinkAzureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleParquetContainerName": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleParquetFolderPath": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleParquetFileName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Source Azure Sql Database Table"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]",
+				"[concat(variables('factoryId'), '/datasets/azureBlobSingleJsonFileNameDataset')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "azureSqlDatabaseTableToAzureBlobSingleJsonDataFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "azureSqlDatabaseTableToAzureBlobSingleJsonDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {
+									"sourceConnectionSecretName": {
+										"value": "'@{pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName}'",
+										"type": "Expression"
+									},
+									"sinkConnectionStringSecretName": {
+										"value": "'@{pipeline().parameters.sinkAzureBlobConnectionStringSecretName}'",
+										"type": "Expression"
+									},
+									"sourceObjectName": {
+										"value": "'@{concat(\n   '[', \n   pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName, \n   '].[', \n   pipeline().parameters.sourceAzureSqlDatabaseTableTableName, \n   ']'\n)}'",
+										"type": "Expression"
+									},
+									"sinkObjectName": {
+										"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobSingleJsonContainerName, \n   '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFolderPath, \n   '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFileName\n)}'",
+										"type": "Expression"
+									},
+									"dataFactoryName": {
+										"value": "'@{pipeline().DataFactory}'",
+										"type": "Expression"
+									},
+									"dataFactoryPipelineName": {
+										"value": "'@{pipeline().Pipeline}'",
+										"type": "Expression"
+									},
+									"dataFactoryPipelineRunId": {
+										"value": "'@{pipeline().RunId}'",
+										"type": "Expression"
+									},
+									"sinkFileNameNoPath": {
+										"value": "'@{pipeline().parameters.sinkAzureBlobSingleJsonFileName}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"readFromAzureSqlDatabase": {
+										"azureSqlDatabaseConnectionStringSecretName": {
+											"value": "@pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName",
+											"type": "Expression"
+										},
+										"azureSqlDatabaseTableSchemaName": {
+											"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName",
+											"type": "Expression"
+										},
+										"azureSqlDatabaseTableTableName": {
+											"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableTableName",
+											"type": "Expression"
+										}
+									},
+									"writeToAzureBlobSingleJson": {
+										"azureBlobConnectionStringSecretName": {
+											"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
+											"type": "Expression"
+										},
+										"azureBlobSingleJsonContainerName": {
+											"value": "@pipeline().parameters.sinkAzureBlobSingleJsonContainerName",
+											"type": "Expression"
+										},
+										"azureBlobSingleJsonFolderPath": {
+											"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFolderPath",
+											"type": "Expression"
+										},
+										"azureBlobSingleJsonFileName": {
+											"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFileName",
+											"type": "Expression"
+										}
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"sourceAzureSqlDatabaseConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sourceAzureSqlDatabaseTableSchemaName": {
+						"type": "string"
+					},
+					"sourceAzureSqlDatabaseTableTableName": {
+						"type": "string"
+					},
+					"sinkAzureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleJsonContainerName": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleJsonFolderPath": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleJsonFileName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Source Azure Sql Database Table"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/azureSqlDatabaseTableToAzureBlobSingleJsonDataFlow')]"
+			]
 		}
 	]
 }
