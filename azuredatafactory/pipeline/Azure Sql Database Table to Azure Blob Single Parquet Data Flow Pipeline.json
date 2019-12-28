@@ -1,0 +1,125 @@
+{
+	"name": "Azure Sql Database Table to Azure Blob Single Parquet Data Flow Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "azureSqlDatabaseTableToAzureBlobSingleParquetDataFlow",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "azureSqlDatabaseTableToAzureBlobSingleParquetDataflow",
+						"type": "DataFlowReference",
+						"parameters": {
+							"sourceConnectionSecretName": {
+								"value": "'@{pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName}'",
+								"type": "Expression"
+							},
+							"sinkConnectionStringSecretName": {
+								"value": "'@{pipeline().parameters.sinkAzureBlobConnectionStringSecretName}'",
+								"type": "Expression"
+							},
+							"sourceObjectName": {
+								"value": "'@{concat(\n   '[', pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName, '].[', \n   pipeline().parameters.sourceAzureSqlDatabaseTableTableName, ']'\n)}'",
+								"type": "Expression"
+							},
+							"sinkObjectName": {
+								"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobSingleParquetContainerName, '/', \n   pipeline().parameters.sinkAzureBlobSingleParquetFolderPath, \n   pipeline().parameters.sinkAzureBlobSingleParquetFileName\n)}'",
+								"type": "Expression"
+							},
+							"dataFactoryName": {
+								"value": "'@{pipeline().DataFactory}'",
+								"type": "Expression"
+							},
+							"dataFactoryPipelineName": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
+							},
+							"dataFactoryPipelineRunId": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							},
+							"sinkFileNameNoPath": {
+								"value": "'@{pipeline().parameters.sinkAzureBlobSingleParquetFileName}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"readFromAzureSqlDatabase": {
+								"azureSqlDatabaseConnectionStringSecretName": {
+									"value": "@pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName",
+									"type": "Expression"
+								},
+								"azureSqlDatabaseTableSchemaName": {
+									"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName",
+									"type": "Expression"
+								},
+								"azureSqlDatabaseTableTableName": {
+									"value": "@pipeline().parameters.sourceAzureSqlDatabaseTableTableName",
+									"type": "Expression"
+								}
+							},
+							"writeToAzureBlobSingleParquet": {
+								"azureBlobConnectionStringSecretName": {
+									"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
+									"type": "Expression"
+								},
+								"azureBlobSingleParquetContainerName": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetContainerName",
+									"type": "Expression"
+								},
+								"azureBlobSingleParquetFolderPath": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFolderPath",
+									"type": "Expression"
+								},
+								"azureBlobSingleParquetFileName": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFileName",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"sourceAzureSqlDatabaseConnectionStringSecretName": {
+				"type": "string"
+			},
+			"sourceAzureSqlDatabaseTableSchemaName": {
+				"type": "string"
+			},
+			"sourceAzureSqlDatabaseTableTableName": {
+				"type": "string"
+			},
+			"sinkAzureBlobConnectionStringSecretName": {
+				"type": "string"
+			},
+			"sinkAzureBlobSingleParquetContainerName": {
+				"type": "string"
+			},
+			"sinkAzureBlobSingleParquetFolderPath": {
+				"type": "string"
+			},
+			"sinkAzureBlobSingleParquetFileName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Source Azure Sql Database Table"
+		},
+		"annotations": []
+	}
+}
