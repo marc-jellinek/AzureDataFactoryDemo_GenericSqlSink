@@ -185,6 +185,9 @@
 						"type": "string"
 					}
 				},
+				"folder": {
+					"name": "Source Azure Blob Single Csv"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -240,6 +243,9 @@
 						"type": "string"
 					}
 				},
+				"folder": {
+					"name": "Source Azure Blob Single Csv"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -294,6 +300,9 @@
 						"type": "string"
 					}
 				},
+				"folder": {
+					"name": "Source Azure Blob Single Json"
+				},
 				"annotations": [],
 				"type": "Json",
 				"typeProperties": {
@@ -347,6 +356,9 @@
 					"azureBlobSingleParquetFileName": {
 						"type": "string"
 					}
+				},
+				"folder": {
+					"name": "Source Azure Blob Single Parquet"
 				},
 				"annotations": [],
 				"type": "Parquet",
@@ -403,6 +415,9 @@
 						"type": "string"
 					}
 				},
+				"folder": {
+					"name": "Source Azure Blob Single Parquet"
+				},
 				"annotations": [],
 				"type": "Parquet",
 				"typeProperties": {
@@ -450,6 +465,9 @@
 					"azureSqlDatabaseTableTableName": {
 						"type": "string"
 					}
+				},
+				"folder": {
+					"name": "Source Azure Sql Database Table"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -647,7 +665,7 @@
 					}
 				},
 				"folder": {
-					"name": "Source Azure Sql Database Table"
+					"name": "Source Azure Sql Database Table/Copy"
 				},
 				"annotations": []
 			},
@@ -762,7 +780,7 @@
 					}
 				},
 				"folder": {
-					"name": "Source Azure Sql Database Table"
+					"name": "Source Azure Sql Database Table/Copy"
 				},
 				"annotations": []
 			},
@@ -1026,7 +1044,7 @@
 					}
 				},
 				"folder": {
-					"name": "Source Azure Sql Database Table"
+					"name": "Source Azure Sql Database Table/Copy"
 				},
 				"annotations": []
 			},
@@ -1040,6 +1058,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "Source Azure Blob Single Csv"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -1079,6 +1100,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "Source Azure Blob Single Csv"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -1118,6 +1142,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "Source Azure Blob Single Csv"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -1157,6 +1184,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "Source Azure Blob Single Csv"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -1196,6 +1226,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "Source Azure Sql Database Table"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -1235,6 +1268,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "Source Azure Sql Database Table"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
