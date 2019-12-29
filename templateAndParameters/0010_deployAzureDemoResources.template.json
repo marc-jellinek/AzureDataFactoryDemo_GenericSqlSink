@@ -154,7 +154,7 @@
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
             //"name": "[concat(parameters('keyVaultName'), '/database1ConnectionString')]",
-            "name": "[concat(parameters('keyVaultName'), '/[', parameters('database1ServerName'), '].[', parameters('database1DatabaseName'), '].[', parameters('database1SqlOpsUsername'), ']')]", 
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('database1ServerName'), '-', parameters('database1DatabaseName'), '-', parameters('database1SqlOpsUsername'))]", 
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -167,7 +167,7 @@
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
             //"name": "[concat(parameters('keyVaultName'), '/database2ConnectionString')]",
-            "name": "[concat(parameters('keyVaultName'), '/[', parameters('database2ServerName'), '].[', parameters('database2DatabaseName'), '].[', parameters('database2SqlOpsUsername'), ']')]", 
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('database2ServerName'), '-', parameters('database2DatabaseName'), '-', parameters('database2SqlOpsUsername'))]", 
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -180,7 +180,7 @@
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
             //"name": "[concat(parameters('keyVaultName'), '/blob1ConnectionString')]",
-            "name": "[concat(parameters('keyVaultName'), '/[', parameters('storageAccount1Name'), ']')]", 
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('storageAccount1Name'))]", 
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -193,7 +193,7 @@
         }, 
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(parameters('keyVaultName'), '/[', parameters('storageAccount2Name'), ']')]", 
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('storageAccount2Name'))]", 
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
