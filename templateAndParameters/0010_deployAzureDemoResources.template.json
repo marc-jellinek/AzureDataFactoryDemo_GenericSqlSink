@@ -4,11 +4,11 @@
     "parameters": {
         "dataFactoryName": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         }, 
         "keyVaultName": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         }, 
         "userObjectId": {
             "type": "string",
@@ -16,55 +16,55 @@
         },
         "database1ServerName": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "database1DatabaseName": { 
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "DB1"
         },
         "database1SqlAdminUsername": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "database1SqlAdminPassword": {
             "type": "secureString",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "database1SqlOpsUsername": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "database1SqlOpsPassword": {
             "type": "secureString",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "database2ServerName": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "database2DatabaseName": { 
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "database2SqlAdminUsername": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "database2SqlAdminPassword": {
             "type": "secureString",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "database2SqlOpsUsername": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "database2SqlOpsPassword": {
             "type": "secureString",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "storageAccount1Name": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "storageAccount1Type": {
             "type": "string",
@@ -77,11 +77,11 @@
         },
         "storageAccount2Name": {
             "type": "string", 
-            "defaultValue": ""
+            "defaultValue": "[newGuid()]"
         },
         "storageAccount2Type": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "Standard_LRS",
             "allowedValues": [
                 "Standard_LRS",
                 "Standard_GRS",
