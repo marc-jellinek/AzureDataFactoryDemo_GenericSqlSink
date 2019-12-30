@@ -94,7 +94,7 @@
 							"sinkAzureSqlDatabaseTableTableName": {
 								"type": "String",
 								"value": {
-									"value": "@{\n   if(\n      equals(\n         pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName, \n         ''\n      ), \n      'utils', \n      pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName\n   )\n}",
+									"value": "@{\n   if(\n      equals(\n         pipeline().parameters.sinkAzureSqlDatabaseTableTableName, \n         ''\n      ), \n      concat(\n         pipeline().parameters.sourceAzureBlobConnectionStringSecretName, '/', \n         pipeline().parameters.sourceAzureBlobSingleCsvContainerName, '/', \n         pipeline().parameters.sourceAzureBlobSingleCsvFolderPath, '/', \n         pipeline().parameters.sourceAzureBlobSingleCsvFileName, '/', \n         utcNow()\n      ),\n      pipeline().parameters.sinkAzureSqlDatabaseTableTableName\n   )\n}",
 									"type": "Expression"
 								}
 							},
