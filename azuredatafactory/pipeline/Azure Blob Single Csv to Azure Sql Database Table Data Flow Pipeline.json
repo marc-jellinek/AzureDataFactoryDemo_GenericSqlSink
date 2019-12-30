@@ -86,7 +86,10 @@
 							},
 							"sinkAzureSqlDatabaseTableSchemaName": {
 								"type": "String",
-								"value": "utils"
+								"value": {
+									"value": "@{\n   if(\n      equals(\n         pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName, \n         ''\n      ), \n      'utils', \n      pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName\n   )\n}",
+									"type": "Expression"
+								}
 							},
 							"sinkAzureSqlDatabaseTableTableName": {
 								"type": "String",
@@ -335,6 +338,12 @@
 			},
 			"deleteSourceFile": {
 				"type": "bool"
+			},
+			"sinkAzureSqlDatabaseTableSchemaName": {
+				"type": "string"
+			},
+			"sinkAzureSqlDatabaseTableTableName": {
+				"type": "string"
 			}
 		},
 		"folder": {

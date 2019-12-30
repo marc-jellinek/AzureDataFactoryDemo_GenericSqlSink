@@ -75,12 +75,15 @@
 							},
 							"sinkAzureSqlDatabaseTableSchemaName": {
 								"type": "String",
-								"value": "utils"
+								"value": {
+									"value": "@{\n   if(\n      equals(\n         pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName, \n         ''\n      ), \n      'utils', \n      pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName\n   )\n}",
+									"type": "Expression"
+								}
 							},
 							"sinkAzureSqlDatabaseTableTableName": {
 								"type": "String",
 								"value": {
-									"value": "@{concat(\n   pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName, \n   '/', \n   pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName, \n   '/', \n   pipeline().parameters.sourceAzureSqlDatabaseTableTableName, \n   '/', \n   utcNow()\n)}",
+									"value": "@{\n   if(\n      equals(\n         pipeline().parameters.sinkAzureSqlDatabaseTableTableName, \n         ''\n      ), \n      concat(\n         pipeline().parameters.sourceAzureSqlDatabaseConnectionStringSecretName, '/', \n         pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName, '/', \n         pipeline().parameters.sourceAzureSqlDatabaseTableTableName, '/', \n         utcNow()\n      ),\n      pipeline().parameters.sinkAzureSqlDatabaseTableTableName\n   )\n}",
 									"type": "Expression"
 								}
 							},
