@@ -264,7 +264,7 @@
 					},
 					"ifTrueActivities": [
 						{
-							"name": "Exec Pipeline Azure Blob Delete Single File_copy1",
+							"name": "Exec Pipeline Azure Blob Delete Single File",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
