@@ -129,11 +129,11 @@
 									"type": "Expression"
 								},
 								"azureBlobSingleCSVFolderPath": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFolderPath",
+									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFolderPath",
 									"type": "Expression"
 								},
 								"azureBlobSingleCSVContainerName": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleCsvContainerName",
+									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonContainerName",
 									"type": "Expression"
 								}
 							}
