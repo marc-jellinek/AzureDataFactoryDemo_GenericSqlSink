@@ -1,6 +1,9 @@
 {
 	"name": "azureBlobSingleJsonToAzureSqlDatabaseDataflow",
 	"properties": {
+		"folder": {
+			"name": "Source Azure Blob Single Json"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
