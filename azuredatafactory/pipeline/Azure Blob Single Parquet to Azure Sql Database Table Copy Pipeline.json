@@ -24,10 +24,7 @@
 						}
 					},
 					"sink": {
-						"type": "ParquetSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						}
+						"type": "AzureSqlSink"
 					},
 					"enableStaging": false
 				},
@@ -57,23 +54,19 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "azureBlobSingleParquetFileNameDataset",
+						"referenceName": "azureSqlDatabaseTableDataset",
 						"type": "DatasetReference",
 						"parameters": {
-							"azureBlobConnectionStringSecretName": {
-								"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
+							"azureSqlDatabaseConnectionStringSecretName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
 								"type": "Expression"
 							},
-							"azureBlobSingleParquetContainerName": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleParquetContainerName",
+							"azureSqlDatabaseTableSchemaName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName",
 								"type": "Expression"
 							},
-							"azureBlobSingleParquetFolderPath": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFolderPath",
-								"type": "Expression"
-							},
-							"azureBlobSingleParquetFileName": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFileName",
+							"azureSqlDatabaseTableTableName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableTableName",
 								"type": "Expression"
 							}
 						}
@@ -146,16 +139,13 @@
 			"sourceAzureBlobSingleParquetFileName": {
 				"type": "string"
 			},
-			"sinkAzureBlobConnectionStringSecretName": {
+			"sinkAzureSqlDatabaseConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleParquetContainerName": {
+			"sinkAzureSqlDatabaseTableSchemaName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleParquetFolderPath": {
-				"type": "string"
-			},
-			"sinkAzureBlobSingleParquetFileName": {
+			"sinkAzureSqlDatabaseTableTableName": {
 				"type": "string"
 			},
 			"deleteSourceFile": {
