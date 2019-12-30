@@ -84,7 +84,7 @@
 								"type": "Expression"
 							},
 							"sinkObjectName": {
-								"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobConnectionStringSecretName, '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonvContainerName, '/',   \n   pipeline().parameters.sinkAzureBlobSingleJsonFolderPath, '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFileName\n)}'",
+								"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobConnectionStringSecretName, '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonContainerName, '/',   \n   pipeline().parameters.sinkAzureBlobSingleJsonFolderPath, '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFileName\n)}'",
 								"type": "Expression"
 							},
 							"dataFactoryName": {
@@ -129,15 +129,15 @@
 									"type": "Expression"
 								},
 								"azureBlobSingleJsonContainerName": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleCsvContainerName",
+									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonContainerName",
 									"type": "Expression"
 								},
 								"azureBlobSingleJsonFolderPath": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFolderPath",
+									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFolderPath",
 									"type": "Expression"
 								},
 								"azureBlobSingleJsonFileName": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFolderPath",
+									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFolderPath",
 									"type": "Expression"
 								}
 							}
@@ -166,7 +166,7 @@
 			"sinkAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleJsonvContainerName": {
+			"sinkAzureBlobSingleJsonContainerName": {
 				"type": "string"
 			},
 			"sinkAzureBlobSingleJsonFolderPath": {
