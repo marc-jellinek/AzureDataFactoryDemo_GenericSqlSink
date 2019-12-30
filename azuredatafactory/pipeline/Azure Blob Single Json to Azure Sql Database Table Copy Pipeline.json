@@ -213,15 +213,15 @@
 								"type": "Expression"
 							},
 							"azureBlobSingleCSVFileName": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
+								"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFileName",
 								"type": "Expression"
 							},
 							"azureBlobSingleCSVFolderPath": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
+								"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFolderPath",
 								"type": "Expression"
 							},
 							"azureBlobSingleCSVContainerName": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
+								"value": "@pipeline().parameters.sourceAzureBlobSingleJsonContainerName",
 								"type": "Expression"
 							}
 						}
@@ -283,15 +283,15 @@
 										"type": "Expression"
 									},
 									"azureBlobContainerName": {
-										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
+										"value": "@pipeline().parameters.sourceAzureBlobSingleJsonContainerName",
 										"type": "Expression"
 									},
 									"azureBlobFolderPath": {
-										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
+										"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFolderPath",
 										"type": "Expression"
 									},
 									"azureBlobFileName": {
-										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
+										"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFileName",
 										"type": "Expression"
 									}
 								}
