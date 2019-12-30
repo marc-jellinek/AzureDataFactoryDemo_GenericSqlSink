@@ -68,7 +68,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "azureBlobSingleJsonToAzureBlobSingleParquet",
+						"referenceName": "azureBlobSingleJsonToAzureBlobSingleParquetDataFlow",
 						"type": "DataFlowReference",
 						"parameters": {
 							"sourceConnectionStringSecretName": {

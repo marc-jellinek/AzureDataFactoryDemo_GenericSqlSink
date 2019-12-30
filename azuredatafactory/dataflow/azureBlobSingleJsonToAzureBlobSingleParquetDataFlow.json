@@ -1,5 +1,5 @@
 {
-	"name": "azureBlobSingleJsonToAzureBlobSingleParquet",
+	"name": "azureBlobSingleJsonToAzureBlobSingleParquetDataFlow",
 	"properties": {
 		"folder": {
 			"name": "Source Azure Blob Single Json"

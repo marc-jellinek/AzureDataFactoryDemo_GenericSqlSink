@@ -1,0 +1,32 @@
+{
+	"name": "azureBlobSingleJsonToAzureSqlDatabaseDataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "azureBlobSingleJsonFileNameDataset",
+						"type": "DatasetReference"
+					},
+					"name": "readFromAzureBlobSingleJson"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "azureSqlDatabaseTableDataset",
+						"type": "DatasetReference"
+					},
+					"name": "writeToAzureSqlDatabaseTable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "enrichWithMetaData"
+				}
+			],
+			"script": "\nparameters{\n\tsourceConnectionStringSecretName as string,\n\tsinkConnectionStringSecretName as string,\n\tsourceObjectName as string,\n\tsinkObjectName as string,\n\tdataFactoryName as string,\n\tdataFactoryPipelineName as string,\n\tdataFactoryPipelineRunId as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> readFromAzureBlobSingleJson\nreadFromAzureBlobSingleJson derive({__sourceConnectionStringSecretName} = ERROR_FUNCTION(''),\n\t\t{__sinkConnectionStringSecretName} = ERROR_FUNCTION(''),\n\t\t{__sourceObjectName} = ERROR_FUNCTION(''),\n\t\t{__sinkObjectName} = ERROR_FUNCTION(''),\n\t\t{__dataFactoryName} = ERROR_FUNCTION(''),\n\t\t{__dataFactoryPipelineName} = ERROR_FUNCTION(''),\n\t\t{__dataFactoryPipelineRunId} = ERROR_FUNCTION('')) ~> enrichWithMetaData\nenrichWithMetaData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table') ~> writeToAzureSqlDatabaseTable"
+		}
+	}
+}
