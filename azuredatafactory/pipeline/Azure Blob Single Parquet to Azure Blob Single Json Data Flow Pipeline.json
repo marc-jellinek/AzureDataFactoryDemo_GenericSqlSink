@@ -68,7 +68,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "azureBlobSingleParquetToAzureBlobSingleCsvDataFlow",
+						"referenceName": "azureBlobSingleParquetToAzureBlobSingleJsonDataFlow",
 						"type": "DataFlowReference",
 						"parameters": {
 							"sourceConnectionSecretName": {
@@ -84,7 +84,7 @@
 								"type": "Expression"
 							},
 							"sinkObjectName": {
-								"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobConnectionStringSecretName, '/', \n   pipeline().parameters.sinkAzureBlobSingleCsvContainerName, '/', \n   pipeline().parameters.sinkAzureBlobSingleCsvFolderPath, '/',\n   pipeline().parameters.sinkAzureBlobSingleCsvFileName\n)}'",
+								"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobConnectionStringSecretName, '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonContainerName, '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFolderPath, '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFileName\n)}'",
 								"type": "Expression"
 							},
 							"dataFactoryName": {
@@ -100,7 +100,7 @@
 								"type": "Expression"
 							},
 							"sinkFileNameNoPath": {
-								"value": "'@{pipeline().parameters.sinkAzureBlobSingleCsvFileName}'",
+								"value": "'@{pipeline().parameters.sinkAzureBlobSingleJsonFileName}'",
 								"type": "Expression"
 							}
 						},
@@ -123,17 +123,21 @@
 									"type": "Expression"
 								}
 							},
-							"writeToAzureBlobSingleCsv": {
+							"writeToAzureBlobSingleJson": {
 								"azureBlobConnectionStringSecretName": {
 									"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
 									"type": "Expression"
 								},
-								"azureBlobSingleCSVFolderPath": {
+								"azureBlobSingleJsonContainerName": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonContainerName",
+									"type": "Expression"
+								},
+								"azureBlobSingleJsonFolderPath": {
 									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFolderPath",
 									"type": "Expression"
 								},
-								"azureBlobSingleCSVContainerName": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonContainerName",
+								"azureBlobSingleJsonFileName": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFileName",
 									"type": "Expression"
 								}
 							}
