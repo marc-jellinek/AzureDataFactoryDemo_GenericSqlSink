@@ -1,5 +1,5 @@
 {
-	"name": "Azure Blob Single Json to Azure Blob Single Parquet",
+	"name": "Azure Blob Single Json to Azure Blob Single Parquet Copy Pipeline",
 	"properties": {
 		"activities": [
 			{
