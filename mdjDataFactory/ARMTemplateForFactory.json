@@ -97,7 +97,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Azure Blob Delete Single Json File')]",
+			"name": "[concat(parameters('factoryName'), '/Azure Blob Delete Single Json File Pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -3378,189 +3378,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/NOT WORKING Azure Blob Single Json to Azure Sql Database Table Data Flow Pipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Decide If Delete Original File",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "azureBlobSingleJsontoAzureSqlDatabase",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@pipeline().parameters.deleteSourceFile",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "Exec Pipeline Azure Blob Delete Single File",
-									"type": "ExecutePipeline",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "Azure Blob Delete Single Csv File Pipeline",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": true,
-										"parameters": {
-											"azureBlobConnectionStringSecretName": {
-												"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
-												"type": "Expression"
-											},
-											"azureBlobContainerName": {
-												"value": "@pipeline().parameters.sourceAzureBlobSingleJsonContainerName",
-												"type": "Expression"
-											},
-											"azureBlobFolderPath": {
-												"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFolderPath",
-												"type": "Expression"
-											},
-											"azureBlobFileName": {
-												"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFileName",
-												"type": "Expression"
-											}
-										}
-									}
-								}
-							]
-						}
-					},
-					{
-						"name": "azureBlobSingleJsontoAzureSqlDatabase",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "azureBlobSingleJsonToAzureSqlDatabaseDataflow",
-								"type": "DataFlowReference",
-								"parameters": {
-									"sourceConnectionStringSecretName": {
-										"value": "'@{pipeline().parameters.sourceAzureBlobConnectionStringSecretName}'",
-										"type": "Expression"
-									},
-									"sinkConnectionStringSecretName": {
-										"value": "'@{pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName}'",
-										"type": "Expression"
-									},
-									"sourceObjectName": {
-										"value": "'@{concat(\n   pipeline().parameters.sourceAzureBlobConnectionStringSecretName, '/', \n   pipeline().parameters.sourceAzureBlobSingleJsonContainerName, '/', \n   pipeline().parameters.sourceAzureBlobSingleJsonFolderPath, '/', \n   pipeline().parameters.sourceAzureBlobSingleJsonFileName\n)}'",
-										"type": "Expression"
-									},
-									"sinkObjectName": {
-										"value": "'@{concat(\n   '[', pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName, '].[', \n   pipeline().parameters.sinkAzureSqlDatabaseTableTableName, ']'\n)}'",
-										"type": "Expression"
-									},
-									"dataFactoryName": {
-										"value": "'@{pipeline().DataFactory}'",
-										"type": "Expression"
-									},
-									"dataFactoryPipelineName": {
-										"value": "'@{pipeline().Pipeline}'",
-										"type": "Expression"
-									},
-									"dataFactoryPipelineRunId": {
-										"value": "'@{pipeline().RunId}'",
-										"type": "Expression"
-									}
-								},
-								"datasetParameters": {
-									"readFromAzureBlobSingleJson": {
-										"azureBlobConnectionStringSecretName": {
-											"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
-											"type": "Expression"
-										},
-										"azureBlobSingleJsonContainerName": {
-											"value": "@pipeline().parameters.sourceAzureBlobSingleJsonContainerName",
-											"type": "Expression"
-										},
-										"azureBlobSingleJsonFolderPath": {
-											"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFolderPath",
-											"type": "Expression"
-										},
-										"azureBlobSingleJsonFileName": {
-											"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFileName",
-											"type": "Expression"
-										}
-									},
-									"writeToAzureSqlDatabaseTable": {
-										"azureSqlDatabaseConnectionStringSecretName": {
-											"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
-											"type": "Expression"
-										},
-										"azureSqlDatabaseTableSchemaName": {
-											"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName",
-											"type": "Expression"
-										},
-										"azureSqlDatabaseTableTableName": {
-											"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableTableName",
-											"type": "Expression"
-										}
-									}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"sourceAzureBlobConnectionStringSecretName": {
-						"type": "string"
-					},
-					"sourceAzureBlobSingleJsonContainerName": {
-						"type": "string"
-					},
-					"sourceAzureBlobSingleJsonFolderPath": {
-						"type": "string"
-					},
-					"sourceAzureBlobSingleJsonFileName": {
-						"type": "string"
-					},
-					"sinkAzureSqlDatabaseConnectionStringSecretName": {
-						"type": "string"
-					},
-					"sinkAzureSqlDatabaseTableSchemaName": {
-						"type": "string"
-					},
-					"sinkAzureSqlDatabaseTableTableName": {
-						"type": "string"
-					},
-					"deleteSourceFile": {
-						"type": "bool"
-					}
-				},
-				"folder": {
-					"name": "Source Azure Blob Single Json/Data Flow"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/azureBlobSingleJsonToAzureSqlDatabaseDataflow')]",
-				"[concat(variables('factoryId'), '/pipelines/Azure Blob Delete Single Csv File Pipeline')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Azure Sql Database Table to Azure Blob Single Csv Copy Pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -4910,6 +4727,189 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/NOT WORKING Azure Blob Single Json to Azure Sql Database Table Data Flow Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Decide If Delete Original File",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "azureBlobSingleJsontoAzureSqlDatabase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@pipeline().parameters.deleteSourceFile",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Exec Pipeline Azure Blob Delete Single File",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Azure Blob Delete Single Csv File Pipeline",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"azureBlobConnectionStringSecretName": {
+												"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+												"type": "Expression"
+											},
+											"azureBlobContainerName": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleJsonContainerName",
+												"type": "Expression"
+											},
+											"azureBlobFolderPath": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFolderPath",
+												"type": "Expression"
+											},
+											"azureBlobFileName": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFileName",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "azureBlobSingleJsontoAzureSqlDatabase",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "azureBlobSingleJsonToAzureSqlDatabaseDataflow",
+								"type": "DataFlowReference",
+								"parameters": {
+									"sourceConnectionStringSecretName": {
+										"value": "'@{pipeline().parameters.sourceAzureBlobConnectionStringSecretName}'",
+										"type": "Expression"
+									},
+									"sinkConnectionStringSecretName": {
+										"value": "'@{pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName}'",
+										"type": "Expression"
+									},
+									"sourceObjectName": {
+										"value": "'@{concat(\n   pipeline().parameters.sourceAzureBlobConnectionStringSecretName, '/', \n   pipeline().parameters.sourceAzureBlobSingleJsonContainerName, '/', \n   pipeline().parameters.sourceAzureBlobSingleJsonFolderPath, '/', \n   pipeline().parameters.sourceAzureBlobSingleJsonFileName\n)}'",
+										"type": "Expression"
+									},
+									"sinkObjectName": {
+										"value": "'@{concat(\n   '[', pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName, '].[', \n   pipeline().parameters.sinkAzureSqlDatabaseTableTableName, ']'\n)}'",
+										"type": "Expression"
+									},
+									"dataFactoryName": {
+										"value": "'@{pipeline().DataFactory}'",
+										"type": "Expression"
+									},
+									"dataFactoryPipelineName": {
+										"value": "'@{pipeline().Pipeline}'",
+										"type": "Expression"
+									},
+									"dataFactoryPipelineRunId": {
+										"value": "'@{pipeline().RunId}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"readFromAzureBlobSingleJson": {
+										"azureBlobConnectionStringSecretName": {
+											"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+											"type": "Expression"
+										},
+										"azureBlobSingleJsonContainerName": {
+											"value": "@pipeline().parameters.sourceAzureBlobSingleJsonContainerName",
+											"type": "Expression"
+										},
+										"azureBlobSingleJsonFolderPath": {
+											"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFolderPath",
+											"type": "Expression"
+										},
+										"azureBlobSingleJsonFileName": {
+											"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFileName",
+											"type": "Expression"
+										}
+									},
+									"writeToAzureSqlDatabaseTable": {
+										"azureSqlDatabaseConnectionStringSecretName": {
+											"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+											"type": "Expression"
+										},
+										"azureSqlDatabaseTableSchemaName": {
+											"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName",
+											"type": "Expression"
+										},
+										"azureSqlDatabaseTableTableName": {
+											"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableTableName",
+											"type": "Expression"
+										}
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"sourceAzureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleJsonContainerName": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleJsonFolderPath": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleJsonFileName": {
+						"type": "string"
+					},
+					"sinkAzureSqlDatabaseConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sinkAzureSqlDatabaseTableSchemaName": {
+						"type": "string"
+					},
+					"sinkAzureSqlDatabaseTableTableName": {
+						"type": "string"
+					},
+					"deleteSourceFile": {
+						"type": "bool"
+					}
+				},
+				"folder": {
+					"name": "Source Azure Blob Single Json/Data Flow"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/azureBlobSingleJsonToAzureSqlDatabaseDataflow')]",
+				"[concat(variables('factoryId'), '/pipelines/Azure Blob Delete Single Csv File Pipeline')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/azureBlobSingleCsvFileNameDataset')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -5595,7 +5595,7 @@
 							"name": "enrichWithMetaData"
 						}
 					],
-					"script": "\nparameters{\n\tsourceConnectionStringSecretName as string,\n\tsinkConnectionStringSecretName as string,\n\tsourceObjectName as string,\n\tsinkObjectName as string,\n\tdataFactoryName as string,\n\tdataFactoryPipelineName as string,\n\tdataFactoryPipelineRunId as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tsingleDocument: true) ~> readFromAzureBlobSingleJson\nreadFromAzureBlobSingleJson derive({__sourceConnectionStringSecretName} = $sourceConnectionStringSecretName,\n\t\t{__sinkConnectionStringSecretName} = $sinkConnectionStringSecretName,\n\t\t{__sourceObjectName} = $sourceObjectName,\n\t\t{__sinkObjectName} = $sinkObjectName,\n\t\t{__dataFactoryName} = $dataFactoryName,\n\t\t{__dataFactoryPipelineName} = $dataFactoryPipelineName,\n\t\t{__dataFactoryPipelineRunId} = $dataFactoryPipelineRunId) ~> enrichWithMetaData\nenrichWithMetaData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table') ~> writeToAzureSqlDatabaseTable"
+					"script": "\nparameters{\n\tsourceConnectionStringSecretName as string,\n\tsinkConnectionStringSecretName as string,\n\tsourceObjectName as string,\n\tsinkObjectName as string,\n\tdataFactoryName as string,\n\tdataFactoryPipelineName as string,\n\tdataFactoryPipelineRunId as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tsingleDocument: true,\n\tpartitionBy('hash', 1)) ~> readFromAzureBlobSingleJson\nreadFromAzureBlobSingleJson derive({__sourceConnectionStringSecretName} = $sourceConnectionStringSecretName,\n\t\t{__sinkConnectionStringSecretName} = $sinkConnectionStringSecretName,\n\t\t{__sourceObjectName} = $sourceObjectName,\n\t\t{__sinkObjectName} = $sinkObjectName,\n\t\t{__dataFactoryName} = $dataFactoryName,\n\t\t{__dataFactoryPipelineName} = $dataFactoryPipelineName,\n\t\t{__dataFactoryPipelineRunId} = $dataFactoryPipelineRunId) ~> enrichWithMetaData\nenrichWithMetaData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table') ~> writeToAzureSqlDatabaseTable"
 				}
 			},
 			"dependsOn": [
@@ -5810,6 +5810,713 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Azure Blob Single Parquet to Azure Blob Single Csv Copy Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Source to Sink",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": false,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "azureBlobSingleParquetFileNameDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureBlobConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetContainerName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetFolderPath": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetFileName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azureBlobSingleCsvFileNameDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureBlobConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureBlobSingleCSVFileName": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFileName",
+										"type": "Expression"
+									},
+									"azureBlobSingleCSVFolderPath": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFolderPath",
+										"type": "Expression"
+									},
+									"azureBlobSingleCSVContainerName": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleCsvContainerName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Decide If Delete Original File",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Source to Sink",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@pipeline().parameters.deleteSourceFile",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Exec Pipeline Azure Blob Delete Single File",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Azure Blob Delete Single Csv File Pipeline",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"azureBlobConnectionStringSecretName": {
+												"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+												"type": "Expression"
+											},
+											"azureBlobContainerName": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
+												"type": "Expression"
+											},
+											"azureBlobFolderPath": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
+												"type": "Expression"
+											},
+											"azureBlobFileName": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"sourceAzureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetContainerName": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetFolderPath": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetFileName": {
+						"type": "string"
+					},
+					"sinkAzureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleCsvContainerName": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleCsvFolderPath": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleCsvFileName": {
+						"type": "string"
+					},
+					"deleteSourceFile": {
+						"type": "bool"
+					}
+				},
+				"folder": {
+					"name": "Source Azure Blob Single Parquet/Copy"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/azureBlobSingleParquetFileNameDataset')]",
+				"[concat(variables('factoryId'), '/datasets/azureBlobSingleCsvFileNameDataset')]",
+				"[concat(variables('factoryId'), '/pipelines/Azure Blob Delete Single Csv File Pipeline')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Azure Blob Single Parquet to Azure Blob Single Json Copy Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Source to Sink",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": false,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings",
+									"quoteAllText": true,
+									"filePattern": "arrayOfObjects"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "azureBlobSingleParquetFileNameDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureBlobConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetContainerName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetFolderPath": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetFileName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azureBlobSingleJsonFileNameDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureBlobConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureBlobSingleJsonContainerName": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleJsonContainerName",
+										"type": "Expression"
+									},
+									"azureBlobSingleJsonFolderPath": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFolderPath",
+										"type": "Expression"
+									},
+									"azureBlobSingleJsonFileName": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFileName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Decide If Delete Original File",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Source to Sink",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@pipeline().parameters.deleteSourceFile",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Exec Pipeline Azure Blob Delete Single File",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Azure Blob Delete Single Csv File Pipeline",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"azureBlobConnectionStringSecretName": {
+												"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+												"type": "Expression"
+											},
+											"azureBlobContainerName": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
+												"type": "Expression"
+											},
+											"azureBlobFolderPath": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
+												"type": "Expression"
+											},
+											"azureBlobFileName": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"sourceAzureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetContainerName": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetFolderPath": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetFileName": {
+						"type": "string"
+					},
+					"sinkAzureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleJsonContainerName": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleJsonFolderPath": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleJsonFileName": {
+						"type": "string"
+					},
+					"deleteSourceFile": {
+						"type": "bool"
+					}
+				},
+				"folder": {
+					"name": "Source Azure Blob Single Parquet/Copy"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/azureBlobSingleParquetFileNameDataset')]",
+				"[concat(variables('factoryId'), '/datasets/azureBlobSingleJsonFileNameDataset')]",
+				"[concat(variables('factoryId'), '/pipelines/Azure Blob Delete Single Csv File Pipeline')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Azure Blob Single Parquet to Azure Blob Single Parquet Copy Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Source to Sink",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": false,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "azureBlobSingleParquetFileNameDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureBlobConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetContainerName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetFolderPath": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetFileName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azureBlobSingleParquetFileNameDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureBlobConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetContainerName": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleParquetContainerName",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetFolderPath": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFolderPath",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetFileName": {
+										"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFileName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Decide If Delete Original File",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Source to Sink",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@pipeline().parameters.deleteSourceFile",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Exec Pipeline Azure Blob Delete Single File",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Azure Blob Delete Single Csv File Pipeline",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"azureBlobConnectionStringSecretName": {
+												"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+												"type": "Expression"
+											},
+											"azureBlobContainerName": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
+												"type": "Expression"
+											},
+											"azureBlobFolderPath": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
+												"type": "Expression"
+											},
+											"azureBlobFileName": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"sourceAzureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetContainerName": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetFolderPath": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetFileName": {
+						"type": "string"
+					},
+					"sinkAzureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleParquetContainerName": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleParquetFolderPath": {
+						"type": "string"
+					},
+					"sinkAzureBlobSingleParquetFileName": {
+						"type": "string"
+					},
+					"deleteSourceFile": {
+						"type": "bool"
+					}
+				},
+				"folder": {
+					"name": "Source Azure Blob Single Parquet/Copy"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/azureBlobSingleParquetFileNameDataset')]",
+				"[concat(variables('factoryId'), '/pipelines/Azure Blob Delete Single Csv File Pipeline')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Azure Blob Single Parquet to Azure Sql Database Table Copy Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Source to Sink",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": false,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "azureBlobSingleParquetFileNameDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureBlobConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetContainerName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetFolderPath": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
+										"type": "Expression"
+									},
+									"azureBlobSingleParquetFileName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azureSqlDatabaseTableDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"azureSqlDatabaseConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableSchemaName": {
+										"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName",
+										"type": "Expression"
+									},
+									"azureSqlDatabaseTableTableName": {
+										"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableTableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Decide If Delete Original File",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Source to Sink",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@pipeline().parameters.deleteSourceFile",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Exec Pipeline Azure Blob Delete Single File",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Azure Blob Delete Single Csv File Pipeline",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"azureBlobConnectionStringSecretName": {
+												"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+												"type": "Expression"
+											},
+											"azureBlobContainerName": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
+												"type": "Expression"
+											},
+											"azureBlobFolderPath": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
+												"type": "Expression"
+											},
+											"azureBlobFileName": {
+												"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"sourceAzureBlobConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetContainerName": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetFolderPath": {
+						"type": "string"
+					},
+					"sourceAzureBlobSingleParquetFileName": {
+						"type": "string"
+					},
+					"sinkAzureSqlDatabaseConnectionStringSecretName": {
+						"type": "string"
+					},
+					"sinkAzureSqlDatabaseTableSchemaName": {
+						"type": "string"
+					},
+					"sinkAzureSqlDatabaseTableTableName": {
+						"type": "string"
+					},
+					"deleteSourceFile": {
+						"type": "bool"
+					}
+				},
+				"folder": {
+					"name": "Source Azure Blob Single Parquet/Copy"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/azureBlobSingleParquetFileNameDataset')]",
+				"[concat(variables('factoryId'), '/datasets/azureSqlDatabaseTableDataset')]",
+				"[concat(variables('factoryId'), '/pipelines/Azure Blob Delete Single Csv File Pipeline')]"
 			]
 		}
 	]
