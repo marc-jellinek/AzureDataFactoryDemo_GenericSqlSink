@@ -3,82 +3,11 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Source to Sink",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "JsonSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": false,
-							"enablePartitionDiscovery": false
-						}
-					},
-					"sink": {
-						"type": "AzureSqlSink"
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "azureBlobSingleJsonFileNameDataset",
-						"type": "DatasetReference",
-						"parameters": {
-							"azureBlobConnectionStringSecretName": {
-								"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
-								"type": "Expression"
-							},
-							"azureBlobSingleJsonContainerName": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleJsonContainerName",
-								"type": "Expression"
-							},
-							"azureBlobSingleJsonFolderPath": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFolderPath",
-								"type": "Expression"
-							},
-							"azureBlobSingleJsonFileName": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFileName",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "azureSqlDatabaseTableDataset",
-						"type": "DatasetReference",
-						"parameters": {
-							"azureSqlDatabaseConnectionStringSecretName": {
-								"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
-								"type": "Expression"
-							},
-							"azureSqlDatabaseTableSchemaName": {
-								"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableSchemaName",
-								"type": "Expression"
-							},
-							"azureSqlDatabaseTableTableName": {
-								"value": "@activity('Find or Create Sink Table').output.firstRow.sinkAzureSqlDatabaseTableTableName",
-								"type": "Expression"
-							}
-						}
-					}
-				]
-			},
-			{
 				"name": "Decide If Delete Original File",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "Source to Sink",
+						"activity": "Import CSV from temp storage",
 						"dependencyConditions": [
 							"Succeeded"
 						]
