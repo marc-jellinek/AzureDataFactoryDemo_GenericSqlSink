@@ -18,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "azureBlobSingleParquetFileNameDataset",
+						"referenceName": "azureBlobSingleParquetNoFileNameDataset",
 						"type": "DatasetReference"
 					},
 					"name": "writeToAzureBlobSingleParquet"

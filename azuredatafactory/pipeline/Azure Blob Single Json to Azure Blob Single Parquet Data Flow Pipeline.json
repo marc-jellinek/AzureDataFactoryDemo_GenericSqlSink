@@ -122,24 +122,6 @@
 									"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFileName",
 									"type": "Expression"
 								}
-							},
-							"writeToAzureBlobSingleParquet": {
-								"azureBlobConnectionStringSecretName": {
-									"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
-									"type": "Expression"
-								},
-								"azureBlobSingleParquetContainerName": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetContainerName",
-									"type": "Expression"
-								},
-								"azureBlobSingleParquetFolderPath": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFolderPath",
-									"type": "Expression"
-								},
-								"azureBlobSingleParquetFileName": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFileName",
-									"type": "Expression"
-								}
 							}
 						}
 					},
