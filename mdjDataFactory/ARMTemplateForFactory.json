@@ -6479,7 +6479,7 @@
 					}
 				},
 				"folder": {
-					"name": "Source Azure Blob Single Csv"
+					"name": "Azure Blob Single Csv"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -6537,7 +6537,7 @@
 					}
 				},
 				"folder": {
-					"name": "Source Azure Blob Single Csv"
+					"name": "Azure Blob Single Csv"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -6594,7 +6594,7 @@
 					}
 				},
 				"folder": {
-					"name": "Source Azure Blob Single Json"
+					"name": "Azure Blob Single Json"
 				},
 				"annotations": [],
 				"type": "Json",
@@ -6651,7 +6651,7 @@
 					}
 				},
 				"folder": {
-					"name": "Source Azure Blob Single Parquet"
+					"name": "Azure Blob Single Parquet"
 				},
 				"annotations": [],
 				"type": "Parquet",
@@ -6709,7 +6709,7 @@
 					}
 				},
 				"folder": {
-					"name": "Source Azure Blob Single Parquet"
+					"name": "Azure Blob Single Parquet"
 				},
 				"annotations": [],
 				"type": "Parquet",
@@ -6760,7 +6760,7 @@
 					}
 				},
 				"folder": {
-					"name": "Source Azure Sql Database Table"
+					"name": "Azure Sql Database Table"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
