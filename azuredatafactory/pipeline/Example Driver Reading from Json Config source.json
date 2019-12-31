@@ -68,7 +68,7 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "If Pipeline AzBlob1Csv2AzBlob1CsvCopy",
+							"name": "AzBlob1Csv2AzBlob1CsvCopy",
 							"type": "IfCondition",
 							"dependsOn": [],
 							"userProperties": [],
@@ -133,7 +133,7 @@
 							}
 						},
 						{
-							"name": "If Pipeline AzBlob1Csv2AzBlob1JsonCopy",
+							"name": "AzBlob1Csv2AzBlob1JsonCopy",
 							"type": "IfCondition",
 							"dependsOn": [],
 							"userProperties": [],
@@ -198,7 +198,7 @@
 							}
 						},
 						{
-							"name": "If Pipeline AzBlob1Csv2AzBlob1ParquetCopyPipeline",
+							"name": "AzBlob1Csv2AzBlob1ParquetCopyPipeline",
 							"type": "IfCondition",
 							"dependsOn": [],
 							"userProperties": [],
@@ -225,7 +225,7 @@
 							}
 						},
 						{
-							"name": "If Pipeline AzBlob1Csv2AzSqlDbCopyPipeline",
+							"name": "AzBlob1Csv2AzSqlDbCopyPipeline",
 							"type": "IfCondition",
 							"dependsOn": [],
 							"userProperties": [],
