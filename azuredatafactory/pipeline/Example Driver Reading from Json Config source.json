@@ -74,7 +74,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals(\n   item().parameters.PipelineName, \n   'Azure Blob Single Csv to Azure Blob Single Csv Copy Pipeline'\n)",
+									"value": "@equals(\n   item().PipelineName, \n   'Azure Blob Single Csv to Azure Blob Single Csv Copy Pipeline'\n)",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
@@ -139,7 +139,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals(\n   item().parameters.PipelineName, \n   'Azure Blob Single Csv to Azure Blob Single Json Copy Pipeline'\n)",
+									"value": "@equals(\n   item().PipelineName, \n   'Azure Blob Single Csv to Azure Blob Single Json Copy Pipeline'\n)",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
@@ -204,7 +204,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals(\n   item().parameters.pipelineName, \n   'Azure Blob Single Csv to Azure Blob Single Parquet Copy Pipeline'\n)",
+									"value": "@equals(\n   item().pipelineName, \n   'Azure Blob Single Csv to Azure Blob Single Parquet Copy Pipeline'\n)",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
@@ -269,7 +269,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals(\n   item().parameters.pipelineName, \n   'Azure Blob Single Csv To Azure Sql Database Table Copy Pipeline'\n)",
+									"value": "@equals(\n   item().pipelineName, \n   'Azure Blob Single Csv To Azure Sql Database Table Copy Pipeline'\n)",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
