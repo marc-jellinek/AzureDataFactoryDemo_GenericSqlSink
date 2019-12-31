@@ -1,0 +1,88 @@
+{
+	"name": "Example Driver Reading from Json Config source",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Config Values",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"dataset": {
+						"referenceName": "azureBlobSingleJsonFileNameDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"azureBlobConnectionStringSecretName": {
+								"value": "@pipeline().parameters.configAzureBlobConnectionStringSecretName",
+								"type": "Expression"
+							},
+							"azureBlobSingleJsonContainerName": {
+								"value": "@pipeline().parameters.configAzureBlobSingleJsonContainerName",
+								"type": "Expression"
+							},
+							"azureBlobSingleJsonFolderPath": {
+								"value": "@pipeline().parameters.configAzureBlobSingleJsonFolderPath",
+								"type": "Expression"
+							},
+							"azureBlobSingleJsonFileName": {
+								"value": "@pipeline().parameters.configAzureBlobSingleJsonFileName",
+								"type": "Expression"
+							}
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach Pipeline Configuration",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Config Values",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Config Values').output",
+						"type": "Expression"
+					},
+					"isSequential": true
+				}
+			}
+		],
+		"parameters": {
+			"configAzureBlobConnectionStringSecretName": {
+				"type": "string"
+			},
+			"configAzureBlobSingleJsonContainerName": {
+				"type": "string"
+			},
+			"configAzureBlobSingleJsonFolderPath": {
+				"type": "string"
+			},
+			"configAzureBlobSingleJsonFileName": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
