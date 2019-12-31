@@ -451,7 +451,60 @@
 										]
 									},
 									{
-										"value": "Azure Blob Single Csv to Azure Blob Single Parquet Copy Pipeline"
+										"value": "Azure Blob Single Csv to Azure Blob Single Parquet Copy Pipeline",
+										"activities": [
+											{
+												"name": "Execute AzBlob1Csv2AzBlob1ParquetCopyPipeline",
+												"type": "ExecutePipeline",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"pipeline": {
+														"referenceName": "Azure Blob Single Csv to Azure Blob Single Parquet Copy Pipeline",
+														"type": "PipelineReference"
+													},
+													"waitOnCompletion": true,
+													"parameters": {
+														"sourceAzureBlobConnectionStringSecretName": {
+															"value": "@item().parameters.sourceAzureBlobConnectionStringSecretName",
+															"type": "Expression"
+														},
+														"sourceAzureBlobSingleCsvContainerName": {
+															"value": "@item().parameters.sourceAzureBlobSingleCsvContainerName",
+															"type": "Expression"
+														},
+														"sourceAzureBlobSingleCsvFolderPath": {
+															"value": "@item().parameters.sourceAzureBlobSingleCsvFolderPath",
+															"type": "Expression"
+														},
+														"sourceAzureBlobSingleCsvFileName": {
+															"value": "@item().parameters.sourceAzureBlobSingleCsvFileName",
+															"type": "Expression"
+														},
+														"sinkAzureBlobConnectionStringSecretName": {
+															"value": "@item().parameters.sinkAzureBlobConnectionStringSecretName",
+															"type": "Expression"
+														},
+														"sinkAzureBlobSingleParquetContainerName": {
+															"value": "@item().parameters.sinkAzureBlobSingleParquetContainerName",
+															"type": "Expression"
+														},
+														"sinkAzureBlobSingleParquetFolderPath": {
+															"value": "@item().parameters.sinkAzureBlobSingleParquetFolderPath",
+															"type": "Expression"
+														},
+														"sinkAzureBlobSingleParquetFileName": {
+															"value": "@item().parameters.sinkAzureBlobSingleParquetFileName",
+															"type": "Expression"
+														},
+														"deleteSourceFile": {
+															"value": "@item().parameters.deleteSourceFile",
+															"type": "Expression"
+														}
+													}
+												}
+											}
+										]
 									},
 									{
 										"value": "Azure Blob Single Csv to Azure Sql Database Copy Pipeline"
