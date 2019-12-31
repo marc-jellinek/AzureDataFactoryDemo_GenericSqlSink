@@ -62,7 +62,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Config Values').output",
+						"value": "@activity('Get Config Values').output.value",
 						"type": "Expression"
 					},
 					"isSequential": true,
