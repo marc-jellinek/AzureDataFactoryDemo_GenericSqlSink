@@ -26,7 +26,7 @@
 			}
 		},
 		"folder": {
-			"name": "Source Azure Blob Single Json"
+			"name": "Azure Blob Single Json"
 		},
 		"annotations": [],
 		"type": "Json",

@@ -23,7 +23,7 @@
 			}
 		},
 		"folder": {
-			"name": "Source Azure Sql Database Table"
+			"name": "Azure Sql Database Table"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",

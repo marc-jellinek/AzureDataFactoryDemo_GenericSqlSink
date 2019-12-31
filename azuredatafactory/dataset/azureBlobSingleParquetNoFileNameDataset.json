@@ -26,7 +26,7 @@
 			}
 		},
 		"folder": {
-			"name": "Source Azure Blob Single Parquet"
+			"name": "Azure Blob Single Parquet"
 		},
 		"annotations": [],
 		"type": "Parquet",
