@@ -6369,11 +6369,11 @@
 															"type": "Expression"
 														},
 														"sourceAzureBlobSingleCsvFolderPath": {
-															"value": "item().parameters.sourceAzureBlobSingleCsvFolderPath",
+															"value": "@item().parameters.sourceAzureBlobSingleCsvFolderPath",
 															"type": "Expression"
 														},
 														"sourceAzureBlobSingleCsvFileName": {
-															"value": "item().parameters.sourceAzureBlobSingleCsvFileName",
+															"value": "@item().parameters.sourceAzureBlobSingleCsvFileName",
 															"type": "Expression"
 														},
 														"sinkAzureBlobConnectionStringSecretName": {
