@@ -6,18 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "mdjDataFactory"
-		},
-		"azureBlobLinkedService_properties_typeProperties_connectionString_secretName": {
-			"type": "string",
-			"defaultValue": "@{linkedService().azureBlobConnectionStringSecretName}"
-		},
-		"azureKeyVaultLinkedService_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://mdjKeyVault.vault.azure.net"
-		},
-		"azureSqlDatabaseLinkedService_properties_typeProperties_connectionString_secretName": {
-			"type": "string",
-			"defaultValue": "@{linkedService().azureSqlDatabaseConnectionStringSecretName}"
 		}
 	},
 	"variables": {
@@ -515,7 +503,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -946,7 +933,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -1320,7 +1306,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -1978,7 +1963,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -2405,7 +2389,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -2780,7 +2763,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -3151,7 +3133,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -3774,7 +3755,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -4150,7 +4130,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -4520,7 +4499,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -4873,7 +4851,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -5119,7 +5096,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -5365,7 +5341,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -5611,7 +5586,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -6162,7 +6136,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -6764,7 +6737,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -6973,8 +6945,7 @@
 							"type": "Expression"
 						}
 					}
-				},
-				"schema": {}
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/azureBlobLinkedService')]"
@@ -7158,7 +7129,7 @@
 							"referenceName": "AzureKeyVaultLinkedService",
 							"type": "LinkedServiceReference"
 						},
-						"secretName": "[parameters('azureBlobLinkedService_properties_typeProperties_connectionString_secretName')]"
+						"secretName": "@{linkedService().azureBlobConnectionStringSecretName}"
 					}
 				}
 			},
@@ -7174,7 +7145,7 @@
 				"annotations": [],
 				"type": "AzureKeyVault",
 				"typeProperties": {
-					"baseUrl": "[parameters('azureKeyVaultLinkedService_properties_typeProperties_baseUrl')]"
+					"baseUrl": "https://mdjKeyVault.vault.azure.net"
 				}
 			},
 			"dependsOn": []
@@ -7199,7 +7170,7 @@
 							"type": "LinkedServiceReference"
 						},
 						"secretName": {
-							"value": "[parameters('azureSqlDatabaseLinkedService_properties_typeProperties_connectionString_secretName')]",
+							"value": "@{linkedService().azureSqlDatabaseConnectionStringSecretName}",
 							"type": "Expression"
 						}
 					}
@@ -7225,8 +7196,7 @@
 								"referenceName": "azureBlobSingleCsvFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleCSV",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleCSV"
 						}
 					],
 					"sinks": [
@@ -7267,8 +7237,7 @@
 								"referenceName": "azureBlobSingleCsvFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleCSV",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleCSV"
 						}
 					],
 					"sinks": [
@@ -7309,8 +7278,7 @@
 								"referenceName": "azureBlobSingleCsvFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleCSV",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleCSV"
 						}
 					],
 					"sinks": [
@@ -7351,8 +7319,7 @@
 								"referenceName": "azureBlobSingleCsvFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleCSV",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleCSV"
 						}
 					],
 					"sinks": [
@@ -7393,8 +7360,7 @@
 								"referenceName": "azureBlobSingleJsonFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleJson",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleJson"
 						}
 					],
 					"sinks": [
@@ -7434,8 +7400,7 @@
 								"referenceName": "azureBlobSingleJsonFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleJson",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleJson"
 						}
 					],
 					"sinks": [
@@ -7476,8 +7441,7 @@
 								"referenceName": "azureBlobSingleJsonFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleJson",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleJson"
 						}
 					],
 					"sinks": [
@@ -7518,8 +7482,7 @@
 								"referenceName": "azureBlobSingleJsonFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleJson",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleJson"
 						}
 					],
 					"sinks": [
@@ -7560,8 +7523,7 @@
 								"referenceName": "azureBlobSingleParquetFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleParquet",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleParquet"
 						}
 					],
 					"sinks": [
@@ -7602,8 +7564,7 @@
 								"referenceName": "azureBlobSingleParquetFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleParquet",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleParquet"
 						}
 					],
 					"sinks": [
@@ -7644,8 +7605,7 @@
 								"referenceName": "azureBlobSingleParquetFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleParquet",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleParquet"
 						}
 					],
 					"sinks": [
@@ -7686,8 +7646,7 @@
 								"referenceName": "azureBlobSingleParquetFileNameDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureBlobSingleParquet",
-							"typeProperties": {}
+							"name": "readFromAzureBlobSingleParquet"
 						}
 					],
 					"sinks": [
@@ -7728,8 +7687,7 @@
 								"referenceName": "azureSqlDatabaseTableDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureSqlDatabase",
-							"typeProperties": {}
+							"name": "readFromAzureSqlDatabase"
 						}
 					],
 					"sinks": [
@@ -7770,8 +7728,7 @@
 								"referenceName": "azureSqlDatabaseTableDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureSqlDatabase",
-							"typeProperties": {}
+							"name": "readFromAzureSqlDatabase"
 						}
 					],
 					"sinks": [
@@ -7812,8 +7769,7 @@
 								"referenceName": "azureSqlDatabaseTableDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureSqlDatabase",
-							"typeProperties": {}
+							"name": "readFromAzureSqlDatabase"
 						}
 					],
 					"sinks": [
@@ -7854,8 +7810,7 @@
 								"referenceName": "azureSqlDatabaseTableDataset",
 								"type": "DatasetReference"
 							},
-							"name": "readFromAzureSqlDatabase",
-							"typeProperties": {}
+							"name": "readFromAzureSqlDatabase"
 						}
 					],
 					"sinks": [
