@@ -6552,7 +6552,7 @@
 																	"type": "Expression"
 																},
 																"truncatePriorToCopy": {
-																	"value": "@item().parameters.trucatePriorToCopy",
+																	"value": "@item().parameters.truncatePriorToCopy",
 																	"type": "Expression"
 																},
 																"deleteSourceFile": {
