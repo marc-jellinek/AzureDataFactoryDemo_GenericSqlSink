@@ -125,7 +125,10 @@
 															"value": "@item().parameters.sinkAzureBlobSingleCsvFileName",
 															"type": "Expression"
 														},
-														"deleteSourceFile": "@item().parameters.deleteSourceFile"
+														"deleteSourceFile": {
+															"value": "@item().parameters.deleteSourceFile",
+															"type": "Expression"
+														}
 													}
 												}
 											}
