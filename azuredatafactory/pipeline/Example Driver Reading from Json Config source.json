@@ -82,7 +82,8 @@
 										"value": "Azure Blob Single Csv to Azure Blob Single Csv Copy Pipeline",
 										"activities": [
 											{
-												"name": "Execute Pipeline",
+												"name": "azBlobSingleCsvtoAzBlob1CsvCopyPipeline",
+												"description": "Azure Blob Single Csv to Azure Blob Single Csv Copy Pipeline",
 												"type": "ExecutePipeline",
 												"dependsOn": [],
 												"userProperties": [],
@@ -138,7 +139,7 @@
 										"value": "Azure Blob Single Csv to Azure Blob Single Json Copy Pipeline",
 										"activities": [
 											{
-												"name": "Execute Pipeline",
+												"name": "azureBlobSingleCsvtoAzureBlobSingleJsonCopyPipeline",
 												"type": "ExecutePipeline",
 												"dependsOn": [],
 												"userProperties": [],
@@ -191,10 +192,10 @@
 										]
 									},
 									{
-										"value": "Azre Blob Single Csv to Azure Blob Single Parquet Copy Pipeline",
+										"value": "Azure Blob Single Csv to Azure Blob Single Parquet Copy Pipeline",
 										"activities": [
 											{
-												"name": "Execute Pipeline",
+												"name": "AzBlobSingleCsvtoAzBlobSingleParquetCopyPipeline",
 												"type": "ExecutePipeline",
 												"dependsOn": [],
 												"userProperties": [],
