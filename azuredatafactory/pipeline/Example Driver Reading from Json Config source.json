@@ -342,7 +342,7 @@
 										"value": "Azure Blob Single Csv to Azure Blob Single Csv Copy Pipeline",
 										"activities": [
 											{
-												"name": "Execute AzBlob1Csv2AzBlob1CsvCopy",
+												"name": "Execute AzBlob1Csv2AzBlob1CsvCopyPipeline",
 												"type": "ExecutePipeline",
 												"dependsOn": [],
 												"userProperties": [],
