@@ -1,5 +1,5 @@
 {
-	"name": "Azure Blob Delete Single File Pipeline",
+	"name": "Azure Blob Delete Single Json File Pipeline",
 	"properties": {
 		"activities": [
 			{
@@ -16,23 +16,23 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "azureBlobSingleCsvFileNameDataset",
+						"referenceName": "azureBlobSingleJsonFileNameDataset",
 						"type": "DatasetReference",
 						"parameters": {
 							"azureBlobConnectionStringSecretName": {
 								"value": "@pipeline().parameters.azureBlobConnectionStringSecretName",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVFileName": {
-								"value": "@pipeline().parameters.azureBlobFileName",
+							"azureBlobSingleJsonContainerName": {
+								"value": "@pipeline().parameters.azureBlobContainerName",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVFolderPath": {
+							"azureBlobSingleJsonFolderPath": {
 								"value": "@pipeline().parameters.azureBlobFolderPath",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVContainerName": {
-								"value": "@pipeline().parameters.azureBlobContainerName",
+							"azureBlobSingleJsonFileName": {
+								"value": "@pipeline().parameters.azureBlobFileName",
 								"type": "Expression"
 							}
 						}

@@ -1,5 +1,5 @@
 {
-	"name": "azureBlobSingleCsvFileNameDataset",
+	"name": "azureBlobSingleParquetNoFileNameDataset",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "azureBlobLinkedService",
@@ -15,43 +15,35 @@
 			"azureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"azureBlobSingleCSVFileName": {
+			"azureBlobSingleParquetContainerName": {
 				"type": "string"
 			},
-			"azureBlobSingleCSVFolderPath": {
+			"azureBlobSingleParquetFolderPath": {
 				"type": "string"
 			},
-			"azureBlobSingleCSVContainerName": {
+			"azureBlobSingleParquetFileName": {
 				"type": "string"
 			}
 		},
 		"folder": {
-			"name": "Azure Blob Single Csv"
+			"name": "Azure Blob Single Parquet"
 		},
 		"annotations": [],
-		"type": "DelimitedText",
+		"type": "Parquet",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": {
-					"value": "@dataset().azureBlobSingleCSVFileName",
-					"type": "Expression"
-				},
 				"folderPath": {
-					"value": "@dataset().azureBlobSingleCSVFolderPath",
+					"value": "@dataset().azureBlobSingleParquetFolderPath",
 					"type": "Expression"
 				},
 				"container": {
-					"value": "@dataset().azureBlobSingleCSVContainerName",
+					"value": "@dataset().azureBlobSingleParquetContainerName",
 					"type": "Expression"
 				}
 			},
-			"columnDelimiter": ",",
-			"escapeChar": "\\",
-			"firstRowAsHeader": true,
-			"quoteChar": "\""
+			"compressionCodec": "snappy"
 		},
 		"schema": []
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+	}
 }

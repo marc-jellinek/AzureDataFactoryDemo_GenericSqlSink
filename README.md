@@ -1,6 +1,6 @@
 # Throwing Mudd on the Wall (TMoW) - Instant ELt using Azure Data Factory
 
-## This is a work in progress, it is not currently release quality
+## This is a work in progress, it is currently being tested.  I have confidence in the data factory objects it produces.  It is not yet complete
 
 ![Harry Mudd](https://www.syfy.com/sites/syfy/files/styles/1200x680/public/wire/legacy/Harry_Mudd.jpg)
 

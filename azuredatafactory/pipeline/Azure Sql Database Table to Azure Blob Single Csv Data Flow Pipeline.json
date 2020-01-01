@@ -114,7 +114,7 @@
 			}
 		},
 		"folder": {
-			"name": "Source Azure Sql Database Table"
+			"name": "Source Azure Sql Database Table/Data Flow"
 		},
 		"annotations": []
 	}

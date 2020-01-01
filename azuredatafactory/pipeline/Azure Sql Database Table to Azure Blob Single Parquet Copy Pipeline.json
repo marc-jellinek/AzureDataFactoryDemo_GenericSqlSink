@@ -1,5 +1,5 @@
 {
-	"name": "Azure Sql Database Table to Azure Blob Single Csv Copy Pipeline",
+	"name": "Azure Sql Database Table to Azure Blob Single Parquet Copy Pipeline",
 	"properties": {
 		"activities": [
 			{
@@ -20,14 +20,14 @@
 						"queryTimeout": "02:00:00"
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
+						"type": "JsonSink",
 						"storeSettings": {
 							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
+							"type": "JsonWriteSettings",
 							"quoteAllText": true,
-							"fileExtension": ".csv"
+							"filePattern": "arrayOfObjects"
 						}
 					},
 					"enableStaging": false
@@ -54,23 +54,23 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "azureBlobSingleCsvFileNameDataset",
+						"referenceName": "azureBlobSingleJsonFileNameDataset",
 						"type": "DatasetReference",
 						"parameters": {
 							"azureBlobConnectionStringSecretName": {
 								"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVFileName": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFileName",
+							"azureBlobSingleJsonContainerName": {
+								"value": "@pipeline().parameters.sinkAzureBlobSingleParquetContainerName",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVFolderPath": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFolderPath",
+							"azureBlobSingleJsonFolderPath": {
+								"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFolderPath",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVContainerName": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvContainerName",
+							"azureBlobSingleJsonFileName": {
+								"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFileName",
 								"type": "Expression"
 							}
 						}
@@ -91,13 +91,13 @@
 			"sinkAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleCsvContainerName": {
+			"sinkAzureBlobSingleParquetContainerName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleCsvFolderPath": {
+			"sinkAzureBlobSingleParquetFolderPath": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleCsvFileName": {
+			"sinkAzureBlobSingleParquetFileName": {
 				"type": "string"
 			}
 		},

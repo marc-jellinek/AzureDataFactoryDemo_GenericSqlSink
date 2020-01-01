@@ -1,5 +1,5 @@
 {
-	"name": "Azure Blob Single Csv to Azure Blob Single Json Data Flow Pipeline",
+	"name": "Azure Blob Single Parquet to Azure Blob Single Parquet Data Flow Pipeline",
 	"properties": {
 		"activities": [
 			{
@@ -7,7 +7,7 @@
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "azureBlobSingleCsvToAzureBlobSingleJsonDataFlow",
+						"activity": "azureBlobSingleParquetToAzureBlobSingleParquetDataFlow",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -27,7 +27,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "Azure Blob Delete Single Csv File Pipeline",
+									"referenceName": "Azure Blob Delete Single Parquet File Pipeline",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true,
@@ -37,15 +37,15 @@
 										"type": "Expression"
 									},
 									"azureBlobContainerName": {
-										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
 										"type": "Expression"
 									},
 									"azureBlobFolderPath": {
-										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
 										"type": "Expression"
 									},
 									"azureBlobFileName": {
-										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
 										"type": "Expression"
 									}
 								}
@@ -55,7 +55,7 @@
 				}
 			},
 			{
-				"name": "azureBlobSingleCsvToAzureBlobSingleJsonDataFlow",
+				"name": "azureBlobSingleParquetToAzureBlobSingleParquetDataFlow",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -68,7 +68,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "azureBlobSingleCsvToAzureBlobSingleJsonDataFlow",
+						"referenceName": "azureBlobSingleParquetToAzureBlobSingleParquetDataFlow",
 						"type": "DataFlowReference",
 						"parameters": {
 							"sourceConnectionSecretName": {
@@ -80,11 +80,11 @@
 								"type": "Expression"
 							},
 							"sourceObjectName": {
-								"value": "'@{concat(\n   pipeline().parameters.sourceAzureBlobSingleCsvContainerName, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvFolderPath, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvFileName\n)}'",
+								"value": "'@{concat(\n   pipeline().parameters.sourceAzureBlobConnectionStringSecretName, '/', \n   pipeline().parameters.sourceAzureBlobSingleParquetContainerName, '/', \n   pipeline().parameters.sourceAzureBlobSingleParquetFolderPath, '/', \n   pipeline().parameters.sourceAzureBlobSingleParquetFileName\n)}'",
 								"type": "Expression"
 							},
 							"sinkObjectName": {
-								"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobSingleJsonContainerName, \n   '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFolderPath, \n   '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFileName\n)}'",
+								"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobConnectionStringSecretName, '/', \n   pipeline().parameters.sinkAzureBlobSingleParquetContainerName, '/', \n   pipeline().parameters.sinkAzureBlobSingleParquetFolderPath, '/', \n   pipeline().parameters.sinkAzureBlobSingleParquetFileName\n)}'",
 								"type": "Expression"
 							},
 							"dataFactoryName": {
@@ -100,44 +100,44 @@
 								"type": "Expression"
 							},
 							"sinkFileNameNoPath": {
-								"value": "'@{pipeline().parameters.sinkAzureBlobSingleJsonFileName}'",
+								"value": "'@{pipeline().parameters.sinkAzureBlobSingleParquetFileName}'",
 								"type": "Expression"
 							}
 						},
 						"datasetParameters": {
-							"readFromAzureBlobSingleCSV": {
+							"readFromAzureBlobSingleParquet": {
 								"azureBlobConnectionStringSecretName": {
 									"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
 									"type": "Expression"
 								},
-								"azureBlobSingleCSVFileName": {
-									"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
+								"azureBlobSingleParquetContainerName": {
+									"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
 									"type": "Expression"
 								},
-								"azureBlobSingleCSVFolderPath": {
-									"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
+								"azureBlobSingleParquetFolderPath": {
+									"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
 									"type": "Expression"
 								},
-								"azureBlobSingleCSVContainerName": {
-									"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
+								"azureBlobSingleParquetFileName": {
+									"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
 									"type": "Expression"
 								}
 							},
-							"writeToAzureBlobSingleJson": {
+							"writeToAzureBlobSingleParquet": {
 								"azureBlobConnectionStringSecretName": {
 									"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
 									"type": "Expression"
 								},
-								"azureBlobSingleJsonContainerName": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonContainerName",
+								"azureBlobSingleParquetContainerName": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetContainerName",
 									"type": "Expression"
 								},
-								"azureBlobSingleJsonFolderPath": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFolderPath",
+								"azureBlobSingleParquetFolderPath": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFolderPath",
 									"type": "Expression"
 								},
-								"azureBlobSingleJsonFileName": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFileName",
+								"azureBlobSingleParquetFileName": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFileName",
 									"type": "Expression"
 								}
 							}
@@ -154,25 +154,25 @@
 			"sourceAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sourceAzureBlobSingleCsvContainerName": {
+			"sourceAzureBlobSingleParquetContainerName": {
 				"type": "string"
 			},
-			"sourceAzureBlobSingleCsvFolderPath": {
+			"sourceAzureBlobSingleParquetFolderPath": {
 				"type": "string"
 			},
-			"sourceAzureBlobSingleCsvFileName": {
+			"sourceAzureBlobSingleParquetFileName": {
 				"type": "string"
 			},
 			"sinkAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleJsonContainerName": {
+			"sinkAzureBlobSingleParquetContainerName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleJsonFolderPath": {
+			"sinkAzureBlobSingleParquetFolderPath": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleJsonFileName": {
+			"sinkAzureBlobSingleParquetFileName": {
 				"type": "string"
 			},
 			"deleteSourceFile": {
@@ -180,7 +180,7 @@
 			}
 		},
 		"folder": {
-			"name": "Source Azure Blob Single Csv/Data Flow"
+			"name": "Source Azure Blob Single Parquet/Data Flow"
 		},
 		"annotations": []
 	}

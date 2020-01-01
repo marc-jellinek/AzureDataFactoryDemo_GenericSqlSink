@@ -86,12 +86,15 @@
 							},
 							"sinkAzureSqlDatabaseTableSchemaName": {
 								"type": "String",
-								"value": "utils"
+								"value": {
+									"value": "@{\n   if(\n      equals(\n         pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName, \n         ''\n      ), \n      'utils', \n      pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName\n   )\n}",
+									"type": "Expression"
+								}
 							},
 							"sinkAzureSqlDatabaseTableTableName": {
 								"type": "String",
 								"value": {
-									"value": "@{concat(\n   pipeline().parameters.sourceAzureBlobConnectionStringSecretName, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvContainerName, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvFolderPath, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvFileName, \n   '/', \n   utcNow()\n)}",
+									"value": "@{\n   if(\n      equals(\n         pipeline().parameters.sinkAzureSqlDatabaseTableTableName, \n         ''\n      ), \n      concat(\n         pipeline().parameters.sourceAzureBlobConnectionStringSecretName, '/', \n         pipeline().parameters.sourceAzureBlobSingleCsvContainerName, '/', \n         pipeline().parameters.sourceAzureBlobSingleCsvFolderPath, '/', \n         pipeline().parameters.sourceAzureBlobSingleCsvFileName, '/', \n         utcNow()\n      ),\n      pipeline().parameters.sinkAzureSqlDatabaseTableTableName\n   )\n}",
 									"type": "Expression"
 								}
 							},
@@ -247,6 +250,58 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "Decide If Delete Original File",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Source to Sink",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.deleteSourceFile",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Exec Pipeline Azure Blob Delete Single File",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Azure Blob Delete Single Csv File Pipeline",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"azureBlobConnectionStringSecretName": {
+										"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
+										"type": "Expression"
+									},
+									"azureBlobContainerName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
+										"type": "Expression"
+									},
+									"azureBlobFolderPath": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
+										"type": "Expression"
+									},
+									"azureBlobFileName": {
+										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
 			}
 		],
 		"parameters": {
@@ -267,10 +322,19 @@
 			},
 			"truncatePriorToCopy": {
 				"type": "bool"
+			},
+			"deleteSourceFile": {
+				"type": "bool"
+			},
+			"sinkAzureSqlDatabaseTableSchemaName": {
+				"type": "string"
+			},
+			"sinkAzureSqlDatabaseTableTableName": {
+				"type": "string"
 			}
 		},
 		"folder": {
-			"name": "Source Azure Blob Single Csv"
+			"name": "Source Azure Blob Single Csv/Copy"
 		},
 		"annotations": []
 	}

@@ -1,5 +1,5 @@
 {
-	"name": "Azure Blob Single Csv to Azure Blob Single Csv Copy Pipeline",
+	"name": "Azure Blob Single Parquet to Azure Sql Database Table Copy Pipeline",
 	"properties": {
 		"activities": [
 			{
@@ -16,48 +16,37 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
+						"type": "ParquetSource",
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": false,
 							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".csv"
-						}
+						"type": "AzureSqlSink"
 					},
 					"enableStaging": false
 				},
 				"inputs": [
 					{
-						"referenceName": "azureBlobSingleCsvFileNameDataset",
+						"referenceName": "azureBlobSingleParquetFileNameDataset",
 						"type": "DatasetReference",
 						"parameters": {
 							"azureBlobConnectionStringSecretName": {
 								"value": "@pipeline().parameters.sourceAzureBlobConnectionStringSecretName",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVFileName": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
+							"azureBlobSingleParquetContainerName": {
+								"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVFolderPath": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
+							"azureBlobSingleParquetFolderPath": {
+								"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVContainerName": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
+							"azureBlobSingleParquetFileName": {
+								"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
 								"type": "Expression"
 							}
 						}
@@ -65,23 +54,19 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "azureBlobSingleCsvFileNameDataset",
+						"referenceName": "azureSqlDatabaseTableDataset",
 						"type": "DatasetReference",
 						"parameters": {
-							"azureBlobConnectionStringSecretName": {
-								"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
+							"azureSqlDatabaseConnectionStringSecretName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVFileName": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFileName",
+							"azureSqlDatabaseTableSchemaName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName",
 								"type": "Expression"
 							},
-							"azureBlobSingleCSVFolderPath": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvFolderPath",
-								"type": "Expression"
-							},
-							"azureBlobSingleCSVContainerName": {
-								"value": "@pipeline().parameters.sinkAzureBlobSingleCsvContainerName",
+							"azureSqlDatabaseTableTableName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableTableName",
 								"type": "Expression"
 							}
 						}
@@ -123,15 +108,15 @@
 										"type": "Expression"
 									},
 									"azureBlobContainerName": {
-										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvContainerName",
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetContainerName",
 										"type": "Expression"
 									},
 									"azureBlobFolderPath": {
-										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFolderPath",
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFolderPath",
 										"type": "Expression"
 									},
 									"azureBlobFileName": {
-										"value": "@pipeline().parameters.sourceAzureBlobSingleCsvFileName",
+										"value": "@pipeline().parameters.sourceAzureBlobSingleParquetFileName",
 										"type": "Expression"
 									}
 								}
@@ -145,25 +130,22 @@
 			"sourceAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sourceAzureBlobSingleCsvContainerName": {
+			"sourceAzureBlobSingleParquetContainerName": {
 				"type": "string"
 			},
-			"sourceAzureBlobSingleCsvFolderPath": {
+			"sourceAzureBlobSingleParquetFolderPath": {
 				"type": "string"
 			},
-			"sourceAzureBlobSingleCsvFileName": {
+			"sourceAzureBlobSingleParquetFileName": {
 				"type": "string"
 			},
-			"sinkAzureBlobConnectionStringSecretName": {
+			"sinkAzureSqlDatabaseConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleCsvContainerName": {
+			"sinkAzureSqlDatabaseTableSchemaName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleCsvFolderPath": {
-				"type": "string"
-			},
-			"sinkAzureBlobSingleCsvFileName": {
+			"sinkAzureSqlDatabaseTableTableName": {
 				"type": "string"
 			},
 			"deleteSourceFile": {
@@ -171,7 +153,7 @@
 			}
 		},
 		"folder": {
-			"name": "Source Azure Blob Single Csv/Copy"
+			"name": "Source Azure Blob Single Parquet/Copy"
 		},
 		"annotations": []
 	}

@@ -1,0 +1,35 @@
+{
+	"name": "azureBlobSingleJsonToAzureBlobSingleJsonDataFlow",
+	"properties": {
+		"folder": {
+			"name": "Source Azure Blob Single Json"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "azureBlobSingleJsonFileNameDataset",
+						"type": "DatasetReference"
+					},
+					"name": "readFromAzureBlobSingleJson"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "azureBlobSingleJsonFileNameDataset",
+						"type": "DatasetReference"
+					},
+					"name": "writeToAzureBlobSingleJson"
+				}
+			],
+			"transformations": [
+				{
+					"name": "enrichWithMetadata"
+				}
+			],
+			"script": "\nparameters{\n\tsourceConnectionStringSecretName as string,\n\tsinkConnectionStringSecretName as string,\n\tsourceObjectName as string,\n\tsinkObjectName as string,\n\tdataFactoryName as string,\n\tdataFactoryPipelineName as string,\n\tdataFactoryPipelineRunId as string,\n\tsinkFileNameNoPath as string\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> readFromAzureBlobSingleJson\nreadFromAzureBlobSingleJson derive({__sourceConnectionStringName} = $sourceConnectionStringSecretName,\n\t\t{__sinkConnectionStringSecretName} = $sinkConnectionStringSecretName,\n\t\t{__sourceObjectName} = $sourceObjectName,\n\t\t{__sinkObjectName} = $sinkObjectName,\n\t\t{__dataFactoryName} = $dataFactoryName,\n\t\t{__dataFactoryPipelineName} = $dataFactoryPipelineName,\n\t\t{__dataFactoryPipelineRunId} = $dataFactoryPipelineRunId) ~> enrichWithMetadata\nenrichWithMetadata sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[($sinkFileNameNoPath)],\n\tpartitionBy('hash', 1),\n\tquoteAll: true) ~> writeToAzureBlobSingleJson"
+		}
+	}
+}

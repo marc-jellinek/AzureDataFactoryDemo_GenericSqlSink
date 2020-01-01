@@ -1,9 +1,9 @@
 {
-	"name": "Azure Sql Database Table to Azure Blob Single Json Data Flow Pipeline",
+	"name": "Azure Sql Database Table to Azure Blob Single Parquet Data Flow Pipeline",
 	"properties": {
 		"activities": [
 			{
-				"name": "azureSqlDatabaseTableToAzureBlobSingleJsonDataFlow",
+				"name": "azureSqlDatabaseTableToAzureBlobSingleParquetDataFlow",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "azureSqlDatabaseTableToAzureBlobSingleJsonDataFlow",
+						"referenceName": "azureSqlDatabaseTableToAzureBlobSingleParquetDataflow",
 						"type": "DataFlowReference",
 						"parameters": {
 							"sourceConnectionSecretName": {
@@ -28,11 +28,11 @@
 								"type": "Expression"
 							},
 							"sourceObjectName": {
-								"value": "'@{concat(\n   '[', \n   pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName, \n   '].[', \n   pipeline().parameters.sourceAzureSqlDatabaseTableTableName, \n   ']'\n)}'",
+								"value": "'@{concat(\n   '[', pipeline().parameters.sourceAzureSqlDatabaseTableSchemaName, '].[', \n   pipeline().parameters.sourceAzureSqlDatabaseTableTableName, ']'\n)}'",
 								"type": "Expression"
 							},
 							"sinkObjectName": {
-								"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobSingleJsonContainerName, \n   '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFolderPath, \n   '/', \n   pipeline().parameters.sinkAzureBlobSingleJsonFileName\n)}'",
+								"value": "'@{concat(\n   pipeline().parameters.sinkAzureBlobSingleParquetContainerName, '/', \n   pipeline().parameters.sinkAzureBlobSingleParquetFolderPath, \n   pipeline().parameters.sinkAzureBlobSingleParquetFileName\n)}'",
 								"type": "Expression"
 							},
 							"dataFactoryName": {
@@ -48,7 +48,7 @@
 								"type": "Expression"
 							},
 							"sinkFileNameNoPath": {
-								"value": "'@{pipeline().parameters.sinkAzureBlobSingleJsonFileName}'",
+								"value": "'@{pipeline().parameters.sinkAzureBlobSingleParquetFileName}'",
 								"type": "Expression"
 							}
 						},
@@ -67,21 +67,21 @@
 									"type": "Expression"
 								}
 							},
-							"writeToAzureBlobSingleJson": {
+							"writeToAzureBlobSingleParquet": {
 								"azureBlobConnectionStringSecretName": {
 									"value": "@pipeline().parameters.sinkAzureBlobConnectionStringSecretName",
 									"type": "Expression"
 								},
-								"azureBlobSingleJsonContainerName": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonContainerName",
+								"azureBlobSingleParquetContainerName": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetContainerName",
 									"type": "Expression"
 								},
-								"azureBlobSingleJsonFolderPath": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFolderPath",
+								"azureBlobSingleParquetFolderPath": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFolderPath",
 									"type": "Expression"
 								},
-								"azureBlobSingleJsonFileName": {
-									"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFileName",
+								"azureBlobSingleParquetFileName": {
+									"value": "@pipeline().parameters.sinkAzureBlobSingleParquetFileName",
 									"type": "Expression"
 								}
 							}
@@ -107,13 +107,13 @@
 			"sinkAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleJsonContainerName": {
+			"sinkAzureBlobSingleParquetContainerName": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleJsonFolderPath": {
+			"sinkAzureBlobSingleParquetFolderPath": {
 				"type": "string"
 			},
-			"sinkAzureBlobSingleJsonFileName": {
+			"sinkAzureBlobSingleParquetFileName": {
 				"type": "string"
 			}
 		},

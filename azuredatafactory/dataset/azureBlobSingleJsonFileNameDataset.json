@@ -25,6 +25,9 @@
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "Azure Blob Single Json"
+		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {
