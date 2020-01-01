@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "Example Driver Reading from Json Config source",
 	"properties": {
 		"activities": [
 			{
