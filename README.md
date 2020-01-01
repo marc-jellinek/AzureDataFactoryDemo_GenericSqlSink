@@ -97,6 +97,33 @@ Onboarding checklist:
 - Within the Data Factory create a linked service pointing at the Key Vault holding the secrets
 - Set Triggers using KeyVaultSecretNames as parameters
 
+Elevator Pitch:
+
+Technical Audience:  
+
+Pre written and pre parameterized Azure Data Factory Pipelines that follow operational, development, deployment and security best practices.
+This takes care of the EL in ELT, at scale, in the cloud, right now. 
+
+Business Audience:
+
+Cloud based data movement and persistence capability that your IT Department will like. 
+
+Partner Audience:
+
+Soft release email:
+
+I want to invite you to participate in an open source project called Throwing Mud on the Wall (TMoW).
+
+It is a set of Azure Data Factory objects that implement in EL in ELT.  
+
+Do you have a customer who needs to move and transform data using Azure Data Factory?  Are they currently comfortable with SSIS, but looking to move to cloud technologies that can handle big data workloads?
+
+TMoW is implemented as a collection of source-to-sink Azure Data Factory Pipelines that are meant to be called by a higher-level orchestrator.  TMoW provides them with best practices, open source implementations for data movement and persistence based on Azure Data Factory, which is in turn based on Apache Spark.  Give them a pre-flight checklist and get them up and moving data.
+
+
+
+
+
 Thanks to 
 - Michael French
 - Mark Kromer

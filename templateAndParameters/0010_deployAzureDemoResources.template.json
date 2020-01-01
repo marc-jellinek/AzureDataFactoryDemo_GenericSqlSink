@@ -8,7 +8,7 @@
         }, 
         "keyVaultName": {
             "type": "string",
-            "defaultValue": "[newGuid()]"
+            "defaultValue": "[newGuid()]" 
         }, 
         "userObjectId": {
             "type": "string",
@@ -28,7 +28,7 @@
         },
         "database1SqlAdminPassword": {
             "type": "secureString",
-            "defaultValue": "[newGuid()]"
+            "defaultValue": ""
         },
         "database1SqlOpsUsername": {
             "type": "string",
@@ -36,7 +36,7 @@
         },
         "database1SqlOpsPassword": {
             "type": "secureString",
-            "defaultValue": "[newGuid()]"
+            "defaultValue": ""
         },
         "database2ServerName": {
             "type": "string",
@@ -52,7 +52,7 @@
         },
         "database2SqlAdminPassword": {
             "type": "secureString",
-            "defaultValue": "[newGuid()]"
+            "defaultValue": ""
         },
         "database2SqlOpsUsername": {
             "type": "string",
@@ -60,7 +60,7 @@
         },
         "database2SqlOpsPassword": {
             "type": "secureString",
-            "defaultValue": "[newGuid()]"
+            "defaultValue": ""
         },
         "storageAccount1Name": {
             "type": "string",
@@ -80,6 +80,32 @@
             "defaultValue": "[newGuid()]"
         },
         "storageAccount2Type": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_ZRS"
+            ]
+        },
+        "storageAccountTempName": {
+            "type": "string", 
+            "defaultValue": "[newGuid()]"
+        },
+        "storageAccountTempType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_ZRS"
+            ]
+        },
+        "storageAccountConfigName": {
+            "type": "string", 
+            "defaultValue": "[newGuid()]"
+        },
+        "storageAccountConfigType": {
             "type": "string",
             "defaultValue": "Standard_LRS",
             "allowedValues": [
@@ -153,34 +179,31 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            //"name": "[concat(parameters('keyVaultName'), '/database1ConnectionString')]",
-            "name": "[concat(parameters('keyVaultName'), '/', parameters('database1ServerName'), '-', parameters('database1DatabaseName'), '-', parameters('database1SqlOpsUsername'))]", 
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('database1ServerName'), '-', parameters('database1DatabaseName'), '-', parameters('database1SqlOpsUsername'), 'SqlAuthConnectionString')]", 
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
             ],
             "properties": {
-                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('Database1ServerName'), '.database.windows.net;Initial Catalog=', parameters('Database1DatabaseName'), ';User ID=', parameters('Database1SqlOpsUserName'), ';Password=', parameters('Database1SqlOpsPassword'))]"
+                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('database1ServerName'), '.database.windows.net;Initial Catalog=', parameters('database1DatabaseName'), ';User ID=', parameters('database1SqlOpsUserName'), ';Password=', parameters('database1SqlOpsPassword'))]"
             } 
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            //"name": "[concat(parameters('keyVaultName'), '/database2ConnectionString')]",
-            "name": "[concat(parameters('keyVaultName'), '/', parameters('database2ServerName'), '-', parameters('database2DatabaseName'), '-', parameters('database2SqlOpsUsername'))]", 
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('database2ServerName'), '-', parameters('database2DatabaseName'), '-', parameters('database2SqlOpsUsername'), 'SqlAuthConnectionString')]", 
             "apiVersion": "2018-02-14",
-            "location": "[resourceGroup().location]",
+            "location": "[resourceGroup().location]", 
             "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
             ],
             "properties": {
-                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('Database2ServerName'), '.database.windows.net;Initial Catalog=', parameters('Database2DatabaseName'), ';User ID=', parameters('Database2SqlOpsUserName'), ';Password=', parameters('Database2SqlOpsPassword'))]"
+                "value": "[concat('Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=', parameters('database2ServerName'), '.database.windows.net;Initial Catalog=', parameters('database2DatabaseName'), ';User ID=', parameters('database2SqlOpsUserName'), ';Password=', parameters('database2SqlOpsPassword'))]"
             }
         }, 
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            //"name": "[concat(parameters('keyVaultName'), '/blob1ConnectionString')]",
-            "name": "[concat(parameters('keyVaultName'), '/', parameters('storageAccount1Name'))]", 
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('storageAccount1Name'), 'AccountKeyConnectionString')]", 
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -193,7 +216,7 @@
         }, 
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "name": "[concat(parameters('keyVaultName'), '/', parameters('storageAccount2Name'))]", 
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('storageAccount2Name'), 'AccountKeyConnectionString')]", 
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -202,6 +225,32 @@
             ],
             "properties": {
                 "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccount2Name'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccount2Name')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+            }
+        },     
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('storageAccountConfigName'), 'AccountKeyConnectionString')]", 
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountConfigName'))]", 
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccountConfigName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountConfigName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+            }
+        },             
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('storageAccountTempName'), 'AccountKeyConnectionString')]", 
+            "apiVersion": "2018-02-14",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountTempName'))]", 
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('StorageAccountTempName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountTempName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
             }
         },     
         {
@@ -237,7 +286,7 @@
                 },
                 "accessTier": "Hot"
             }
-        },
+        },        
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
@@ -246,6 +295,74 @@
             "sku": {
                 "name": "[parameters('storageAccount2Type')]",
                 "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('storageAccountTempName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('storageAccountTempType')]",
+                "tier": "Standard" 
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [
+                    ],
+                    "ipRules": [
+                    ],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('storageAccountConfigName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('storageAccountConfigType')]",
+                "tier": "Standard" 
             },
             "kind": "StorageV2",
             "properties": {
@@ -307,6 +424,40 @@
             }
         },
         {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(parameters('storageAccountTempName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountTempName'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": [
+                    ]
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(parameters('storageAccountConfigName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountConfigName'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": [
+                    ]
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-04-01",
             "name": "[concat(parameters('storageAccount1Name'), '/default/default')]",
@@ -330,6 +481,30 @@
                 "publicAccess": "None"
             } 
         },        
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(parameters('storageAccountTempName'), '/default/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountTempName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountTempName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            } 
+        },        
+        { 
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(parameters('storageAccountConfigName'), '/default/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountConfigName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountConfigName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            } 
+        },
         {
             "type": "Microsoft.Sql/servers",
             "name": "[parameters('database1ServerName')]",

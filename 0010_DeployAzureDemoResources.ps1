@@ -3,7 +3,7 @@ $azureDemoResourcesDeployment = New-AzResourceGroupDeployment `
     -TemplateFile "./templateAndParameters/0010_deployAzureDemoResources.template.json" `
     -TemplateParameterFile "./templateAndParameters/0010_deployAzureDemoResources.parameters.json"
 
-$deployment | Out-Host
+$azureDemoResourcesDeployment | Out-Host
 
 $keyVaultName = $azureDemoResourcesDeployment.Parameters.keyVaultName.value 
 
@@ -30,19 +30,30 @@ $database2SqlOpsPassword = $azureDemoResourcesDeployment.Parameters.database2Sql
 $storageAccount1Name = $azureDemoResourcesDeployment.Parameters.storageAccount1Name.value
 $storageAccount2Name = $azureDemoResourcesDeployment.Parameters.storageAccount2Name.value
 
-$storageAccount1Key = (
+$storageAccountTempName = $azureDemoResourcesDeployment.Parameters.storageAccountTempName.value
+
+$storageAccountConfigName = $azureDemoResourcesDeployment.Parameters.storageAccountConfigName.value 
+
+$storageAccount1Key = ( `
     Get-AzStorageAccountKey `
         -ResourceGroupName $resourceGroupName `
         -AccountName $storageAccount1Name `
         | Where-Object { $_.KeyName -eq 'key1' }
-    ).Value
+).Value
 
-$storageAccount2Key = (
+$storageAccount2Key = ( `
     Get-AzStorageAccountKey `
         -ResourceGroupName $resourceGroupName `
         -AccountName $storageAccount2Name `
         | Where-Object { $_.KeyName -eq 'key1' }
-    ).Value
+).Value
+
+$storageAccountConfigKey = (    `
+    Get-AzStorageAccountKey `
+        -ResourceGroupName $resourceGroupName `
+        -AccountName $storageAccountConfigName `
+        | Where-Object { $_.KeyName -eq 'key1' }
+).Value
 
 # upload test data to blob storage accounts
 $ctx = New-AzStorageContext `
@@ -68,3 +79,16 @@ Set-AzStorageBlobContent `
     -Context $ctx `
     -Properties @{"ContentType" = "text/csv"} `
     -Force   
+
+$ctx = New-AzStorageContext `
+    -StorageAccountName $storageAccountConfigName `
+    -StorageAccountKey $storageAccountConfigKey
+
+Set-AzStorageBlobContent `
+    -File "./demoConfig/testAllPipelines.json" `
+    -Blob "config/testAllPipelines.json" `
+    -Container "default" `
+    -Context $ctx `
+    -Properties @{"ContentType" = "text/json"} `
+    -Force   
+

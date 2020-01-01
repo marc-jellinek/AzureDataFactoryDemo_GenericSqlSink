@@ -1,0 +1,58 @@
+[
+    {
+        "pipelineName": "Azure Blob Single Csv to Azure Blob Single Csv Copy Pipeline", 
+        "parameters": {
+            "sourceAzureBlobConnectionStringSecretName": "mdjstorageaccount1AccountKeyConnectionString", 
+            "sourceAzureBlobSingleCsvContainerName": "default", 
+            "sourceAzureBlobSingleCsvFolderPath": "input/csv/singleFiles", 
+            "sourceAzureBlobSingleCsvFileName": "0010_sourceData1.csv", 
+            "sinkAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString",
+            "sinkAzureBlobSingleCsvContainerName": "default", 
+            "sinkAzureBlobSingleCsvFolderPath": "output/csv/singleFiles", 
+            "sinkAzureBlobSingleCsvFileName": "0010_sourceData1.SingleCsvToSingleCsv.copy.csv", 
+            "deleteSourceFile": false
+        }
+    }, 
+    {
+        "pipelineName": "Azure Blob Single Csv to Azure Blob Single Json Copy Pipeline", 
+        "parameters": {
+            "sourceAzureBlobConnectionStringSecretName": "mdjstorageaccount1AccountKeyConnectionString", 
+            "sourceAzureBlobSingleCsvContainerName": "default", 
+            "sourceAzureBlobSingleCsvFolderPath": "input/csv/singleFiles", 
+            "sourceAzureBlobSingleCsvFileName": "0010_sourceData1.csv", 
+            "sinkAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString",
+            "sinkAzureBlobSingleJsonContainerName": "default", 
+            "sinkAzureBlobSingleJsonFolderPath": "output/json/singleFiles", 
+            "sinkAzureBlobSingleJsonFileName": "0010_sourceData1.SingleCsvToSingleJson.copy.json", 
+            "deleteSourceFile": false
+        }
+    }, 
+    {
+        "pipelineName": "Azure Blob Single Csv to Azure Blob Single Parquet Copy Pipeline", 
+        "parameters": {
+            "sourceAzureBlobConnectionStringSecretName": "mdjstorageaccount1AccountKeyConnectionString", 
+            "sourceAzureBlobSingleCsvContainerName": "default", 
+            "sourceAzureBlobSingleCsvFolderPath": "input/csv/singleFiles", 
+            "sourceAzureBlobSingleCsvFileName": "0010_sourceData1.csv", 
+            "sinkAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString",
+            "sinkAzureBlobSingleParquetContainerName": "default", 
+            "sinkAzureBlobSingleParquetFolderPath": "output/parquet/singleFiles", 
+            "sinkAzureBlobSingleParquetFileName": "0010_sourceData1.SingleCsvToSingleParquet.copy.json", 
+            "deleteSourceFile": false
+        }
+    }, 
+    {
+        "pipelineName": "Azure Blob Single Csv to Azure Sql Database Copy Pipeline", 
+        "parameters": {
+            "sourceAzureBlobConnectionStringSecretName": "mdjstorageaccount1AccountKeyConnectionString", 
+            "sourceAzureBlobSingleCsvContainerName": "default", 
+            "sourceAzureBlobSingleCsvFolderPath": "input/csv/singleFiles", 
+            "sourceAzureBlobSingleCsvFileName": "0010_sourceData1.csv", 
+            "sinkAzureSqlDatabaseConnectionStringSecretName":"mdjdatabaseserver2-DB2-mdjdatabase2sqlopsSqlAuthConnectionString", 
+            "sinkAzureSqlDatabaseTableSchemaName": "utils", 
+            "sinkAzureSqlDatabaseTableTableName": "Integers", 
+            "truncatePriorToCopy": false, 
+            "deleteSourceFile": false
+        }
+    }            
+]

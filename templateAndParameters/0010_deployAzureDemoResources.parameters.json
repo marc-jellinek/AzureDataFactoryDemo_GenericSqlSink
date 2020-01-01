@@ -58,6 +58,18 @@
         }, 
         "storageAccount2Type": {
             "value": "Standard_LRS"
+        }, 
+        "storageAccountTempName": {
+            "value": "mdjstorageaccounttemp"
+        }, 
+        "storageAccountTempType": {
+            "value": "Standard_LRS"
+        }, 
+        "storageAccountConfigName": {
+            "value": "mdjstorageaccountconfig"
+        }, 
+        "storageAccountConfigType": {
+            "value": "Standard_LRS"
         }
     }
 }

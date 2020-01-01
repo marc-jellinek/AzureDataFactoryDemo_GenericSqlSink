@@ -46,17 +46,14 @@ RETURNS varchar(8000)
     DECLARE @JSONStructure varchar(8000);
 
     SET @JSONStructure = (
-            SELECT col.name as [name],
-        CASE WHEN typ.name = '' THEN '' 
-                            ELSE 'String'
-                        END     as [type]
+            SELECT col.name as [name]
     FROM sys.schemas sch
         INNER JOIN sys.tables tbl ON sch.schema_id = tbl.schema_id
         INNER JOIN sys.columns col ON tbl.object_id = col.object_id
         INNER JOIN sys.types typ ON col.user_type_id = typ.user_type_id
     WHERE       sch.name = @azureSqlDatabaseTableSchemaName AND
         tbl.name = @azureSqlDatabaseTableTableName AND
-        NOT col.name IN     (   '__RowID', 
+        NOT col.name IN     (   '__rowId', 
                                 '__sourceConnectionStringSecretName', 
                                 '__sinkConnectionStringSecretName', 
                                 '__sourceObjectName', 
@@ -82,45 +79,96 @@ CREATE OR ALTER PROCEDURE [utils].[sp_GetTableBasedOnSuppliedStructure]
 AS
 BEGIN
     DECLARE @CountMatches bigint = NULL;
+    DECLARE @suppliedColumnList varchar(8000);
 
-    DROP TABLE IF EXISTS #JsonTableStructure;
+    DROP TABLE IF EXISTS #suppliedStructureColumns;
+    DROP TABLE IF EXISTS #existingTableStructureColumns;
 
-    SELECT sch.name as schema_name,
-        tbl.name as table_name,
-        [utils].[CleanseString]([utils].[GenerateJSONFromTables](sch.name, tbl.name)) as JsonStructure
-    INTO        #JsonTableStructure
-    FROM sys.schemas sch
-        INNER JOIN sys.tables tbl ON sch.schema_id = tbl.schema_id;
+    SELECT      *
+    INTO        #suppliedStructureColumns
+    FROM        OPENJSON(@suppliedStructure) WITH ([name] varchar(8000) '$.name')
 
-    SET         @suppliedStructure = [utils].[CleanseString](@suppliedStructure);
+    DELETE FROM #suppliedStructureColumns  -- these columns are ignored for comparison sake.  If they exist in the source, they will be copied to the target
+    WHERE name IN     (   '__rowId', 
+                            '__sourceConnectionStringSecretName', 
+                            '__sinkConnectionStringSecretName', 
+                            '__sourceObjectName', 
+                            '__sinkObjectName', 
+                            '__dataFactoryName', 
+                            '__dataFactoryPipelineName',
+                            '__dataFactoryPipelineRunId',
+                            '__insertDateTimeUTC'
+                        );
+
+    SELECT      @suppliedColumnList =     
+                        (   SELECT      STUFF(
+                                            (
+                                                SELECT      ',' + name 
+                                                FROM        #suppliedStructureColumns 
+                                                FOR         XML PATH ('')
+                                            ), 
+                                            1, 
+                                            1, 
+                                            ''
+                                        )
+                        );
+
+    SELECT      sch.name as schema_name, 
+                tbl.name as table_name, 
+                STUFF(
+                    (
+                        SELECT      ',' + col.name 
+                        FROM        sys.columns col
+                        WHERE       tbl.object_id  = col.object_id AND
+                                    col.name NOT IN     (   '__rowId', 
+                                                            '__sourceConnectionStringSecretName', 
+                                                            '__sinkConnectionStringSecretName', 
+                                                            '__sourceObjectName', 
+                                                            '__sinkObjectName', 
+                                                            '__dataFactoryName', 
+                                                            '__dataFactoryPipelineName',
+                                                            '__dataFactoryPipelineRunId',
+                                                            '__insertDateTimeUTC'
+                                                        )
+                        ORDER BY    col.column_id 
+                        FOR         XML PATH ('')
+                    ), 
+                    1, 
+                    1, 
+                    ''
+                ) as columnlist
+    INTO        #existingTableStructureColumns
+    FROM        sys.schemas sch
+                INNER JOIN sys.tables tbl ON sch.schema_id = tbl.schema_id;
 
     SELECT      @CountMatches = ISNULL(COUNT_BIG(*), 0)
-    FROM        #JsonTableStructure j
-    WHERE       j.JsonStructure = @suppliedStructure;
+    FROM        #existingTableStructureColumns exist
+    WHERE       exist.columnlist = @suppliedColumnList;
 
     IF @CountMatches = 0 
-    BEGIN
-        SET @multipleMatches = 0;
-        SET @azureSqlDatabaseTableSchemaName = NULL;
-        SET @azureSqlDatabaseTableTableName = NULL;
-    END
+        BEGIN
+            SET @multipleMatches = 0;
+            SET @azureSqlDatabaseTableSchemaName = NULL;
+            SET @azureSqlDatabaseTableTableName = NULL;
+        END
 
     IF @CountMatches = 1
-    BEGIN
-        SET @multipleMatches = 0;
+        BEGIN
+            SET @multipleMatches = 0;
 
-        SELECT @azureSqlDatabaseTableSchemaName = j.schema_name,
-            @azureSqlDatabaseTableTableName = j.table_name
-        FROM #JsonTableStructure j
-        WHERE       j.JsonStructure = @suppliedStructure;
-    END
+            SELECT      @azureSqlDatabaseTableSchemaName = exist.schema_name, 
+                        @azureSqlDatabaseTableTableName = exist.table_name
+            FROM        #existingTableStructureColumns exist 
+            WHERE       exist.columnlist = @suppliedColumnList
+        END
 
     IF @CountMatches > 1
-    BEGIN
-        SET @multipleMatches = 1;
-        SET @azureSqlDatabaseTableSchemaName = NULL;
-        SET @azureSqlDatabaseTableTableName = NULL;
-    END
+        BEGIN
+            SET @multipleMatches = 1;
+            SET @azureSqlDatabaseTableSchemaName = NULL;
+            SET @azureSqlDatabaseTableTableName = NULL;
+        END        
+
 END 
 GO
 
@@ -147,20 +195,30 @@ BEGIN
     DECLARE @sql varchar(8000);
     DECLARE @Create varchar(8000);
     DECLARE @Columns varchar(8000) = N'';
+    DECLARE @DefaultColumnList TABLE (name varchar(8000))
+
+    INSERT INTO @DefaultColumnList (name) VALUES ('__rowId');
+    INSERT INTO @DefaultColumnList (name) VALUES ('__sourceConnectionStringSecretName');
+    INSERT INTO @DefaultColumnList (name) VALUES ('__sourceConnectionStringSecretName');
+    INSERT INTO @DefaultColumnList (name) VALUES ('__sinkConnectionStringSecretName');
+    INSERT INTO @DefaultColumnList (name) VALUES ('__sourceObjectName');
+    INSERT INTO @DefaultColumnList (name) VALUES ('__sinkObjectName');
+    INSERT INTO @DefaultColumnList (name) VALUES ('__dataFactoryName');
+    INSERT INTO @DefaultColumnList (name) VALUES ('__dataFactoryPipelineName');
+    INSERT INTO @DefaultColumnList (name) VALUES ('__dataFactoryPipelineRunId');
+    INSERT INTO @DefaultColumnList (name) VALUES ('__insertDateTimeUTC');
 
     SET @suppliedStructure = [utils].[CleanseString](@suppliedStructure);
 
     SET @Create = 'CREATE TABLE ' + QUOTENAME(@azureSqlDatabaseTableSchemaName) + '.' + QUOTENAME(@azureSqlDatabaseTableTableName);
 
-    SELECT @Columns  = '[__RowID] bigint IDENTITY PRIMARY KEY CLUSTERED, ';
+    SELECT @Columns  = '[__rowId] bigint IDENTITY PRIMARY KEY CLUSTERED, ';
 
-    SELECT @Columns += columndef.name
-    FROM (   SELECT QUOTENAME(columnspec.Name) + ' varchar(max), ' as name
-        FROM OPENJSON(@suppliedStructure)
-                                WITH (
-                                    [Name] varchar(8000) '$.name', 
-                                    [Type] varchar(8000) '$.type'
-                                ) columnspec
+    SELECT      @Columns += columndef.name
+    FROM        (   SELECT QUOTENAME(columnspec.Name) + ' varchar(max), ' as name
+                    FROM OPENJSON(@suppliedStructure)
+                            WITH ([Name] varchar(8000) '$.name') columnspec
+                    WHERE columnspec.Name NOT IN (SELECT name FROM @DefaultColumnList)
                 ) columndef;
 
     SELECT @Columns += '[__sourceConnectionStringSecretName] varchar(1000), ';
@@ -187,14 +245,14 @@ CREATE OR ALTER PROCEDURE [utils].[sp_FindOrCreateSinkTable]
 AS
 BEGIN
 
-     DECLARE @foundTableSchemaName varchar(8000) 
-    DECLARE @foundTableTableName varchar(8000)
+    DECLARE @foundTableSchemaName varchar(8000);
+    DECLARE @foundTableTableName varchar(8000);
 
     EXEC [utils].[sp_GetTableBasedOnSuppliedStructure] 
         @suppliedStructure = @suppliedStructure, 
         @azureSqlDatabaseTableSchemaName = @foundTableSchemaName OUTPUT, 
         @azureSqlDatabaseTableTableName = @foundTableTableName OUTPUT, 
-        @multipleMatches = @multipleMatches OUTPUT
+        @multipleMatches = @multipleMatches OUTPUT;
 
     IF (@foundTableSchemaName IS NULL AND @foundTableTableName IS NULL) OR -- No matching table, create new
         (@multipleMatches = 1)                          -- many matching tables, I don't know which to load, instead create another new table
@@ -202,17 +260,18 @@ BEGIN
         EXEC utils.sp_CreateTableFromJSON 
             @suppliedStructure = @suppliedStructure,
             @azureSqlDatabaseTableSchemaName = @sinkAzureSqlDatabaseTableSchemaName OUTPUT, 
-            @azureSqlDatabaseTableTableName = @sinkAzureSqlDatabaseTableTableName OUTPUT
+            @azureSqlDatabaseTableTableName = @sinkAzureSqlDatabaseTableTableName OUTPUT;
 
 		SELECT  @sinkAzureSqlDatabaseTableSchemaName as sinkAzureSqlDatabaseTableSchemaName,
-            @sinkAzureSqlDatabaseTableTableName as sinkAzureSqlDatabaseTableTableName,
-            @multipleMatches as multipleMatches
+                @sinkAzureSqlDatabaseTableTableName as sinkAzureSqlDatabaseTableTableName,
+                @multipleMatches as multipleMatches;
 
     END 
 	ELSE
 	BEGIN
-		SELECT @foundTableSchemaName as sinkAzureSqlDatabaseTableSchemaName, 
-				@foundTableTableName as sinkAzureSqlDatabaseTableTableName
+		SELECT  @foundTableSchemaName as sinkAzureSqlDatabaseTableSchemaName, 
+				@foundTableTableName as sinkAzureSqlDatabaseTableTableName, 
+                @multipleMatches as multipleMatches;
 	END
     
 END 
