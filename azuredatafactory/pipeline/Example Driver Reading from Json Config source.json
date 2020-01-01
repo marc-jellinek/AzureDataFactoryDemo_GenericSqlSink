@@ -1356,7 +1356,7 @@
 												"userProperties": [],
 												"typeProperties": {
 													"pipeline": {
-														"referenceName": "Azure Blob Single Json to Azure Sql Database Table Data Flow0 Pipeline",
+														"referenceName": "Azure Blob Single Json to Azure Sql Database Table Data Flow Pipeline",
 														"type": "PipelineReference"
 													},
 													"waitOnCompletion": true,
