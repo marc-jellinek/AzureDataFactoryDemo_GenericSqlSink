@@ -75,8 +75,16 @@
                 "Standard_ZRS"
             ]
         },
-        "storageAccount2Name": {
+        "storageAccount1BlobServicesName": {
             "type": "string", 
+            "defaultValue": "default"
+        },
+        "storageAccount1ContainerName": {
+            "type": "string", 
+            "defaultValue": "default"
+        }, 
+        "storageAccount2Name": {
+            "type": "string",
             "defaultValue": "[newGuid()]"
         },
         "storageAccount2Type": {
@@ -88,8 +96,16 @@
                 "Standard_ZRS"
             ]
         },
-        "storageAccountTempName": {
+        "storageAccount2BlobServicesName": {
             "type": "string", 
+            "defaultValue": "default"
+        },
+        "storageAccount2ContainerName": {
+            "type": "string", 
+            "defaultValue": "default"
+        }, 
+        "storageAccountTempName": {
+            "type": "string",
             "defaultValue": "[newGuid()]"
         },
         "storageAccountTempType": {
@@ -101,8 +117,16 @@
                 "Standard_ZRS"
             ]
         },
-        "storageAccountConfigName": {
+        "storageAccountTempBlobServicesName": {
             "type": "string", 
+            "defaultValue": "default"
+        },
+        "storageAccountTempContainerName": {
+            "type": "string", 
+            "defaultValue": "default"
+        }, 
+        "storageAccountConfigName": {
+            "type": "string",
             "defaultValue": "[newGuid()]"
         },
         "storageAccountConfigType": {
@@ -113,7 +137,15 @@
                 "Standard_GRS",
                 "Standard_ZRS"
             ]
-        }
+        },
+        "storageAccountConfigBlobServicesName": {
+            "type": "string", 
+            "defaultValue": "default"
+        },
+        "storageAccountConfigContainerName": {
+            "type": "string", 
+            "defaultValue": "default"
+        }, 
     },
     "resources": [
         {
@@ -122,7 +154,7 @@
             "name": "[parameters('keyVaultName')]",
             "location": "[resourceGroup().location]",
             "properties": {
-                "sku": {
+                "sku": { 
                     "family": "A",
                     "name": "Standard"
                 },
@@ -392,7 +424,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2019-04-01",
-            "name": "[concat(parameters('storageAccount1Name'), '/default')]",
+            "name": "[concat(parameters('storageAccount1Name'), '/', parameters('storageAccount1BlobServicesName'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1Name'))]"
             ],
@@ -409,7 +441,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2019-04-01",
-            "name": "[concat(parameters('storageAccount2Name'), '/default')]",
+            "name": "[concat(parameters('storageAccount2Name'), '/', parameters('storageAccount2BlobServicesName'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2Name'))]"
             ],
@@ -426,7 +458,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2019-04-01",
-            "name": "[concat(parameters('storageAccountTempName'), '/default')]",
+            "name": "[concat(parameters('storageAccountTempName'), '/', parameters('storageAccountTempBlobServicesName'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountTempName'))]"
             ],
@@ -443,7 +475,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2019-04-01",
-            "name": "[concat(parameters('storageAccountConfigName'), '/default')]",
+            "name": "[concat(parameters('storageAccountConfigName'), '/', parameters('storageAccountConfigBlobServicesName'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountConfigName'))]"
             ],
@@ -460,9 +492,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-04-01",
-            "name": "[concat(parameters('storageAccount1Name'), '/default/default')]",
+            "name": "[concat(parameters('storageAccount1Name'), '/', parameters('storageAccount1BlobServicesName'), '/', parameters('storageAccount1ContainerName'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccount1Name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccount1Name'), parameters('storageAccount1BlobServicesName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1Name'))]"
             ],
             "properties": {
@@ -472,9 +504,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-04-01",
-            "name": "[concat(parameters('storageAccount2Name'), '/default/default')]",
+            "name": "[concat(parameters('storageAccount2Name'), '/', parameters('storageAccount2BlobServicesName'), '/', parameters('storageAccount2ContainerName'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccount2Name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccount2Name'), parameters('storageAccount2BlobServicesName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2Name'))]"
             ],
             "properties": {
@@ -484,9 +516,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-04-01",
-            "name": "[concat(parameters('storageAccountTempName'), '/default/default')]",
+            "name": "[concat(parameters('storageAccountTempName'), '/', parameters('storageAccountTempBlobServicesName'), '/', parameters('storageAccountTempContainerName'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountTempName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountTempName'), parameters('storageAccountTempBlobServicesName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountTempName'))]"
             ],
             "properties": {
@@ -496,9 +528,9 @@
         { 
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-04-01",
-            "name": "[concat(parameters('storageAccountConfigName'), '/default/default')]",
+            "name": "[concat(parameters('storageAccountConfigName'), '/', parameters('storageAccountConfigBlobServicesName'), '/', parameters('storageAccountConfigContainerName'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountConfigName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountConfigName'), parameters('storageAccountConfigBlobServicesName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountConfigName'))]"
             ],
             "properties": {

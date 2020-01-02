@@ -1,0 +1,75 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataFactoryName": {
+            "value": ""
+        },
+        "keyVaultName": {
+            "value": ""
+        },
+        "userObjectId": {
+            "value": ""
+        }, 
+        "database1ServerName": {
+            "value": ""
+        },
+        "database1DatabaseName": {
+            "value": ""
+        },
+        "database1SqlAdminUsername": {
+            "value": ""
+        },
+        "database1SqlAdminPassword": {
+            "value": ""
+        },
+        "database1SqlOpsUsername": {
+            "value": ""
+        },
+        "database1SqlOpsPassword": {
+            "value": ""
+        },
+        "database2ServerName": {
+            "value": ""
+        },
+        "database2DatabaseName": {
+            "value": ""
+        }, 
+        "database2SqlAdminUsername": {
+            "value": ""
+        },
+        "database2SqlAdminPassword": {
+            "value": ""
+        },
+        "database2SqlOpsUsername": {
+            "value": ""
+        },
+        "database2SqlOpsPassword": {
+            "value": ""
+        },
+        "storageAccount1Name": {
+            "value": ""
+        }, 
+        "storageAccount1Type": {
+            "value": ""
+        }, 
+        "storageAccount2Name": {
+            "value": ""
+        }, 
+        "storageAccount2Type": {
+            "value": ""
+        }, 
+        "storageAccountTempName": {
+            "value": ""
+        }, 
+        "storageAccountTempType": {
+            "value": ""
+        }, 
+        "storageAccountConfigName": {
+            "value": ""
+        }, 
+        "storageAccountConfigType": {
+            "value": ""
+        }
+    }
+}
