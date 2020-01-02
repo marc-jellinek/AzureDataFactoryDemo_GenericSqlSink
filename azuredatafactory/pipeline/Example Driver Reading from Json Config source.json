@@ -953,7 +953,7 @@
 												}
 											}
 										]
-									}, 
+									},
 									{
 										"value": "Azure Blob Single Csv to Azure Blob Single Csv Data Flow Pipeline",
 										"activities": [
@@ -1356,7 +1356,7 @@
 												"userProperties": [],
 												"typeProperties": {
 													"pipeline": {
-														"referenceName": "Azure Blob Single Json to Azure Sql Database Table Data Flow Pipeline",
+														"referenceName": "NOT WORKING Azure Blob Single Json to Azure Sql Database Table Data Flow Pipeline",
 														"type": "PipelineReference"
 													},
 													"waitOnCompletion": true,
@@ -1829,7 +1829,7 @@
 												}
 											}
 										]
-									}										
+									}
 								]
 							}
 						}
