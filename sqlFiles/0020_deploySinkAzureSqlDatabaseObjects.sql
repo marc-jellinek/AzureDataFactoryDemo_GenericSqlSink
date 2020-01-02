@@ -50,7 +50,6 @@ RETURNS varchar(8000)
     FROM sys.schemas sch
         INNER JOIN sys.tables tbl ON sch.schema_id = tbl.schema_id
         INNER JOIN sys.columns col ON tbl.object_id = col.object_id
-        INNER JOIN sys.types typ ON col.user_type_id = typ.user_type_id
     WHERE       sch.name = @azureSqlDatabaseTableSchemaName AND
         tbl.name = @azureSqlDatabaseTableTableName AND
         NOT col.name IN     (   '__rowId', 

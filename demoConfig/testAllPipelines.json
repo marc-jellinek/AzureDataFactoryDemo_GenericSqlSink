@@ -50,9 +50,65 @@
             "sourceAzureBlobSingleCsvFileName": "0010_sourceData1.csv", 
             "sinkAzureSqlDatabaseConnectionStringSecretName":"mdjdatabaseserver2-DB2-mdjdatabase2sqlopsSqlAuthConnectionString", 
             "sinkAzureSqlDatabaseTableSchemaName": "utils", 
-            "sinkAzureSqlDatabaseTableTableName": "Integers", 
+            "sinkAzureSqlDatabaseTableTableName": "0010_sourceData1.SingleCsvToSqlDb.copy.csv", 
             "truncatePriorToCopy": false, 
             "deleteSourceFile": false
         }
-    }            
+    },
+    {
+        "pipelineName": "Azure Blob Single Json to Azure Blob Single Csv Copy Pipeline", 
+        "parameters": {
+            "sourceAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString", 
+            "sourceAzureBlobSingleJsonContainerName": "default", 
+            "sourceAzureBlobSingleJsonFolderPath": "output/json/singleFiles", 
+            "sourceAzureBlobSingleJsonFileName": "0010_sourceData1.SingleCsvToSingleJson.copy.json", 
+            "sinkAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString",
+            "sinkAzureBlobSingleContainerName": "default", 
+            "sinkAzureBlobSingleCsvFolderPath": "output/csv/singleFiles", 
+            "sinkAzureBlobSingleCsvFileName": "0010_sourceData1.SingleJsonToSingleCsv.copy.csv", 
+            "deleteSourceFile": false
+        }
+    }, 
+    {
+        "pipelineName": "Azure Blob Single Json to Azure Blob Single Json Copy Pipeline", 
+        "parameters": {
+            "sourceAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString", 
+            "sourceAzureBlobSingleJsonContainerName": "default", 
+            "sourceAzureBlobSingleJsonFolderPath": "output/json/singleFiles", 
+            "sourceAzureBlobSingleJsonFileName": "0010_sourceData1.SingleCsvToSingleJson.copy.json", 
+            "sinkAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString",
+            "sinkAzureBlobSingleJsonContainerName": "default", 
+            "sinkAzureBlobSingleJsonFolderPath": "output/json/singleFiles", 
+            "sinkAzureBlobSingleJsonFileName": "0010_sourceData1.SingleJsonToSingleJson.copy.json", 
+            "deleteSourceFile": false
+        }
+    }, 
+    {
+        "pipelineName": "Azure Blob Single Json to Azure Blob Single Parquet Copy Pipeline", 
+        "parameters": {
+            "sourceAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString", 
+            "sourceAzureBlobSingleJsonContainerName": "default", 
+            "sourceAzureBlobSingleJsonFolderPath": "output/json/singleFiles", 
+            "sourceAzureBlobSingleJsonFileName": "0010_sourceData1.SingleCsvToSingleJson.copy.json", 
+            "sinkAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString",
+            "sinkAzureBlobSingleParquetContainerName": "default", 
+            "sinkAzureBlobSingleParquetFolderPath": "output/parquet/singleFiles", 
+            "sinkAzureBlobSingleParquetFileName": "0010_sourceData1.SingleCsvToSingleParquet.copy.json", 
+            "deleteSourceFile": false
+        }
+    }, 
+    {
+        "pipelineName": "Azure Blob Single Json to Azure Sql Database Copy Pipeline", 
+        "parameters": {
+            "sourceAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString", 
+            "sourceAzureBlobSingleJsonContainerName": "default", 
+            "sourceAzureBlobSingleJsonFolderPath": "output/json/singleFiles", 
+            "sourceAzureBlobSingleJsonFileName": "0010_sourceData1.SingleCsvToSingleJson.copy.json", 
+            "sinkAzureSqlDatabaseConnectionStringSecretName":"mdjdatabaseserver2-DB2-mdjdatabase2sqlopsSqlAuthConnectionString", 
+            "sinkAzureSqlDatabaseTableSchemaName": "utils", 
+            "sinkAzureSqlDatabaseTableTableName": "0010_sourceData1.SingleJsonToSqlDb.copy.csv", 
+            "truncatePriorToCopy": false, 
+            "deleteSourceFile": false
+        }
+    }       
 ]

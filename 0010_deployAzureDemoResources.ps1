@@ -68,27 +68,27 @@ Set-AzStorageBlobContent `
     -Properties @{"ContentType" = "text/csv"} `
     -Force
 
-$ctx = New-AzStorageContext `
-    -StorageAccountName $storageAccount2Name `
-    -StorageAccountKey $storageAccount2Key
-
 Set-AzStorageBlobContent `
-    -File "./demoData/csv/singleFiles/0010_sourceData2.csv" `
-    -Blob "input/csv/singleFiles/0010_sourceData2.csv" `
-    -Container "default" `
-    -Context $ctx `
-    -Properties @{"ContentType" = "text/csv"} `
-    -Force   
-
-$ctx = New-AzStorageContext `
-    -StorageAccountName $storageAccountConfigName `
-    -StorageAccountKey $storageAccountConfigKey
-
-Set-AzStorageBlobContent `
-    -File "./demoConfig/testAllPipelines.json" `
-    -Blob "config/testAllPipelines.json" `
+    -File "./templateAndParameters/0010_deployAzureDemoResources.template.json" `
+    -Blob "input/json/singleFiles/0010_deployAzureDemoResources.template.json" `
     -Container "default" `
     -Context $ctx `
     -Properties @{"ContentType" = "text/json"} `
-    -Force   
+    -Force
+
+Set-AzStorageBlobContent `
+    -File "./demoData/parquet/singleFiles/userdata.parquet" `
+    -Blob "input/parquet/singleFiles/userdata.parquet" `
+    -Container "default" `
+    -Context $ctx `
+    -Properties @{"ContentType" = "parquet/binary"} `
+    -Force
+
+Set-AzStorageBlobContent `
+    -File "./demoData/avro/singleFiles/userdata.avro" `
+    -Blob "input/avro/singleFiles/userdata.avro" `
+    -Container "default" `
+    -Context $ctx `
+    -Properties @{"ContentType" = "avro/binary"} `
+    -Force
 
