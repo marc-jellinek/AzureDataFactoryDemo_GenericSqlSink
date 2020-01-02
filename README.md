@@ -1,4 +1,4 @@
-# Throwing Mudd on the Wall (TMoW) - Instant ELt using Azure Data Factory
+# Throwing Mud on the Wall (TMoW) - Instant ELt using Azure Data Factory
 
 ## This is a work in progress, it is currently being tested.  It is not yet complete
 
