@@ -8102,6 +8102,71 @@
 											}
 										]
 									}
+								},
+								{
+									"name": "If AzBlb1Csv2AzBlb1CsvCopy",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@equals(\n   item().pipelineName, \n   'Azure Blob Single Csv to Azure Blob Single Csv Copy Pipeline'\n)",
+											"type": "Expression"
+										},
+										"ifTrueActivities": [
+											{
+												"name": "Exec AzBlb1Csv2AzBlb1CsvCopy",
+												"type": "ExecutePipeline",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"pipeline": {
+														"referenceName": "Azure Blob Single Csv to Azure Blob Single Csv Copy Pipeline",
+														"type": "PipelineReference"
+													},
+													"waitOnCompletion": true,
+													"parameters": {
+														"sourceAzureBlobConnectionStringSecretName": {
+															"value": "@item().sourceAzureBlobConnectionStringSecretName",
+															"type": "Expression"
+														},
+														"sourceAzureBlobSingleCsvContainerName": {
+															"value": "@item().sourceAzureBlobSingleCsvContainerName",
+															"type": "Expression"
+														},
+														"sourceAzureBlobSingleCsvFolderPath": {
+															"value": "@item.sourceAzureBlobSingleCsvFolderPath",
+															"type": "Expression"
+														},
+														"sourceAzureBlobSingleCsvFileName": {
+															"value": "@item().sourceAzureBlobSingleCsvFileName",
+															"type": "Expression"
+														},
+														"sinkAzureBlobConnectionStringSecretName": {
+															"value": "@item().sinkAzureBlobConnectionStringSecretName",
+															"type": "Expression"
+														},
+														"sinkAzureBlobSingleCsvContainerName": {
+															"value": "@item().sinkAzureBlobSingleCsvContainerName",
+															"type": "Expression"
+														},
+														"sinkAzureBlobSingleCsvFolderPath": {
+															"value": "@item().sinkAzureBlobSingleCsvFolderPath",
+															"type": "Expression"
+														},
+														"sinkAzureBlobSingleCsvFileName": {
+															"value": "@item().sinkAzureBlobSingleCsvFileName",
+															"type": "Expression"
+														},
+														"deleteSourceFile": {
+															"value": "@item().deleteSourceFile",
+															"type": "Expression"
+														}
+													}
+												}
+											}
+										]
+									}
 								}
 							]
 						}
