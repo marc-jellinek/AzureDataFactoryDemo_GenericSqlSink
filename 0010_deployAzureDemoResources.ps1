@@ -28,11 +28,20 @@ $database2SqlOpsUsername = $azureDemoResourcesDeployment.Parameters.database2Sql
 $database2SqlOpsPassword = $azureDemoResourcesDeployment.Parameters.database2SqlOpsPassword.value 
 
 $storageAccount1Name = $azureDemoResourcesDeployment.Parameters.storageAccount1Name.value
+$storageAccount1BlobServicesName = $azureDemoResourcesDeployment.Parameters.storageAccount1BlobServicesName.Value
+$storageAccount1ContainerName = $azureDemoResourcesDeployment.Parameters.storageAccount1ContainerName.value
+
 $storageAccount2Name = $azureDemoResourcesDeployment.Parameters.storageAccount2Name.value
+$storageAccount2BlobServicesName = $azureDemoResourcesDeployment.Parameters.storageAccount2BlobServicesName.Value
+$storageAccount2ContainerName = $azureDemoResourcesDeployment.Parameters.storageAccount2ContainerName.value
 
 $storageAccountTempName = $azureDemoResourcesDeployment.Parameters.storageAccountTempName.value
+$storageAccountTempBlobServicesName = $azureDemoResourcesDeployment.Parameters.storageAccountTempBlobServicesName.Value
+$storageAccountTempContainerName = $azureDemoResourcesDeployment.Parameters.storageAccountTempContainerName.value
 
 $storageAccountConfigName = $azureDemoResourcesDeployment.Parameters.storageAccountConfigName.value 
+$storageAccountConfigBlobServicesName = $azureDemoResourcesDeployment.Parameters.storageAccountConfigBlobServicesName.Value
+$storageAccountConfigContainerName = $azureDemoResourcesDeployment.Parameters.storageAccountConfigContainerName.value
 
 $storageAccount1Key = ( `
     Get-AzStorageAccountKey `
@@ -63,7 +72,15 @@ $ctx = New-AzStorageContext `
 Set-AzStorageBlobContent `
     -File "./demoData/csv/singleFiles/0010_sourceData1.csv" `
     -Blob "input/csv/singleFiles/0010_sourceData1.csv" `
-    -Container "default" `
+    -Container "$storageAccount1ContainerName" `
+    -Context $ctx `
+    -Properties @{"ContentType" = "text/csv"} `
+    -Force
+
+Set-AzStorageBlobContent `
+    -File "./demoData/csv/singleFiles/0010_sourceData2.csv" `
+    -Blob "input/csv/singleFiles/0010_sourceData2.csv" `
+    -Container "$storageAccount1ContainerName" `
     -Context $ctx `
     -Properties @{"ContentType" = "text/csv"} `
     -Force
@@ -71,7 +88,7 @@ Set-AzStorageBlobContent `
 Set-AzStorageBlobContent `
     -File "./templateAndParameters/0010_deployAzureDemoResources.template.json" `
     -Blob "input/json/singleFiles/0010_deployAzureDemoResources.template.json" `
-    -Container "default" `
+    -Container "$storageAccount1ContainerName" `
     -Context $ctx `
     -Properties @{"ContentType" = "text/json"} `
     -Force
@@ -79,7 +96,7 @@ Set-AzStorageBlobContent `
 Set-AzStorageBlobContent `
     -File "./demoData/parquet/singleFiles/userdata.parquet" `
     -Blob "input/parquet/singleFiles/userdata.parquet" `
-    -Container "default" `
+    -Container "$storageAccount1ContainerName" `
     -Context $ctx `
     -Properties @{"ContentType" = "parquet/binary"} `
     -Force
@@ -87,8 +104,20 @@ Set-AzStorageBlobContent `
 Set-AzStorageBlobContent `
     -File "./demoData/avro/singleFiles/userdata.avro" `
     -Blob "input/avro/singleFiles/userdata.avro" `
-    -Container "default" `
+    -Container "$storageAccount1ContainerName" `
     -Context $ctx `
     -Properties @{"ContentType" = "avro/binary"} `
     -Force
 
+# upload configuration to config storage account
+$ctx = New-AzStorageContext `
+    -StorageAccountName $storageAccountConfigName `
+    -StorageAccountKey $storageAccountConfigKey
+
+Set-AzStorageBlobContent `
+    -File "./demoConfig/testAllPipelines.json" `
+    -Blob "config/testAllPipelines.json" `
+    -Container "$storageAccountConfigContainerName" `
+    -Context $ctx `
+    -Properties @{"ContentType" = "text/json"} `
+    -Force

@@ -1,5 +1,5 @@
 {
-	"name": "NOT WORKING Azure Blob Single Json to Azure Sql Database Table Data Flow Pipeline",
+	"name": "Azure Blob Single Json to Azure Sql Database Table Data Flow Pipeline",
 	"properties": {
 		"activities": [
 			{

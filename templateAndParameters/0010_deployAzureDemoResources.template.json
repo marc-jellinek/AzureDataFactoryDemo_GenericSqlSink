@@ -145,7 +145,7 @@
         "storageAccountConfigContainerName": {
             "type": "string", 
             "defaultValue": "default"
-        }, 
+        } 
     },
     "resources": [
         {
@@ -352,7 +352,7 @@
                 },
                 "accessTier": "Hot"
             }
-        },
+        }, 
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
