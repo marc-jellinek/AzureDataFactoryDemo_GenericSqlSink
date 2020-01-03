@@ -1845,7 +1845,7 @@
 								},
 								"ifTrueActivities": [
 									{
-										"name": "Exec AzBlb1Csv2AzBlb1CsvCopy",
+										"name": "AzBlb1Csv2AzBlb1CsvCopy",
 										"type": "ExecutePipeline",
 										"dependsOn": [],
 										"userProperties": [],
@@ -1910,7 +1910,7 @@
 								},
 								"ifTrueActivities": [
 									{
-										"name": "Execute AzBlob1Csv2AzBlob1JsonCopyPipeline",
+										"name": "AzBlob1Csv2AzBlob1JsonCopyPipeline",
 										"type": "ExecutePipeline",
 										"dependsOn": [],
 										"userProperties": [],
