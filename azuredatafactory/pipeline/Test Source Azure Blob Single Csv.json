@@ -43,7 +43,7 @@
 							"type": "Expression"
 						},
 						"sinkAzureBlobSingleCsvFileName": {
-							"value": "@variables('sinkAzureBlobSingleCsvFolderPath')",
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleCsvFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Csv'), '<method>', 'Cp'",
 							"type": "Expression"
 						},
 						"deleteSourceFile": {
@@ -94,7 +94,7 @@
 							"type": "Expression"
 						},
 						"sinkAzureBlobSingleJsonFileName": {
-							"value": "@variables('sinkAzureBlobSingleJsonFileName')",
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleJsonFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Csv'), '<method>', 'Cp'",
 							"type": "Expression"
 						},
 						"deleteSourceFile": {
@@ -145,7 +145,7 @@
 							"type": "Expression"
 						},
 						"sinkAzureBlobSingleParquetFileName": {
-							"value": "@variables('sinkAzureBlobSingleParquetFileName')",
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleParquetFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Prqt'), '<method>', 'Cp'",							
 							"type": "Expression"
 						},
 						"deleteSourceFile": {
@@ -200,12 +200,216 @@
 							"type": "Expression"
 						},
 						"sinkAzureSqlDatabaseTableTableName": {
-							"value": "@variables('sinkAzureSqlDatabaseTableTableName')",
+							"value": "@replace(replace(replace(variables('sinkAzureSQlDatabaseTableTableName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Csv'), '<method>', 'Cp'",
 							"type": "Expression"
 						}
 					}
 				}
-			}
+			}, 
+			{
+				"name": "AzBlb1Csv2AzBlb1CsvDf",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Blob Single Csv to Azure Blob Single Csv Data Flow Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sourceAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvContainerName": {
+							"value": "@variables('sourceAzureBlobSingleCsvContainerName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvFolderPath": {
+							"value": "@variables('sourceAzureBlobSingleCsvFolderPath')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvFileName": {
+							"value": "@variables('sourceAzureBlobSingleCsvFileName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sinkAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleCsvContainerName": {
+							"value": "@variables('sinkAzureBlobSingleCsvContainerName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleCsvFolderPath": {
+							"value": "@variables('sinkAzureBlobSingleCsvFolderPath')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleCsvFileName": {
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleCsvFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Csv'), '<method>', 'Df'",
+							"type": "Expression"
+						},
+						"deleteSourceFile": {
+							"value": "@variables('deleteSourceFile')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "AzBlb1Csv2AzBlb1JsonDf",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Blob Single Csv to Azure Blob Single Json Data Flow Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sourceAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvContainerName": {
+							"value": "@variables('sourceAzureBlobSingleCsvContainerName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvFolderPath": {
+							"value": "@variables('sourceAzureBlobSingleCsvFolderPath')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvFileName": {
+							"value": "@variables('sourceAzureBlobSingleCsvFileName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sinkAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleJsonContainerName": {
+							"value": "@variables('sinkAzureBlobSingleJsonContainerName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleJsonFolderPath": {
+							"value": "@variables('sinkAzureBlobSingleJsonFolderPath')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleJsonFileName": {
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleJsonFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Csv'), '<method>', 'Df'",
+							"type": "Expression"
+						},
+						"deleteSourceFile": {
+							"value": "@variables('deleteSourceFile')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "AzBlb1Csv2AzBlb1PrqtDf",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Blob Single Csv to Azure Blob Single Parquet Data Flow Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sourceAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvContainerName": {
+							"value": "@variables('sourceAzureBlobSingleCsvContainerName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvFolderPath": {
+							"value": "@variables('sourceAzureBlobSingleCsvFolderPath')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvFileName": {
+							"value": "@variables('sourceAzureBlobSingleCsvFileName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sinkAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetContainerName": {
+							"value": "@variables('sinkAzureBlobSingleParquetContainerName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetFolderPath": {
+							"value": "@variables('sinkAzureBlobSingleParquetFolderPath')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetFileName": {
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleParquetFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Prqt'), '<method>', 'Df'",							
+							"type": "Expression"
+						},
+						"deleteSourceFile": {
+							"value": "@variables('deleteSourceFile')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "AzBlb1Csv2AzSqlDbTableCp",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Blob Single Csv to Azure Sql Database Table Copy Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sourceAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvContainerName": {
+							"value": "@variables('sourceAzureBlobSingleCsvContainerName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvFolderPath": {
+							"value": "@variables('sourceAzureBlobSingleCsvFolderPath')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleCsvFileName": {
+							"value": "@variables('sourceAzureBlobSingleCsvFileName')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sinkAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"truncatePriorToCopy": {
+							"value": "@variables('truncatePriorToCopy')",
+							"type": "Expression"
+						},
+						"deleteSourceFile": {
+							"value": "@variables('deleteSourceFile')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sinkAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseTableTableName": {
+							"value": "@replace(replace(replace(variables('sinkAzureSQlDatabaseTableTableName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Csv'), '<method>', 'Cp'",
+							"type": "Expression"
+						}
+					}
+				}
+			}			
 		],
 		"variables": {
 			"sourceAzureBlobConnectionStringSecretName": {
@@ -223,42 +427,6 @@
 			"sourceAzureBlobSingleCsvFileName": {
 				"type": "String",
 				"defaultValue": "0010_sourceData1.csv"
-			},
-			"sourceAzureBlobSingleJsonContainerName": {
-				"type": "String",
-				"defaultValue": "default"
-			},
-			"sourceAzureBlobSingleJsonFolderPath": {
-				"type": "String",
-				"defaultValue": "input/json/singleFiles"
-			},
-			"sourceAzureBlobSingleJsonFileName": {
-				"type": "String",
-				"defaultValue": "0010_deployAzureDemoResources.template.json"
-			},
-			"sourceAzureBlobSingleParquetContainerName": {
-				"type": "String",
-				"defaultValue": "default"
-			},
-			"sourceAzureBlobSingleParquetFolderPath": {
-				"type": "String",
-				"defaultValue": "input/parquet/singleFiles"
-			},
-			"sourceAzureBlobSingleParquetFileName": {
-				"type": "String",
-				"defaultValue": "userdata.parquet"
-			},
-			"sourceAzureSqlDatabaseConnectionStringSecretName": {
-				"type": "String",
-				"defaultValue": "mdjdatabaseserver1-DB1-mdjdatabase1sqlopsSqlAuthConnectionString"
-			},
-			"sourceAzureSqlDatabaseTableSchemaName": {
-				"type": "String",
-				"defaultValue": "sys"
-			},
-			"sourceAzureSqlDatabaseTableTableName": {
-				"type": "String",
-				"defaultValue": "objects"
 			},
 			"sinkAzureBlobConnectionStringSecretName": {
 				"type": "String",
@@ -310,7 +478,7 @@
 			},
 			"sinkAzureSqlDatabaseTableTableName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.AzBlb1Csv2AzSqlDbTblCp"
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>"
 			},
 			"deleteSourceFile": {
 				"type": "Boolean",
