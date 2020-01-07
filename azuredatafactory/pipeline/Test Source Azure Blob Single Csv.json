@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Exec AzBlb1Csv2AzBlb1CsvCp",
+				"name": "AzBlb1Csv2AzBlb1CsvCp",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
@@ -58,7 +58,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Exec AzBlb1Csv2AzBlb1CsvCp",
+						"activity": "AzBlb1Csv2AzBlb1CsvCp",
 						"dependencyConditions": [
 							"Succeeded"
 						]
