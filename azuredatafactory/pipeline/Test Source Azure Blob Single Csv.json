@@ -139,7 +139,7 @@
 							"type": "Expression"
 						},
 						"sourceAzureBlobSingleCsvFolderPath": {
-							"value": "@variables('sinkAzureBlobSingleCsvFolderPath')",
+							"value": "@variables('sourceAzureBlobSingleCsvFolderPath')",
 							"type": "Expression"
 						},
 						"sourceAzureBlobSingleCsvFileName": {
