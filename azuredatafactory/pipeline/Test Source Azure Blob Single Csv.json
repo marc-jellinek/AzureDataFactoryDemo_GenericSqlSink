@@ -56,14 +56,7 @@
 			{
 				"name": "AzBlb1Csv2AzBlb1JsonCp",
 				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "AzBlb1Csv2AzBlb1CsvCp",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
@@ -114,14 +107,7 @@
 			{
 				"name": "AzBlb1Csv2AzBlb1PrqtCp",
 				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "AzBlb1Csv2AzBlb1JsonCp",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
@@ -172,14 +158,7 @@
 			{
 				"name": "AzBlb1Csv2AzSqlDbTableCp",
 				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "AzBlb1Csv2AzBlb1PrqtCp",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
