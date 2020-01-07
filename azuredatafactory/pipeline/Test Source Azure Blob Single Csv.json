@@ -360,13 +360,13 @@
 				}
 			},
 			{
-				"name": "AzBlb1Csv2AzSqlDbTableCp",
+				"name": "AzBlb1Csv2AzSqlDbTableDf",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "Azure Blob Single Csv to Azure Sql Database Table Copy Pipeline",
+						"referenceName": "Azure Blob Single Csv to Azure Sql Database Table Data Flow Pipeline",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true,
@@ -391,20 +391,20 @@
 							"value": "@variables('sinkAzureSqlDatabaseConnectionStringSecretName')",
 							"type": "Expression"
 						},
-						"truncatePriorToCopy": {
-							"value": "@variables('truncatePriorToCopy')",
-							"type": "Expression"
-						},
-						"deleteSourceFile": {
-							"value": "@variables('deleteSourceFile')",
-							"type": "Expression"
-						},
 						"sinkAzureSqlDatabaseTableSchemaName": {
 							"value": "@variables('sinkAzureSqlDatabaseTableSchemaName')",
 							"type": "Expression"
 						},
 						"sinkAzureSqlDatabaseTableTableName": {
 							"value": "@replace(replace(replace(variables('sinkAzureSQlDatabaseTableTableName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Csv'), '<method>', 'Cp'",
+							"type": "Expression"
+						},
+						"truncatePriorToCopy": {
+							"value": "@variables('truncatePriorToCopy')",
+							"type": "Expression"
+						},
+						"deleteSourceFile": {
+							"value": "@variables('deleteSourceFile')",
 							"type": "Expression"
 						}
 					}
@@ -442,7 +442,7 @@
 			},
 			"sinkAzureBlobSingleCsvFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.AzBlb1Csv2<sink><method>.csv"
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>.csv"
 			},
 			"sinkAzureBlobSingleJsonContainerName": {
 				"type": "String",
@@ -454,7 +454,7 @@
 			},
 			"sinkAzureBlobSingleJsonFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.AzBlb1Json2<sink><method>.json"
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>.json"
 			},
 			"sinkAzureBlobSingleParquetContainerName": {
 				"type": "String",
@@ -466,7 +466,7 @@
 			},
 			"sinkAzureBlobSingleParquetFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.AzBlb1Prqt2<sink><method>.parquet"
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>.parquet"
 			},
 			"sinkAzureSqlDatabaseConnectionStringSecretName": {
 				"type": "String",
