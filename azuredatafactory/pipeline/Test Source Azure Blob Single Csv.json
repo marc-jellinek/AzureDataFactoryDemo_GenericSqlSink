@@ -442,7 +442,7 @@
 			},
 			"sinkAzureBlobSingleCsvFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.<source>2<sink><method>.csv"
+				"defaultValue": "0010_sourceData1.AzBlb1Csv2<sink><method>.csv"
 			},
 			"sinkAzureBlobSingleJsonContainerName": {
 				"type": "String",
@@ -454,7 +454,7 @@
 			},
 			"sinkAzureBlobSingleJsonFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.<source>2<sink><method>.json"
+				"defaultValue": "0010_sourceData1.AzBlb1Json2<sink><method>.json"
 			},
 			"sinkAzureBlobSingleParquetContainerName": {
 				"type": "String",
@@ -466,7 +466,7 @@
 			},
 			"sinkAzureBlobSingleParquetFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.<source>2<sink><method>.parquet"
+				"defaultValue": "0010_sourceData1.AzBlb1Prqt2<sink><method>.parquet"
 			},
 			"sinkAzureSqlDatabaseConnectionStringSecretName": {
 				"type": "String",
