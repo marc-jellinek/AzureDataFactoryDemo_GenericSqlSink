@@ -37,7 +37,7 @@
             "sinkAzureBlobConnectionStringSecretName": "mdjstorageaccount2AccountKeyConnectionString",
             "sinkAzureBlobSingleParquetContainerName": "default", 
             "sinkAzureBlobSingleParquetFolderPath": "output/parquet/singleFiles", 
-            "sinkAzureBlobSingleParquetFileName": "0010_sourceData1.SingleCsvToSingleParquet.copy.json", 
+            "sinkAzureBlobSingleParquetFileName": "0010_sourceData1.SingleCsvToSingleParquet.copy.parquet", 
             "deleteSourceFile": false
         }
     }, 

@@ -224,6 +224,42 @@
 				"type": "String",
 				"defaultValue": "0010_sourceData1.csv"
 			},
+			"sourceAzureBlobSingleJsonContainerName": {
+				"type": "String",
+				"defaultValue": "default"
+			},
+			"sourceAzureBlobSingleJsonFolderPath": {
+				"type": "String",
+				"defaultValue": "input/json/singleFiles"
+			},
+			"sourceAzureBlobSingleJsonFileName": {
+				"type": "String",
+				"defaultValue": "0010_deployAzureDemoResources.template.json"
+			},
+			"sourceAzureBlobSingleParquetContainerName": {
+				"type": "String",
+				"defaultValue": "default"
+			},
+			"sourceAzureBlobSingleParquetFolderPath": {
+				"type": "String",
+				"defaultValue": "input/parquet/singleFiles"
+			},
+			"sourceAzureBlobSingleParquetFileName": {
+				"type": "String",
+				"defaultValue": "userdata.parquet"
+			},
+			"sourceAzureSqlDatabaseConnectionStringSecretName": {
+				"type": "String",
+				"defaultValue": "mdjdatabaseserver1-DB1-mdjdatabase1sqlopsSqlAuthConnectionString"
+			},
+			"sourceAzureSqlDatabaseTableSchemaName": {
+				"type": "String",
+				"defaultValue": "sys"
+			},
+			"sourceAzureSqlDatabaseTableTableName": {
+				"type": "String",
+				"defaultValue": "objects"
+			},
 			"sinkAzureBlobConnectionStringSecretName": {
 				"type": "String",
 				"defaultValue": "mdjstorageaccount2AccountKeyConnectionString"
@@ -238,7 +274,7 @@
 			},
 			"sinkAzureBlobSingleCsvFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.AzBlb1Csv2AzBlb1CsvCp.csv"
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>.csv"
 			},
 			"sinkAzureBlobSingleJsonContainerName": {
 				"type": "String",
@@ -250,7 +286,7 @@
 			},
 			"sinkAzureBlobSingleJsonFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.AzBlb1Csv2AzBlb1JsonCp.json"
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>.json"
 			},
 			"sinkAzureBlobSingleParquetContainerName": {
 				"type": "String",
@@ -262,7 +298,7 @@
 			},
 			"sinkAzureBlobSingleParquetFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.AzBlb1Csv2AzBlb1PrqtCp.parquet"
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>.parquet"
 			},
 			"sinkAzureSqlDatabaseConnectionStringSecretName": {
 				"type": "String",
