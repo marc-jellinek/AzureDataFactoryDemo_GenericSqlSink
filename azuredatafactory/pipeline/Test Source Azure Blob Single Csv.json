@@ -145,7 +145,7 @@
 							"type": "Expression"
 						},
 						"sinkAzureBlobSingleParquetFileName": {
-							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleParquetFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Prqt'), '<method>', 'Cp')",							
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleParquetFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Prqt'), '<method>', 'Cp')",
 							"type": "Expression"
 						},
 						"deleteSourceFile": {
@@ -205,7 +205,7 @@
 						}
 					}
 				}
-			}, 
+			},
 			{
 				"name": "AzBlb1Csv2AzBlb1CsvDf",
 				"type": "ExecutePipeline",
@@ -298,7 +298,7 @@
 							"type": "Expression"
 						},
 						"sinkAzureBlobSingleJsonFileName": {
-							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleJsonFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Json'), '<method>', 'Df'",
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleJsonFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Json'), '<method>', 'Df')",
 							"type": "Expression"
 						},
 						"deleteSourceFile": {
@@ -349,7 +349,7 @@
 							"type": "Expression"
 						},
 						"sinkAzureBlobSingleParquetFileName": {
-							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleParquetFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Prqt'), '<method>', 'Df'",							
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleParquetFileName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzBlb1Prqt'), '<method>', 'Df')",
 							"type": "Expression"
 						},
 						"deleteSourceFile": {
@@ -396,7 +396,7 @@
 							"type": "Expression"
 						},
 						"sinkAzureSqlDatabaseTableTableName": {
-							"value": "@replace(replace(replace(variables('sinkAzureSQlDatabaseTableTableName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzSqlDbTbl'), '<method>', 'Df'",
+							"value": "@replace(replace(replace(variables('sinkAzureSQlDatabaseTableTableName'), '<source>', 'AzBlb1Csv'), '<sink>', 'AzSqlDbTbl'), '<method>', 'Df')",
 							"type": "Expression"
 						},
 						"truncatePriorToCopy": {
@@ -409,7 +409,7 @@
 						}
 					}
 				}
-			}			
+			}
 		],
 		"variables": {
 			"sourceAzureBlobConnectionStringSecretName": {
@@ -481,8 +481,7 @@
 				"defaultValue": "0010_sourceData1.<source>2<sink><method>"
 			},
 			"deleteSourceFile": {
-				"type": "Boolean",
-				"defaultValue": false
+				"type": "Boolean"
 			},
 			"truncatePriorToCopy": {
 				"type": "Boolean",
