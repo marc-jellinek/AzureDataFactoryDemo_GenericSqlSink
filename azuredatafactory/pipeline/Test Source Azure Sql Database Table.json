@@ -39,7 +39,7 @@
 			},
 			"sinkAzureBlobSingleCsvFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.<source>2<sink><method>.csv"
+				"defaultValue": "sys.objects.<source>2<sink><method>.csv"
 			},
 			"sinkAzureBlobSingleJsonContainerName": {
 				"type": "String",
@@ -51,7 +51,7 @@
 			},
 			"sinkAzureBlobSingleJsonFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.<source>2<sink><method>.json"
+				"defaultValue": "sys.objects.<source>2<sink><method>.json"
 			},
 			"sinkAzureBlobSingleParquetContainerName": {
 				"type": "String",
@@ -63,7 +63,7 @@
 			},
 			"sinkAzureBlobSingleParquetFileName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.<source>2<sink><method>.parquet"
+				"defaultValue": "sys.objects.<source>2<sink><method>.parquet"
 			},
 			"sinkAzureSqlDatabaseConnectionStringSecretName": {
 				"type": "String",
@@ -75,7 +75,7 @@
 			},
 			"sinkAzureSqlDatabaseTableTableName": {
 				"type": "String",
-				"defaultValue": "0010_sourceData1.<source>2<sink><method>"
+				"defaultValue": "sys.objects.<source>2<sink><method>"
 			},
 			"deleteSourceFile": {
 				"type": "Boolean",
