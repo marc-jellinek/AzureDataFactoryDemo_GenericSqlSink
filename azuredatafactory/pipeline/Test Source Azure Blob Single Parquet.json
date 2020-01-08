@@ -103,6 +103,104 @@
 						}
 					}
 				}
+			},
+			{
+				"name": "AzBlb1Prqt2AzBlb1PrqtCopy",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Blob Single Parquet to Azure Blob Single Parquet Copy Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sourceAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleParquetContainerName": {
+							"value": "@variables('sourceAzureBlobSingleParquetContainerName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleParquetFolderPath": {
+							"value": "@variables('sourceAzureBlobSingleParquetFolderPath')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleParquetFileName": {
+							"value": "@variables('sourceAzureBlobSingleParquetFileName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sinkAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetContainerName": {
+							"value": "@variables('sinkAzureBlobSingleParquetContainerName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetFolderPath": {
+							"value": "@variables('sinkAzureBlobSingleParquetFolderPath')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetFileName": {
+							"value": "@variables('sinkAzureBlobSingleParquetFileName')",
+							"type": "Expression"
+						},
+						"deleteSourceFile": {
+							"value": "@variables('deleteSourceFile')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "AzBlb1Prqt2AzSqlDbTblCopy",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Blob Single Parquet to Azure Sql Database Table Copy Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sourceAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleParquetContainerName": {
+							"value": "@variables('sourceAzureBlobSingleParquetContainerName')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleParquetFolderPath": {
+							"value": "@variables('sourceAzureBlobSingleParquetFolderPath')",
+							"type": "Expression"
+						},
+						"sourceAzureBlobSingleParquetFileName": {
+							"value": "@variables('sourceAzureBlobSingleParquetFileName')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sinkAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sinkAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseTableTableName": {
+							"value": "@replace(replace(replace(variables('sinkAzureSqlDatabaseTableTableName'), '<source>', 'AzBlb1Prqt'), '<sink>', 'AzSqlDbTbl'), '<method>', 'Cp')",
+							"type": "Expression"
+						},
+						"deleteSourceFile": {
+							"value": "@variables('deleteSourceFile')",
+							"type": "Expression"
+						}
+					}
+				}
 			}
 		],
 		"variables": {
