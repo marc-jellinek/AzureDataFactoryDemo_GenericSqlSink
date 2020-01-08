@@ -10,6 +10,135 @@
 				"typeProperties": {
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "AzSqlDbTbl2AzBlb1JsonCopy",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Sql Database Table to Azure Blob Single Json Copy Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sourceAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableTableName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableTableName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sinkAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleJsonContainerName": {
+							"value": "@variables('sinkAzureBlobSingleJsonContainerName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleJsonFolderPath": {
+							"value": "@variables('sinkAzureBlobSingleJsonFolderPath')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleJsonFileName": {
+							"value": "@variables('sinkAzureBlobSingleJsonFileName')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "AzSqlDbTbl2AzBlb1ParquetCopy",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Sql Database Table to Azure Blob Single Parquet Copy Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sourceAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableTableName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableTableName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sinkAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetContainerName": {
+							"value": "@variables('sinkAzureBlobSingleParquetContainerName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetFolderPath": {
+							"value": "@variables('sinkAzureBlobSingleParquetFolderPath')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetFileName": {
+							"value": "@variables('sinkAzureBlobSingleParquetFileName')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "AzSqlDbTbl2AzSqlDbTblCopy",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Sql Database Table to Azure Sql Database Table Copy Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sourceAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableTableName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableTableName')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sinkAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"truncatePriorToCopy": {
+							"value": "@variables('truncatePriorToCopy')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sinkAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseTableTableName": {
+							"value": "@variables('sinkAzureSqlDatabaseTableTableName')",
+							"type": "Expression"
+						}
+					}
+				}
 			}
 		],
 		"variables": {
