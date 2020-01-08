@@ -8,7 +8,41 @@
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"waitOnCompletion": true
+					"pipeline": {
+						"referenceName": "Azure Sql Database Table to Azure Blob Single Csv Copy Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sourceAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableTableName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableTableName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sinkAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleCsvContainerName": {
+							"value": "@variables('sinkAzureBlobSingleCsvContainerName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleCsvFolderPath": {
+							"value": "@variables('sinkAzureBlobSingleCsvFolderPath')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleCsvFileName": {
+							"value": "@variables('sinkAzureBlobSingleCsvFileName')",
+							"type": "Expression"
+						}
+					}
 				}
 			},
 			{
