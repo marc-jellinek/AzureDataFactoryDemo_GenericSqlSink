@@ -225,13 +225,13 @@
 			"tempAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"tempAzureBlobContainerName": {
+			"tempAzureBlobCsvContainerName": {
 				"type": "string"
 			},
-			"tempAzureBlobFolderPath": {
+			"tempAzureBlobCsvFolderPath": {
 				"type": "string"
 			},
-			"tempAzureBlobFileName": {
+			"tempAzureBlobCsvFileName": {
 				"type": "string"
 			}
 		},
