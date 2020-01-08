@@ -94,7 +94,7 @@
 							"type": "Expression"
 						},
 						"sinkAzureBlobSingleJsonFileName": {
-							"value": "@variables('sinkAzureBlobSingleJsonFileName')",
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleJsonFileName'), '<source>', 'AzBlb1Json'), '<sink>', 'AzBlb1Json'), '<method>', 'Cp')",
 							"type": "Expression"
 						},
 						"deleteSourceFile": {
@@ -145,7 +145,7 @@
 							"type": "Expression"
 						},
 						"sinkAzureBlobSingleParquetFileName": {
-							"value": "@variables('sinkAzureBlobSingleParquetFileName')",
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleParquetFileName'), '<source>', 'AzBlb1Json'), '<sink>', 'AzBlb1Prqt'), '<method>', 'Copy')",
 							"type": "Expression"
 						},
 						"deleteSourceFile": {
