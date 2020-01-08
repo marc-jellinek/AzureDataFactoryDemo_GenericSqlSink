@@ -123,15 +123,15 @@
 								"type": "Expression"
 							},
 							"azureBlobSingleCSVFileName": {
-								"value": "@pipeline().parameters.tempAzureBlobFileName",
+								"value": "@pipeline().parameters.tempAzureBlobSingleCsvFileName",
 								"type": "Expression"
 							},
 							"azureBlobSingleCSVFolderPath": {
-								"value": "@pipeline().parameters.tempAzureBlobFolderPath",
+								"value": "@pipeline().parameters.tempAzureBlobSingleCsvFolderPath",
 								"type": "Expression"
 							},
 							"azureBlobSingleCSVContainerName": {
-								"value": "@pipeline().parameters.tempAzureBlobContainerName",
+								"value": "@pipeline().parameters.tempAzureBlobSingleCsvContainerName",
 								"type": "Expression"
 							}
 						}
@@ -225,13 +225,13 @@
 			"tempAzureBlobConnectionStringSecretName": {
 				"type": "string"
 			},
-			"tempAzureBlobCsvContainerName": {
+			"tempAzureBlobSingleCsvContainerName": {
 				"type": "string"
 			},
-			"tempAzureBlobCsvFolderPath": {
+			"tempAzureBlobSingleCsvFolderPath": {
 				"type": "string"
 			},
-			"tempAzureBlobCsvFileName": {
+			"tempAzureBlobSingleCsvFileName": {
 				"type": "string"
 			}
 		},
