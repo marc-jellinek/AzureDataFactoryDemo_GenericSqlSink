@@ -1,0 +1,91 @@
+{
+	"name": "Test Source Azure Sql Database Table",
+	"properties": {
+		"activities": [
+			{
+				"name": "AzSqlDbTbl2AzBlb1CsvCopy",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"variables": {
+			"sourceAzureSqlDatabaseConnectionStringSecretName": {
+				"type": "String",
+				"defaultValue": "mdjdatabaseserver1-DB1-mdjdatabase1sqlopsSqlAuthConnectionString"
+			},
+			"sourceAzureSqlDatabaseTableSchemaName": {
+				"type": "String",
+				"defaultValue": "sys"
+			},
+			"sourceAzureSqlDatabaseTableTableName": {
+				"type": "String",
+				"defaultValue": "objects"
+			},
+			"sinkAzureBlobConnectionStringSecretName": {
+				"type": "String",
+				"defaultValue": "mdjstorageaccount2AccountKeyConnectionString"
+			},
+			"sinkAzureBlobSingleCsvContainerName": {
+				"type": "String",
+				"defaultValue": "default"
+			},
+			"sinkAzureBlobSingleCsvFolderPath": {
+				"type": "String",
+				"defaultValue": "output/csv/singleFiles"
+			},
+			"sinkAzureBlobSingleCsvFileName": {
+				"type": "String",
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>.csv"
+			},
+			"sinkAzureBlobSingleJsonContainerName": {
+				"type": "String",
+				"defaultValue": "default"
+			},
+			"sinkAzureBlobSingleJsonFolderPath": {
+				"type": "String",
+				"defaultValue": "output/json/singleFiles"
+			},
+			"sinkAzureBlobSingleJsonFileName": {
+				"type": "String",
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>.json"
+			},
+			"sinkAzureBlobSingleParquetContainerName": {
+				"type": "String",
+				"defaultValue": "default"
+			},
+			"sinkAzureBlobSingleParquetFolderPath": {
+				"type": "String",
+				"defaultValue": "output/parquet/singleFiles"
+			},
+			"sinkAzureBlobSingleParquetFileName": {
+				"type": "String",
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>.parquet"
+			},
+			"sinkAzureSqlDatabaseConnectionStringSecretName": {
+				"type": "String",
+				"defaultValue": "mdjdatabaseserver2-DB2-mdjdatabase2sqlopsSqlAuthConnectionString"
+			},
+			"sinkAzureSqlDatabaseTableSchemaName": {
+				"type": "String",
+				"defaultValue": "utils"
+			},
+			"sinkAzureSqlDatabaseTableTableName": {
+				"type": "String",
+				"defaultValue": "0010_sourceData1.<source>2<sink><method>"
+			},
+			"deleteSourceFile": {
+				"type": "Boolean",
+				"defaultValue": false
+			},
+			"truncatePriorToCopy": {
+				"type": "Boolean",
+				"defaultValue": true
+			}
+		},
+		"annotations": []
+	}
+}

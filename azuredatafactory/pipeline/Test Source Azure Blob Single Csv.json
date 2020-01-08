@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "AzBlb1Csv2AzBlb1CsvCp",
+				"name": "AzBlb1Csv2AzBlb1CsvCopy",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
@@ -54,7 +54,7 @@
 				}
 			},
 			{
-				"name": "AzBlb1Csv2AzBlb1JsonCp",
+				"name": "AzBlb1Csv2AzBlb1JsonCopy",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
@@ -105,7 +105,7 @@
 				}
 			},
 			{
-				"name": "AzBlb1Csv2AzBlb1PrqtCp",
+				"name": "AzBlb1Csv2AzBlb1PrqtCopy",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
@@ -156,7 +156,7 @@
 				}
 			},
 			{
-				"name": "AzBlb1Csv2AzSqlDbTableCp",
+				"name": "AzBlb1Csv2AzSqlDbTableCopy",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
