@@ -201,7 +201,7 @@
 						}
 					}
 				}
-			}, 
+			},
 			{
 				"name": "AzBlb1Prqt2AzBlb1CsvDf",
 				"type": "ExecutePipeline",
@@ -401,7 +401,7 @@
 						}
 					}
 				}
-			}			
+			}
 		],
 		"variables": {
 			"sourceAzureBlobConnectionStringSecretName": {
@@ -479,6 +479,9 @@
 				"type": "Boolean",
 				"defaultValue": true
 			}
+		},
+		"folder": {
+			"name": "Test Pipelines"
 		},
 		"annotations": []
 	}

@@ -221,7 +221,7 @@
 						}
 					}
 				}
-			}, 
+			},
 			{
 				"name": "AzBlb1Json2AzBlb1CsvDf",
 				"type": "ExecutePipeline",
@@ -441,7 +441,7 @@
 						}
 					}
 				}
-			}			
+			}
 		],
 		"variables": {
 			"sourceAzureBlobConnectionStringSecretName": {
@@ -535,6 +535,9 @@
 				"type": "String",
 				"defaultValue": "0010_deployAzureDemoResources.template.<source>2<sink><method>.csv"
 			}
+		},
+		"folder": {
+			"name": "Test Pipelines"
 		},
 		"annotations": []
 	}

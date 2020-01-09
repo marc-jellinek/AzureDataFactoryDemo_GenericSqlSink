@@ -420,6 +420,9 @@
 				"defaultValue": true
 			}
 		},
+		"folder": {
+			"name": "Test Pipelines"
+		},
 		"annotations": []
 	}
 }
