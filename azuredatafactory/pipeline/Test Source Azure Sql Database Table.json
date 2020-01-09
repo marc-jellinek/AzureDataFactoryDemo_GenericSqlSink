@@ -340,7 +340,7 @@
 							"type": "Expression"
 						},
 						"sinkAzureSqlDatabaseTableTableName": {
-							"value": "@replace(replace(replace(variables('sinkAzureSqlDatabaseTableTableName'), '<source>', 'AzSqlDbTbl', '<sink>', 'AzSqlDbTbl'), '<method>', 'Df')",
+							"value": "@replace(replace(replace(variables('sinkAzureSqlDatabaseTableTableName'), '<source>', 'AzSqlDbTbl'), '<sink>', 'AzSqlDbTbl'), '<method>', 'Df')",
 							"type": "Expression"
 						}
 					}
