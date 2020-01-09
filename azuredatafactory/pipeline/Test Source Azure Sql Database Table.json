@@ -173,6 +173,178 @@
 						}
 					}
 				}
+			},
+			{
+				"name": "AzSqlDbTbl2AzBlb1CsvDf",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Sql Database Table to Azure Blob Single Csv Data Flow Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sourceAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableTableName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableTableName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sinkAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleCsvContainerName": {
+							"value": "@variables('sinkAzureBlobSingleCsvContainerName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleCsvFolderPath": {
+							"value": "@variables('sinkAzureBlobSingleCsvFolderPath')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleCsvFileName": {
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleCsvFileName'), '<source>', 'AzSqlDbTbl'), '<sink>', 'AzBlb1Csv'), '<method>', 'Df')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "AzSqlDbTbl2AzBlb1JsonDf",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Sql Database Table to Azure Blob Single Json Data Flow Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sourceAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableTableName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableTableName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sinkAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleJsonContainerName": {
+							"value": "@variables('sinkAzureBlobSingleJsonContainerName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleJsonFolderPath": {
+							"value": "@variables('sinkAzureBlobSingleJsonFolderPath')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleJsonFileName": {
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleJsonFileName'), '<source>', 'AzSqlDbTbl'), '<sink>', 'AzBlb1Json'), '<method>', 'Df')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "AzSqlDbTbl2AzBlb1ParquetDf",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Sql Database Table to Azure Blob Single Parquet Data Flow Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sourceAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableTableName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableTableName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobConnectionStringSecretName": {
+							"value": "@variables('sinkAzureBlobConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetContainerName": {
+							"value": "@variables('sinkAzureBlobSingleParquetContainerName')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetFolderPath": {
+							"value": "@variables('sinkAzureBlobSingleParquetFolderPath')",
+							"type": "Expression"
+						},
+						"sinkAzureBlobSingleParquetFileName": {
+							"value": "@replace(replace(replace(variables('sinkAzureBlobSingleParquetFileName'), '<source>', 'AzSqlDbTbl'), '<sink>', 'AzBlb1Prqt'), '<method>', 'Df')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "AzSqlDbTbl2AzSqlDbTblDf",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Azure Sql Database Table to Azure Sql Database Table Data Flow Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sourceAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sourceAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sourceAzureSqlDatabaseTableTableName": {
+							"value": "@variables('sourceAzureSqlDatabaseTableTableName')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseConnectionStringSecretName": {
+							"value": "@variables('sinkAzureSqlDatabaseConnectionStringSecretName')",
+							"type": "Expression"
+						},
+						"truncatePriorToCopy": {
+							"value": "@variables('truncatePriorToCopy')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseTableSchemaName": {
+							"value": "@variables('sinkAzureSqlDatabaseTableSchemaName')",
+							"type": "Expression"
+						},
+						"sinkAzureSqlDatabaseTableTableName": {
+							"value": "@replace(replace(replace(variables('sinkAzureSqlDatabaseTableTableName'), '<source>', 'AzSqlDbTbl', '<sink>', 'AzSqlDbTbl'), '<method>', 'Df')",
+							"type": "Expression"
+						}
+					}
+				}
 			}
 		],
 		"variables": {
@@ -241,8 +413,7 @@
 				"defaultValue": "sys.objects.<source>2<sink><method>"
 			},
 			"deleteSourceFile": {
-				"type": "Boolean",
-				"defaultValue": false
+				"type": "Boolean"
 			},
 			"truncatePriorToCopy": {
 				"type": "Boolean",
