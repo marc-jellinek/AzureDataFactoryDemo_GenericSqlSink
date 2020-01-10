@@ -2048,7 +2048,7 @@
 									"type": "Expression"
 								},
 								"sinkAzureBlobSingleParquetFileName": {
-									"value": "@replace(replace(replace(variables('sinkAzureBlobSingleParquetFileName'), '<source>', 'AzBlb1Json'), '<sink>', 'AzSqlDbTbl'), '<method>', 'Df')",
+									"value": "@replace(replace(replace(variables('sinkAzureBlobSingleParquetFileName'), '<source>', 'AzBlb1Json'), '<sink>', 'AzBlb1Prqt'), '<method>', 'Df')",
 									"type": "Expression"
 								},
 								"deleteSourceFile": {
