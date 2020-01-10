@@ -74,7 +74,7 @@
 								"type": "Expression"
 							},
 							"azureBlobSingleJsonFolderPath": {
-								"value": "@pipeline().parameters.sourceAzureBlobSingleJsonFolderPath",
+								"value": "@pipeline().parameters.sinkAzureBlobSingleJsonFolderPath",
 								"type": "Expression"
 							},
 							"azureBlobSingleJsonFileName": {
