@@ -27,7 +27,7 @@
 						"formatSettings": {
 							"type": "JsonWriteSettings",
 							"quoteAllText": true,
-							"filePattern": "arrayOfObjects"
+							"filePattern": "setOfObjects"
 						}
 					},
 					"enableStaging": false
