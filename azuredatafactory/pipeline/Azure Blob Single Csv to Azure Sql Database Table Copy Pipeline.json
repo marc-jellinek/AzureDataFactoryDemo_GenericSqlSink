@@ -116,8 +116,14 @@
 								"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
 								"type": "Expression"
 							},
-							"azureSqlDatabaseTableSchemaName": "foo",
-							"azureSqlDatabaseTableTableName": "bar"
+							"azureSqlDatabaseTableSchemaName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName",
+								"type": "Expression"
+							},
+							"azureSqlDatabaseTableTableName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableTableName",
+								"type": "Expression"
+							}
 						}
 					}
 				}

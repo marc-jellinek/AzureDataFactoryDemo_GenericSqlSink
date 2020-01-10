@@ -481,7 +481,8 @@
 				"defaultValue": "0010_sourceData1.<source>2<sink><method>"
 			},
 			"deleteSourceFile": {
-				"type": "Boolean"
+				"type": "Boolean",
+				"defaultValue": false
 			},
 			"truncatePriorToCopy": {
 				"type": "Boolean",
