@@ -94,7 +94,7 @@
 							"sinkAzureSqlDatabaseTableTableName": {
 								"type": "String",
 								"value": {
-									"value": "@{concat(\n   pipeline().parameters.sourceAzureBlobConnectionStringSecretName, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvContainerName, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvFolderPath, \n   '/', \n   pipeline().parameters.sourceAzureBlobSingleCsvFileName, \n   '/', \n   utcNow()\n)}",
+									"value": "@{\n   if(\n      equals(\n         pipeline().parameters.sinkAzureSqlDatabaseTableTableName, \n         ''\n      ), \n      concat(\n         pipeline().parameters.sourceAzureBlobConnectionStringSecretName, '/', \n         pipeline().parameters.sourceAzureBlobSingleCsvContainerName, '/', \n         pipeline().parameters.sourceAzureBlobSingleCsvFolderPath, '/', \n         pipeline().parameters.sourceAzureBlobSingleCsvFileName, '/', \n         utcNow()\n      ),\n      pipeline().parameters.sinkAzureSqlDatabaseTableTableName\n   )\n}",
 									"type": "Expression"
 								}
 							},
@@ -116,8 +116,14 @@
 								"value": "@pipeline().parameters.sinkAzureSqlDatabaseConnectionStringSecretName",
 								"type": "Expression"
 							},
-							"azureSqlDatabaseTableSchemaName": "foo",
-							"azureSqlDatabaseTableTableName": "bar"
+							"azureSqlDatabaseTableSchemaName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableSchemaName",
+								"type": "Expression"
+							},
+							"azureSqlDatabaseTableTableName": {
+								"value": "@pipeline().parameters.sinkAzureSqlDatabaseTableTableName",
+								"type": "Expression"
+							}
 						}
 					}
 				}
